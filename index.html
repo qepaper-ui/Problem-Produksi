@@ -172,6 +172,7 @@ tr:hover td{background:var(--panel-2);}
 .toast.show{opacity:1;transform:translateY(0);}
 .loading{color:var(--text-dim);padding:30px;text-align:center;font-size:13px;}
 </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -327,8 +328,11 @@ tr:hover td{background:var(--panel-2);}
 <div class="toast" id="toast"></div>
 
 <script>
-const STORE_MASTER = 'master-data';
-const STORE_ENTRIES = 'entries-harian';
+// ================= SUPABASE =================
+const SUPABASE_URL = 'https://esukioascntyyoslcyzg.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3L32XQnIQt8WN3KUjW39dw_bIPqekh8';
+const { createClient } = window.supabase;
+const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
 let master = { mesin: [], operator: [], qc: [], jenisProblem: [] };
 let entries = [];
@@ -356,42 +360,75 @@ function showToast(msg){
 }
 
 async function loadAll(){
-  try{
-    const m = await window.storage.get(STORE_MASTER, true);
-    master = m ? JSON.parse(m.value) : defaultMaster();
-  }catch(e){
-    master = defaultMaster();
-    await window.storage.set(STORE_MASTER, JSON.stringify(master), true);
-  }
-  try{
-    const e = await window.storage.get(STORE_ENTRIES, true);
-    entries = e ? JSON.parse(e.value) : [];
-  }catch(e){
-    entries = [];
-  }
+  const [entriesRes, machinesRes, operatorsRes, qcRes, problemTypesRes] = await Promise.all([
+    supabase.from('entries').select('*').order('date', { ascending: false }),
+    supabase.from('machines').select('name').order('name'),
+    supabase.from('operators').select('name').order('name'),
+    supabase.from('qc').select('name').order('name'),
+    supabase.from('problem_types').select('name').order('name')
+  ]);
+
+  const errors = [entriesRes, machinesRes, operatorsRes, qcRes, problemTypesRes]
+    .map(r => r.error).filter(Boolean);
+  if(errors.length) throw errors[0];
+
+  entries = (entriesRes.data || []).map(e => ({
+    id: e.id,
+    date: e.date,
+    shift: e.shift || '',
+    machine: e.machine || '',
+    operator: e.operator || '',
+    qc: e.qc || '',
+    problemType: e.problem_type || '',
+    downtime: e.downtime ?? '',
+    desc: e.description || '',
+    created_at: e.created_at
+  }));
+
+  master = {
+    mesin: (machinesRes.data || []).map(x => x.name),
+    operator: (operatorsRes.data || []).map(x => x.name),
+    qc: (qcRes.data || []).map(x => x.name),
+    jenisProblem: (problemTypesRes.data || []).map(x => x.name)
+  };
+
   dataReady = true;
 }
 
-function defaultMaster(){
-  return {
-    mesin: ['Mesin 01','Mesin 02','Mesin 03'],
-    operator: [],
-    qc: [],
-    jenisProblem: ['Setting/Adjustment','Kerusakan Komponen','Bahan Baku','Kualitas Hasil','Human Error','Listrik/Kelistrikan']
+
+async function saveEntry(entry){
+  const payload = {
+    id: entry.id,
+    date: entry.date,
+    shift: entry.shift || null,
+    machine: entry.machine,
+    operator: entry.operator,
+    qc: entry.qc,
+    problem_type: entry.problemType,
+    downtime: entry.downtime === '' ? 0 : parseInt(entry.downtime, 10) || 0,
+    description: entry.desc
   };
+  const { error } = await supabase.from('entries').insert(payload);
+  if(error) throw error;
 }
 
-async function saveMaster(){
-  try{
-    const res = await window.storage.set(STORE_MASTER, JSON.stringify(master), true);
-    if(!res) showToast('Gagal menyimpan master data');
-  }catch(e){ showToast('Gagal menyimpan master data'); }
+async function deleteEntry(id){
+  const { error } = await supabase.from('entries').delete().eq('id', id);
+  if(error) throw error;
 }
-async function saveEntries(){
-  try{
-    const res = await window.storage.set(STORE_ENTRIES, JSON.stringify(entries), true);
-    if(!res) showToast('Gagal menyimpan data');
-  }catch(e){ showToast('Gagal menyimpan data'); }
+
+async function addMasterItem(cat, val){
+  const tableMap = { mesin:'machines', operator:'operators', qc:'qc', jenisProblem:'problem_types' };
+  const table = tableMap[cat];
+  const { error } = await supabase.from(table).insert({ name: val });
+  if(error && error.code !== '23505') throw error;
+}
+
+async function deleteMasterItem(cat, val){
+  const tableMap = { mesin:'machines', operator:'operators', qc:'qc', jenisProblem:'problem_types' };
+  const table = tableMap[cat];
+  const { error } = await supabase.from(table).delete().eq('name', val);
+  if(error) throw error;
 }
 
 /* ---------- TABS ---------- */
@@ -463,8 +500,14 @@ document.getElementById('entryForm').addEventListener('submit', async (ev)=>{
   if(!entry.machine || !entry.operator || !entry.qc || !entry.problemType || !entry.desc){
     showToast('Lengkapi semua field wajib'); return;
   }
-  entries.push(entry);
-  await saveEntries();
+  try{
+    await saveEntry(entry);
+    entries.push(entry);
+  }catch(err){
+    console.error(err);
+    showToast('Gagal menyimpan: '+(err.message||'periksa koneksi/database'));
+    return;
+  }
   document.getElementById('f-desc').value='';
   document.getElementById('f-downtime').value='';
   const msg = document.getElementById('saveMsg');
@@ -492,9 +535,13 @@ function renderTodayList(){
     </tr>`).join('') + '</tbody></table>';
   box.querySelectorAll('[data-del]').forEach(b=>{
     b.addEventListener('click', async ()=>{
-      entries = entries.filter(x=>x.id!==b.dataset.del);
-      await saveEntries();
-      renderTodayList(); renderAll(); renderDataTable();
+      try{
+        await deleteEntry(b.dataset.del);
+        entries = entries.filter(x=>x.id!==b.dataset.del);
+        renderTodayList(); renderAll(); renderDataTable();
+      }catch(err){
+        console.error(err); showToast('Gagal menghapus data');
+      }
     });
   });
 }
@@ -592,9 +639,13 @@ function renderDataTable(){
     </tr>`).join('');
   tbody.querySelectorAll('[data-del2]').forEach(b=>{
     b.addEventListener('click', async ()=>{
-      entries = entries.filter(x=>x.id!==b.dataset.del2);
-      await saveEntries();
-      renderDataTable(); renderAll(); renderTodayList();
+      try{
+        await deleteEntry(b.dataset.del2);
+        entries = entries.filter(x=>x.id!==b.dataset.del2);
+        renderDataTable(); renderAll(); renderTodayList();
+      }catch(err){
+        console.error(err); showToast('Gagal menghapus data');
+      }
     });
   });
 }
@@ -631,9 +682,13 @@ function renderMasterLists(){
   document.querySelectorAll('[data-rm]').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       const [cat, val] = btn.dataset.rm.split('::');
-      master[cat] = master[cat].filter(v=>v!==val);
-      await saveMaster();
-      renderMasterLists(); refreshFormSelects();
+      try{
+        await deleteMasterItem(cat, val);
+        master[cat] = master[cat].filter(v=>v!==val);
+        renderMasterLists(); refreshFormSelects();
+      }catch(err){
+        console.error(err); showToast('Gagal menghapus master data');
+      }
     });
   });
 }
@@ -643,10 +698,16 @@ document.querySelectorAll('[data-add]').forEach(btn=>{
     const input = document.getElementById('add-'+cat);
     const val = input.value.trim();
     if(!val) return;
-    if(!master[cat].includes(val)) master[cat].push(val);
-    input.value='';
-    await saveMaster();
-    renderMasterLists(); refreshFormSelects();
+    try{
+      if(!master[cat].includes(val)){
+        await addMasterItem(cat, val);
+        master[cat].push(val);
+      }
+      input.value='';
+      renderMasterLists(); refreshFormSelects();
+    }catch(err){
+      console.error(err); showToast('Gagal menambah master data: '+(err.message||''));
+    }
   });
 });
 
@@ -657,13 +718,21 @@ function renderAll(){
 }
 
 async function init(){
-  await loadAll();
-  document.getElementById('loadingMsg').classList.add('hidden');
-  document.getElementById('tab-ringkasan').classList.remove('hidden');
-  refreshFormSelects();
-  renderMasterLists();
-  renderTodayList();
-  renderAll();
+  try{
+    await loadAll();
+    document.getElementById('loadingMsg').classList.add('hidden');
+    document.getElementById('tab-ringkasan').classList.remove('hidden');
+    refreshFormSelects();
+    renderMasterLists();
+    renderTodayList();
+    renderAll();
+  }catch(err){
+    console.error(err);
+    document.getElementById('loadingMsg').innerHTML =
+      '<strong style="color:var(--red)">Gagal terhubung ke database.</strong><br><br>'+
+      '<span>Pastikan tabel Supabase dan RLS/permissions sudah dibuat sesuai panduan.</span><br>'+
+      '<span style="font-size:11px">'+esc(err.message || String(err))+'</span>';
+  }
 }
 init();
 </script>
