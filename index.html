@@ -172,7 +172,6 @@ tr:hover td{background:var(--panel-2);}
 .toast.show{opacity:1;transform:translateY(0);}
 .loading{color:var(--text-dim);padding:30px;text-align:center;font-size:13px;}
 </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -327,12 +326,25 @@ tr:hover td{background:var(--panel-2);}
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-// ================= SUPABASE =================
+/* ============ KONFIGURASI SUPABASE ============
+   Ganti 2 nilai di bawah ini dengan milik project Supabase Anda:
+   Project Settings -> API -> Project URL & anon public key
+   ================================================ */
 const SUPABASE_URL = 'https://esukioascntyyoslcyzg.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3L32XQnIQt8WN3KUjW39dw_bIPqekh8';
-const { createClient } = window.supabase;
-const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const SUPABASE_ANON_KEY = 'sb_publishable_3L32XQnIQt8WN3KUjW39dw_bIPqekh8';
+
+const isSupabaseConfigured = !SUPABASE_URL.includes('GANTI_DENGAN') && !SUPABASE_ANON_KEY.includes('GANTI_DENGAN');
+const sb = isSupabaseConfigured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+function ensureConfigured(){
+  if(!sb){
+    showToast('Supabase belum dikonfigurasi. Lihat komentar SUPABASE_URL di kode.');
+    return false;
+  }
+  return true;
+}
 
 let master = { mesin: [], operator: [], qc: [], jenisProblem: [] };
 let entries = [];
@@ -359,76 +371,63 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'), 2200);
 }
 
-async function loadAll(){
-  const [entriesRes, machinesRes, operatorsRes, qcRes, problemTypesRes] = await Promise.all([
-    supabase.from('entries').select('*').order('date', { ascending: false }),
-    supabase.from('machines').select('name').order('name'),
-    supabase.from('operators').select('name').order('name'),
-    supabase.from('qc').select('name').order('name'),
-    supabase.from('problem_types').select('name').order('name')
-  ]);
-
-  const errors = [entriesRes, machinesRes, operatorsRes, qcRes, problemTypesRes]
-    .map(r => r.error).filter(Boolean);
-  if(errors.length) throw errors[0];
-
-  entries = (entriesRes.data || []).map(e => ({
-    id: e.id,
-    date: e.date,
-    shift: e.shift || '',
-    machine: e.machine || '',
-    operator: e.operator || '',
-    qc: e.qc || '',
-    problemType: e.problem_type || '',
-    downtime: e.downtime ?? '',
-    desc: e.description || '',
-    created_at: e.created_at
-  }));
-
-  master = {
-    mesin: (machinesRes.data || []).map(x => x.name),
-    operator: (operatorsRes.data || []).map(x => x.name),
-    qc: (qcRes.data || []).map(x => x.name),
-    jenisProblem: (problemTypesRes.data || []).map(x => x.name)
+function rowToEntry(r){
+  return {
+    id: r.id, date: r.date, shift: r.shift||'', machine: r.machine||'',
+    operator: r.operator||'', qc: r.qc||'', problemType: r.problem_type||'',
+    downtime: r.downtime||'', desc: r.description||''
   };
+}
 
+async function seedMasterData(m){
+  const rows = [];
+  Object.keys(m).forEach(cat=>{ m[cat].forEach(val=> rows.push({id:uid(), category:cat, value:val})); });
+  if(rows.length){
+    const { error } = await sb.from('master_items').insert(rows);
+    if(error) console.error('Gagal seed master data:', error);
+  }
+}
+
+async function loadAll(){
+  if(!ensureConfigured()){
+    master = defaultMaster();
+    entries = [];
+    dataReady = true;
+    return;
+  }
+  try{
+    const { data, error } = await sb.from('master_items').select('*').order('value');
+    if(error) throw error;
+    master = { mesin: [], operator: [], qc: [], jenisProblem: [] };
+    (data||[]).forEach(row=>{ if(master[row.category]) master[row.category].push(row.value); });
+    if(!data || data.length===0){
+      master = defaultMaster();
+      await seedMasterData(master);
+    }
+  }catch(err){
+    console.error('Gagal memuat master data:', err);
+    master = defaultMaster();
+    showToast('Gagal memuat master data dari Supabase');
+  }
+  try{
+    const { data, error } = await sb.from('problem_entries').select('*').order('date',{ascending:false});
+    if(error) throw error;
+    entries = (data||[]).map(rowToEntry);
+  }catch(err){
+    console.error('Gagal memuat data entri:', err);
+    entries = [];
+    showToast('Gagal memuat data dari Supabase');
+  }
   dataReady = true;
 }
 
-
-async function saveEntry(entry){
-  const payload = {
-    id: entry.id,
-    date: entry.date,
-    shift: entry.shift || null,
-    machine: entry.machine,
-    operator: entry.operator,
-    qc: entry.qc,
-    problem_type: entry.problemType,
-    downtime: entry.downtime === '' ? 0 : parseInt(entry.downtime, 10) || 0,
-    description: entry.desc
+function defaultMaster(){
+  return {
+    mesin: ['Mesin 01','Mesin 02','Mesin 03'],
+    operator: [],
+    qc: [],
+    jenisProblem: ['Setting/Adjustment','Kerusakan Komponen','Bahan Baku','Kualitas Hasil','Human Error','Listrik/Kelistrikan']
   };
-  const { error } = await supabase.from('entries').insert(payload);
-  if(error) throw error;
-}
-
-async function deleteEntry(id){
-  const { error } = await supabase.from('entries').delete().eq('id', id);
-  if(error) throw error;
-}
-
-async function addMasterItem(cat, val){
-  const tableMap = { mesin:'machines', operator:'operators', qc:'qc', jenisProblem:'problem_types' };
-  const table = tableMap[cat];
-  const { error } = await supabase.from(table).insert({ name: val });
-  if(error && error.code !== '23505') throw error;
-}
-
-async function deleteMasterItem(cat, val){
-  const tableMap = { mesin:'machines', operator:'operators', qc:'qc', jenisProblem:'problem_types' };
-  const table = tableMap[cat];
-  const { error } = await supabase.from(table).delete().eq('name', val);
-  if(error) throw error;
 }
 
 /* ---------- TABS ---------- */
@@ -500,14 +499,14 @@ document.getElementById('entryForm').addEventListener('submit', async (ev)=>{
   if(!entry.machine || !entry.operator || !entry.qc || !entry.problemType || !entry.desc){
     showToast('Lengkapi semua field wajib'); return;
   }
-  try{
-    await saveEntry(entry);
-    entries.push(entry);
-  }catch(err){
-    console.error(err);
-    showToast('Gagal menyimpan: '+(err.message||'periksa koneksi/database'));
-    return;
-  }
+  if(!ensureConfigured()) return;
+  const { error } = await sb.from('problem_entries').insert({
+    id: entry.id, date: entry.date, shift: entry.shift, machine: entry.machine,
+    operator: entry.operator, qc: entry.qc, problem_type: entry.problemType,
+    downtime: entry.downtime, description: entry.desc
+  });
+  if(error){ showToast('Gagal menyimpan: '+error.message); return; }
+  entries.push(entry);
   document.getElementById('f-desc').value='';
   document.getElementById('f-downtime').value='';
   const msg = document.getElementById('saveMsg');
@@ -535,13 +534,11 @@ function renderTodayList(){
     </tr>`).join('') + '</tbody></table>';
   box.querySelectorAll('[data-del]').forEach(b=>{
     b.addEventListener('click', async ()=>{
-      try{
-        await deleteEntry(b.dataset.del);
-        entries = entries.filter(x=>x.id!==b.dataset.del);
-        renderTodayList(); renderAll(); renderDataTable();
-      }catch(err){
-        console.error(err); showToast('Gagal menghapus data');
-      }
+      if(!ensureConfigured()) return;
+      const { error } = await sb.from('problem_entries').delete().eq('id', b.dataset.del);
+      if(error){ showToast('Gagal menghapus: '+error.message); return; }
+      entries = entries.filter(x=>x.id!==b.dataset.del);
+      renderTodayList(); renderAll(); renderDataTable();
     });
   });
 }
@@ -639,13 +636,11 @@ function renderDataTable(){
     </tr>`).join('');
   tbody.querySelectorAll('[data-del2]').forEach(b=>{
     b.addEventListener('click', async ()=>{
-      try{
-        await deleteEntry(b.dataset.del2);
-        entries = entries.filter(x=>x.id!==b.dataset.del2);
-        renderDataTable(); renderAll(); renderTodayList();
-      }catch(err){
-        console.error(err); showToast('Gagal menghapus data');
-      }
+      if(!ensureConfigured()) return;
+      const { error } = await sb.from('problem_entries').delete().eq('id', b.dataset.del2);
+      if(error){ showToast('Gagal menghapus: '+error.message); return; }
+      entries = entries.filter(x=>x.id!==b.dataset.del2);
+      renderDataTable(); renderAll(); renderTodayList();
     });
   });
 }
@@ -681,14 +676,12 @@ function renderMasterLists(){
   });
   document.querySelectorAll('[data-rm]').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
+      if(!ensureConfigured()) return;
       const [cat, val] = btn.dataset.rm.split('::');
-      try{
-        await deleteMasterItem(cat, val);
-        master[cat] = master[cat].filter(v=>v!==val);
-        renderMasterLists(); refreshFormSelects();
-      }catch(err){
-        console.error(err); showToast('Gagal menghapus master data');
-      }
+      const { error } = await sb.from('master_items').delete().eq('category', cat).eq('value', val);
+      if(error){ showToast('Gagal menghapus: '+error.message); return; }
+      master[cat] = master[cat].filter(v=>v!==val);
+      renderMasterLists(); refreshFormSelects();
     });
   });
 }
@@ -697,17 +690,13 @@ document.querySelectorAll('[data-add]').forEach(btn=>{
     const cat = btn.dataset.add;
     const input = document.getElementById('add-'+cat);
     const val = input.value.trim();
-    if(!val) return;
-    try{
-      if(!master[cat].includes(val)){
-        await addMasterItem(cat, val);
-        master[cat].push(val);
-      }
-      input.value='';
-      renderMasterLists(); refreshFormSelects();
-    }catch(err){
-      console.error(err); showToast('Gagal menambah master data: '+(err.message||''));
-    }
+    if(!val || master[cat].includes(val)) return;
+    if(!ensureConfigured()) return;
+    const { error } = await sb.from('master_items').insert({ id: uid(), category: cat, value: val });
+    if(error){ showToast('Gagal menyimpan: '+error.message); return; }
+    master[cat].push(val);
+    input.value='';
+    renderMasterLists(); refreshFormSelects();
   });
 });
 
@@ -718,21 +707,13 @@ function renderAll(){
 }
 
 async function init(){
-  try{
-    await loadAll();
-    document.getElementById('loadingMsg').classList.add('hidden');
-    document.getElementById('tab-ringkasan').classList.remove('hidden');
-    refreshFormSelects();
-    renderMasterLists();
-    renderTodayList();
-    renderAll();
-  }catch(err){
-    console.error(err);
-    document.getElementById('loadingMsg').innerHTML =
-      '<strong style="color:var(--red)">Gagal terhubung ke database.</strong><br><br>'+
-      '<span>Pastikan tabel Supabase dan RLS/permissions sudah dibuat sesuai panduan.</span><br>'+
-      '<span style="font-size:11px">'+esc(err.message || String(err))+'</span>';
-  }
+  await loadAll();
+  document.getElementById('loadingMsg').classList.add('hidden');
+  document.getElementById('tab-ringkasan').classList.remove('hidden');
+  refreshFormSelects();
+  renderMasterLists();
+  renderTodayList();
+  renderAll();
 }
 init();
 </script>
