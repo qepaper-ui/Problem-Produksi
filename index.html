@@ -171,6 +171,103 @@ tr:hover td{background:var(--panel-2);}
 }
 .toast.show{opacity:1;transform:translateY(0);}
 .loading{color:var(--text-dim);padding:30px;text-align:center;font-size:13px;}
+
+/* photo upload fields */
+.photo-input-wrap{
+  display:flex;align-items:center;gap:10px;background:var(--panel-2);border:1px solid var(--line);
+  border-radius:4px;padding:8px 10px;
+}
+.photo-input-wrap input[type=file]{
+  color:var(--text-dim);font-size:12px;width:100%;
+}
+.photo-preview{
+  width:44px;height:44px;border-radius:4px;object-fit:cover;border:1px solid var(--line);flex-shrink:0;display:none;
+}
+.photo-preview.show{display:block;}
+
+/* gallery / photo cards */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
+.photo-card{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+.photo-card .photo-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);}
+.photo-card .photo-col{position:relative;background:var(--panel-2);}
+.photo-card .photo-col img{width:100%;height:120px;object-fit:cover;display:block;cursor:zoom-in;}
+.photo-card .photo-col img:hover{opacity:.85;}
+.photo-card .photo-col .no-photo{
+  height:120px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);
+  font-size:10.5px;text-align:center;padding:6px;
+}
+.photo-card .photo-col .cap{
+  position:absolute;top:0;left:0;background:rgba(18,22,26,.75);color:var(--amber);
+  font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;
+  padding:2px 6px;
+}
+.photo-card .info{padding:10px;}
+.photo-card .info .meta{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);margin-bottom:4px;}
+.photo-card .info .desc{font-size:12.5px;color:var(--text);line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+/* lightbox */
+.lightbox{
+  position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;
+  z-index:999;padding:36px;cursor:zoom-out;
+}
+.lightbox.show{display:flex;}
+.lightbox img{max-width:100%;max-height:100%;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.6);}
+/* pallet dinamis di form */
+.pallet-row{
+  display:flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--line);
+  border-radius:4px;padding:8px;margin-bottom:8px;flex-wrap:wrap;
+}
+.pallet-row input[type=text]{flex:1;min-width:140px;}
+.pallet-row .photo-input-wrap{flex:1;min-width:180px;margin-bottom:0;}
+.pallet-row .remove-pallet-row{flex-shrink:0;}
+
+/* chip palet di kartu foto */
+.pallet-list{display:flex;flex-wrap:wrap;gap:6px;padding:0 10px 10px;}
+.pallet-chip{
+  display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);
+  border-radius:4px;padding:3px 8px 3px 3px;font-size:11px;color:var(--text-dim);
+}
+.pallet-chip img{width:26px;height:26px;object-fit:cover;border-radius:3px;cursor:zoom-in;}
+.pallet-chip .no-photo-sm{width:26px;height:26px;display:flex;align-items:center;justify-content:center;
+  background:var(--panel-2);border-radius:3px;font-size:9px;color:var(--text-dim);}
+
+.btn.editing-active{outline:2px solid var(--amber);}
+
+.period-toggle{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-right:10px;}
+.period-btn{
+  background:var(--panel-2);color:var(--text-dim);border:none;border-right:1px solid var(--line);
+  padding:6px 12px;font-size:12px;font-family:'IBM Plex Mono',monospace;cursor:pointer;
+}
+.period-btn:last-child{border-right:none;}
+.period-btn.active{background:var(--amber);color:#1a1300;}
+.project-summary-row{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+.project-summary-row select{width:auto;min-width:200px;}
+
+/* hot list reject terbesar */
+.hotlist{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+.hot-row{
+  display:flex;align-items:center;gap:12px;background:var(--panel-2);border:1px solid var(--line);
+  border-radius:6px;padding:10px 12px;
+}
+.hot-row.rank-1{border-color:var(--red);background:linear-gradient(90deg, rgba(209,77,77,.18), transparent 70%);}
+.hot-row.rank-2{border-color:#e0703d;background:linear-gradient(90deg, rgba(224,112,61,.14), transparent 70%);}
+.hot-row.rank-3{border-color:var(--amber);background:linear-gradient(90deg, rgba(232,163,61,.12), transparent 70%);}
+.hot-rank{
+  font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:14px;width:30px;text-align:center;
+  color:var(--text-dim);flex-shrink:0;
+}
+.hot-row.rank-1 .hot-rank{color:var(--red);font-size:16px;}
+.hot-row.rank-2 .hot-rank{color:#e0703d;}
+.hot-row.rank-3 .hot-rank{color:var(--amber);}
+.hot-info{flex:1;min-width:0;}
+.hot-name{font-size:13px;font-weight:600;margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.hot-fire{font-size:12px;}
+.hot-bar-wrap{height:6px;background:var(--line);border-radius:3px;overflow:hidden;}
+.hot-bar{height:100%;background:linear-gradient(90deg,var(--red),var(--amber));border-radius:3px;}
+.hot-stats{text-align:right;flex-shrink:0;}
+.hot-reject{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--red);font-weight:700;}
+.hot-pct{font-size:11px;color:var(--text-dim);}
 </style>
 </head>
 <body>
@@ -182,6 +279,11 @@ tr:hover td{background:var(--panel-2);}
       <h1 class="display">Panel Problem Produksi</h1>
     </div>
     <div class="week-nav">
+      <div class="period-toggle" id="periodToggle">
+        <button class="period-btn" data-period="day">Harian</button>
+        <button class="period-btn active" data-period="week">Mingguan</button>
+        <button class="period-btn" data-period="month">Bulanan</button>
+      </div>
       <button id="prevWeek">‹</button>
       <div class="week-range mono" id="weekRange">–</div>
       <button id="nextWeek">›</button>
@@ -189,8 +291,9 @@ tr:hover td{background:var(--panel-2);}
   </div>
   <div class="hazard"></div>
   <nav class="tabs">
-    <button class="tab-btn active" data-tab="ringkasan">Ringkasan Mingguan</button>
+    <button class="tab-btn active" data-tab="ringkasan">Ringkasan</button>
     <button class="tab-btn" data-tab="input">Input Harian</button>
+    <button class="tab-btn" data-tab="galeri">Galeri Foto</button>
     <button class="tab-btn" data-tab="data">Data Lengkap</button>
     <button class="tab-btn" data-tab="master">Master Data</button>
   </nav>
@@ -207,8 +310,21 @@ tr:hover td{background:var(--panel-2);}
       <div class="barlist" id="barMachine"></div>
     </div>
     <div class="panel">
+      <h2>🔥 Hot List — Reject Terbesar <span id="rejectPanelLabel">Minggu Ini</span></h2>
+      <div class="kpi-grid" id="rejectKpiGrid" style="margin-bottom:0;"></div>
+      <div class="hotlist" id="hotlistReject"></div>
+    </div>
+    <div class="panel">
       <h2>Jenis Problem Paling Sering</h2>
       <div class="barlist" id="barProblem"></div>
+    </div>
+    <div class="panel">
+      <h2>Problem per Nomor Project</h2>
+      <div class="barlist" id="barProject"></div>
+    </div>
+    <div class="panel">
+      <h2>Problem Terbaru Dengan Foto</h2>
+      <div class="gallery-grid" id="recentPhotos"></div>
     </div>
   </section>
 
@@ -221,6 +337,11 @@ tr:hover td{background:var(--panel-2);}
           <div class="field">
             <label>Tanggal</label>
             <input type="date" id="f-date" required>
+          </div>
+          <div class="field">
+            <label>Nomor Project</label>
+            <input type="text" id="f-project" list="projectList" placeholder="cth. PRJ-2026-001">
+            <datalist id="projectList"></datalist>
           </div>
           <div class="field">
             <label>Shift</label>
@@ -252,11 +373,51 @@ tr:hover td{background:var(--panel-2);}
             <input type="number" id="f-downtime" min="0" placeholder="0">
           </div>
         </div>
+        <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;">
+          <div class="field">
+            <label>Qty Production</label>
+            <input type="number" id="f-qty-production" min="0" placeholder="0">
+          </div>
+          <div class="field">
+            <label>Total Reject</label>
+            <input type="number" id="f-total-reject" min="0" placeholder="0">
+          </div>
+          <div class="field">
+            <label>Qty Total (Production − Reject)</label>
+            <input type="text" id="f-qty-total" readonly style="background:var(--panel-2);color:var(--text-dim);">
+          </div>
+          <div class="field">
+            <label>% Reject</label>
+            <input type="text" id="f-reject-pct" readonly style="background:var(--panel-2);color:var(--text-dim);">
+          </div>
+        </div>
         <div class="field">
           <label>Detail / Deskripsi Problem</label>
           <textarea id="f-desc" placeholder="Jelaskan problem yang terjadi secara lengkap..." required></textarea>
         </div>
-        <button type="submit" class="btn">Simpan Problem</button>
+        <div class="form-grid" style="grid-template-columns:1fr 1fr;">
+          <div class="field">
+            <label>Foto Problem</label>
+            <div class="photo-input-wrap">
+              <input type="file" id="f-photo-problem" accept="image/*">
+              <img class="photo-preview" id="preview-problem">
+            </div>
+          </div>
+          <div class="field">
+            <label>Foto NC (Non Conformance)</label>
+            <div class="photo-input-wrap">
+              <input type="file" id="f-photo-nc" accept="image/*">
+              <img class="photo-preview" id="preview-nc">
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Nomor Palet &amp; Foto Label Palet <span style="color:var(--text-dim);font-weight:400;">(bisa lebih dari satu)</span></label>
+          <div id="palletRows"></div>
+          <button type="button" class="btn ghost small" id="addPalletRow" style="margin-top:6px;">+ Tambah Palet</button>
+        </div>
+        <button type="submit" class="btn" id="submitBtnMain">Simpan Problem</button>
+        <button type="button" class="btn ghost" id="cancelEditBtn" style="display:none;margin-left:8px;">Batal Edit</button>
         <span id="saveMsg" style="margin-left:10px;color:var(--green);font-size:12.5px;"></span>
       </form>
     </div>
@@ -267,6 +428,14 @@ tr:hover td{background:var(--panel-2);}
     </div>
   </section>
 
+  <!-- GALERI FOTO -->
+  <section id="tab-galeri" class="hidden">
+    <div class="panel">
+      <h2>Galeri Foto Problem &amp; NC</h2>
+      <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+  </section>
+
   <!-- DATA LENGKAP -->
   <section id="tab-data" class="hidden">
     <div class="panel">
@@ -274,18 +443,21 @@ tr:hover td{background:var(--panel-2);}
       <div class="filters">
         <input type="date" id="filt-from" title="Dari tanggal">
         <input type="date" id="filt-to" title="Sampai tanggal">
+        <select id="filt-project"><option value="">Semua Project</option></select>
         <select id="filt-machine"><option value="">Semua Mesin</option></select>
         <select id="filt-operator"><option value="">Semua Operator</option></select>
         <select id="filt-qc"><option value="">Semua QC</option></select>
         <button class="btn ghost small" id="clearFilters">Reset Filter</button>
         <button class="btn small" id="exportCsv" style="margin-left:auto;">Ekspor CSV</button>
+        <button class="btn small" id="exportExcel">Ekspor Excel</button>
       </div>
       <div style="overflow-x:auto;">
         <table id="dataTable">
           <thead>
             <tr>
-              <th>Tanggal</th><th>Shift</th><th>Mesin</th><th>Operator</th><th>QC</th>
-              <th>Jenis Problem</th><th>Deskripsi</th><th>Downtime</th><th></th>
+              <th>Tanggal</th><th>No. Project</th><th>Shift</th><th>Mesin</th><th>No. Palet</th><th>Operator</th><th>QC</th>
+              <th>Jenis Problem</th><th>Deskripsi</th><th>Qty Production</th><th>Total Reject</th>
+              <th>Qty Total</th><th>% Reject</th><th>Downtime</th><th></th>
             </tr>
           </thead>
           <tbody id="dataTableBody"></tbody>
@@ -325,8 +497,10 @@ tr:hover td{background:var(--panel-2);}
 </main>
 
 <div class="toast" id="toast"></div>
+<div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt="Foto diperbesar"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <script>
 /* ============ KONFIGURASI SUPABASE ============
    Ganti 2 nilai di bawah ini dengan milik project Supabase Anda:
@@ -348,7 +522,8 @@ function ensureConfigured(){
 
 let master = { mesin: [], operator: [], qc: [], jenisProblem: [] };
 let entries = [];
-let currentWeekStart = mondayOf(new Date());
+let currentAnchor = mondayOf(new Date());
+let periodMode = 'week';
 let dataReady = false;
 
 function mondayOf(d){
@@ -363,7 +538,25 @@ function fmtDisplay(d){
   return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short'});
 }
 function addDays(d,n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
+function addMonths(d,n){ return new Date(d.getFullYear(), d.getMonth()+n, 1); }
+function firstOfMonth(d){ return new Date(d.getFullYear(), d.getMonth(), 1); }
+function lastOfMonth(d){ return new Date(d.getFullYear(), d.getMonth()+1, 0); }
 function uid(){ return 'e'+Date.now()+Math.random().toString(36).slice(2,7); }
+
+function getPeriodRange(){
+  if(periodMode==='day'){
+    const d = new Date(currentAnchor); d.setHours(0,0,0,0);
+    return { start: d, end: d };
+  }
+  if(periodMode==='month'){
+    return { start: firstOfMonth(currentAnchor), end: lastOfMonth(currentAnchor) };
+  }
+  const start = mondayOf(currentAnchor);
+  return { start, end: addDays(start, 6) };
+}
+function fmtDisplayMonth(d){
+  return d.toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+}
 
 function showToast(msg){
   const t = document.getElementById('toast');
@@ -372,10 +565,21 @@ function showToast(msg){
 }
 
 function rowToEntry(r){
+  let pallets = Array.isArray(r.pallets) ? r.pallets : [];
+  if(pallets.length===0 && (r.pallet_number || r.photo_label_palet_url)){
+    pallets = [{ number: r.pallet_number||'', photo: r.photo_label_palet_url||'' }];
+  }
   return {
     id: r.id, date: r.date, shift: r.shift||'', machine: r.machine||'',
     operator: r.operator||'', qc: r.qc||'', problemType: r.problem_type||'',
-    downtime: r.downtime||'', desc: r.description||''
+    downtime: r.downtime||'', desc: r.description||'',
+    photoProblem: r.photo_problem_url||'', photoNc: r.photo_nc_url||'',
+    pallets: pallets,
+    projectNumber: r.project_number||'',
+    qtyProduction: r.qty_production!=null ? Number(r.qty_production) : null,
+    totalReject: r.total_reject!=null ? Number(r.total_reject) : null,
+    qtyTotal: r.qty_total!=null ? Number(r.qty_total) : null,
+    rejectPercentage: r.reject_percentage!=null ? Number(r.reject_percentage) : null
   };
 }
 
@@ -438,21 +642,46 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     document.querySelectorAll('main > section').forEach(s=>s.classList.add('hidden'));
     document.getElementById('tab-'+btn.dataset.tab).classList.remove('hidden');
     if(btn.dataset.tab==='data') renderDataTable();
+    if(btn.dataset.tab==='galeri') renderGallery();
   });
 });
 
-/* ---------- WEEK NAV ---------- */
+/* ---------- PERIOD NAV ---------- */
 document.getElementById('prevWeek').addEventListener('click', ()=>{
-  currentWeekStart = addDays(currentWeekStart, -7); renderAll();
+  if(periodMode==='day') currentAnchor = addDays(currentAnchor, -1);
+  else if(periodMode==='month') currentAnchor = addMonths(currentAnchor, -1);
+  else currentAnchor = addDays(currentAnchor, -7);
+  renderAll();
 });
 document.getElementById('nextWeek').addEventListener('click', ()=>{
-  currentWeekStart = addDays(currentWeekStart, 7); renderAll();
+  if(periodMode==='day') currentAnchor = addDays(currentAnchor, 1);
+  else if(periodMode==='month') currentAnchor = addMonths(currentAnchor, 1);
+  else currentAnchor = addDays(currentAnchor, 7);
+  renderAll();
+});
+document.querySelectorAll('.period-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    periodMode = btn.dataset.period;
+    document.querySelectorAll('.period-btn').forEach(b=>b.classList.toggle('active', b===btn));
+    renderAll();
+  });
 });
 
 function renderWeekRange(){
-  const end = addDays(currentWeekStart, 6);
-  document.getElementById('weekRange').textContent = fmtDisplay(currentWeekStart)+' – '+fmtDisplay(end);
-  document.getElementById('rangeLabel1').textContent = '('+fmtDisplay(currentWeekStart)+'–'+fmtDisplay(end)+')';
+  const { start, end } = getPeriodRange();
+  let rangeText, labelText;
+  if(periodMode==='day'){
+    rangeText = fmtDisplay(start);
+    labelText = '('+fmtDisplay(start)+')';
+  }else if(periodMode==='month'){
+    rangeText = fmtDisplayMonth(start);
+    labelText = '('+fmtDisplayMonth(start)+')';
+  }else{
+    rangeText = fmtDisplay(start)+' – '+fmtDisplay(end);
+    labelText = '('+fmtDisplay(start)+'–'+fmtDisplay(end)+')';
+  }
+  document.getElementById('weekRange').textContent = rangeText;
+  document.getElementById('rangeLabel1').textContent = labelText;
 }
 
 /* ---------- SELECT POPULATION ---------- */
@@ -480,41 +709,136 @@ function refreshFormSelects(){
   populateSelect(document.getElementById('filt-qc'), master.qc, 'Semua QC');
 }
 
+function refreshProjectOptions(){
+  const projects = Array.from(new Set(entries.map(e=>e.projectNumber).filter(Boolean))).sort();
+  document.getElementById('projectList').innerHTML = projects.map(p=>`<option value="${esc(p)}">`).join('');
+  const filtProject = document.getElementById('filt-project');
+  if(filtProject) populateSelect(filtProject, projects, 'Semua Project');
+}
+
 /* ---------- ENTRY FORM ---------- */
 document.getElementById('f-date').value = fmt(new Date());
 
 document.getElementById('entryForm').addEventListener('submit', async (ev)=>{
   ev.preventDefault();
-  const entry = {
-    id: uid(),
+  if(!ensureConfigured()) return;
+  const submitBtn = document.getElementById('submitBtnMain');
+  const msg = document.getElementById('saveMsg');
+  const isEdit = !!editingId;
+  const entryId = isEdit ? editingId : uid();
+
+  const fileProblem = document.getElementById('f-photo-problem').files[0];
+  const fileNc = document.getElementById('f-photo-nc').files[0];
+
+  const base = {
     date: document.getElementById('f-date').value,
+    projectNumber: document.getElementById('f-project').value.trim(),
     shift: document.getElementById('f-shift').value,
     machine: document.getElementById('f-machine').value,
     operator: document.getElementById('f-operator').value,
     qc: document.getElementById('f-qc').value,
     problemType: document.getElementById('f-problemtype').value,
     downtime: document.getElementById('f-downtime').value || '',
-    desc: document.getElementById('f-desc').value.trim()
+    desc: document.getElementById('f-desc').value.trim(),
+    qtyProduction: document.getElementById('f-qty-production').value===''? null : Number(document.getElementById('f-qty-production').value),
+    totalReject: document.getElementById('f-total-reject').value===''? null : Number(document.getElementById('f-total-reject').value)
   };
-  if(!entry.machine || !entry.operator || !entry.qc || !entry.problemType || !entry.desc){
+  if(!base.machine || !base.operator || !base.qc || !base.problemType || !base.desc){
     showToast('Lengkapi semua field wajib'); return;
   }
-  if(!ensureConfigured()) return;
-  const { error } = await sb.from('problem_entries').insert({
-    id: entry.id, date: entry.date, shift: entry.shift, machine: entry.machine,
-    operator: entry.operator, qc: entry.qc, problem_type: entry.problemType,
-    downtime: entry.downtime, description: entry.desc
-  });
-  if(error){ showToast('Gagal menyimpan: '+error.message); return; }
-  entries.push(entry);
-  document.getElementById('f-desc').value='';
-  document.getElementById('f-downtime').value='';
-  const msg = document.getElementById('saveMsg');
-  msg.textContent = 'Tersimpan ✓';
-  setTimeout(()=>msg.textContent='', 1800);
+  const { qtyTotal, rejectPct } = calcRejectStats(base.qtyProduction, base.totalReject);
+  base.qtyTotal = (base.qtyProduction==null && base.totalReject==null) ? null : qtyTotal;
+  base.rejectPercentage = (base.qtyProduction==null && base.totalReject==null) ? null : rejectPct;
+
+  submitBtn.disabled = true;
+  msg.style.color = 'var(--text-dim)';
+  msg.textContent = isEdit ? 'Menyimpan perubahan...' : 'Mengunggah foto & menyimpan...';
+
+  const filesToDeleteAfterSuccess = [];
+  let photoProblemUrl = isEdit ? editingExistingPhotoProblem : '';
+  let photoNcUrl = isEdit ? editingExistingPhotoNc : '';
+  const pallets = [];
+
+  try{
+    if(fileProblem){
+      const newUrl = await uploadPhoto(fileProblem, entryId+'-problem-'+Date.now());
+      if(isEdit && editingExistingPhotoProblem) filesToDeleteAfterSuccess.push(editingExistingPhotoProblem);
+      photoProblemUrl = newUrl;
+    }
+    if(fileNc){
+      const newUrl = await uploadPhoto(fileNc, entryId+'-nc-'+Date.now());
+      if(isEdit && editingExistingPhotoNc) filesToDeleteAfterSuccess.push(editingExistingPhotoNc);
+      photoNcUrl = newUrl;
+    }
+    for(let i=0;i<palletFormState.length;i++){
+      const row = palletFormState[i];
+      let photoUrl = row.existingPhoto || '';
+      if(row.file){
+        const newUrl = await uploadPhoto(row.file, entryId+'-label-'+i+'-'+Date.now());
+        if(row.existingPhoto) filesToDeleteAfterSuccess.push(row.existingPhoto);
+        photoUrl = newUrl;
+      }
+      const number = (row.number||'').trim();
+      if(number || photoUrl) pallets.push({ number, photo: photoUrl });
+    }
+  }catch(err){
+    submitBtn.disabled = false;
+    msg.textContent = '';
+    showToast('Gagal upload foto: '+err.message);
+    return;
+  }
+
+  const payload = {
+    date: base.date, project_number: base.projectNumber, shift: base.shift, machine: base.machine,
+    operator: base.operator, qc: base.qc, problem_type: base.problemType,
+    downtime: base.downtime, description: base.desc,
+    photo_problem_url: photoProblemUrl, photo_nc_url: photoNcUrl,
+    pallets: pallets,
+    qty_production: base.qtyProduction, total_reject: base.totalReject,
+    qty_total: base.qtyTotal, reject_percentage: base.rejectPercentage
+  };
+
+  let error;
+  if(isEdit){
+    ({ error } = await sb.from('problem_entries').update(payload).eq('id', entryId));
+  }else{
+    ({ error } = await sb.from('problem_entries').insert({ id: entryId, ...payload }));
+  }
+  submitBtn.disabled = false;
+  if(error){ msg.textContent=''; showToast('Gagal menyimpan: '+error.message); return; }
+
+  if(filesToDeleteAfterSuccess.length){
+    const paths = filesToDeleteAfterSuccess.map(pathFromPublicUrl).filter(Boolean);
+    if(paths.length) sb.storage.from('problem-photos').remove(paths).catch(()=>{});
+  }
+
+  const localEntry = {
+    id: entryId, date: base.date, projectNumber: base.projectNumber, shift: base.shift, machine: base.machine,
+    operator: base.operator, qc: base.qc, problemType: base.problemType,
+    downtime: base.downtime, desc: base.desc,
+    photoProblem: photoProblemUrl, photoNc: photoNcUrl, pallets: pallets,
+    qtyProduction: base.qtyProduction, totalReject: base.totalReject,
+    qtyTotal: base.qtyTotal, rejectPercentage: base.rejectPercentage
+  };
+
+  if(isEdit){
+    const idx = entries.findIndex(x=>x.id===entryId);
+    if(idx!==-1) entries[idx] = localEntry;
+    resetFormToBlank();
+    showToast('Perubahan tersimpan');
+  }else{
+    entries.push(localEntry);
+    resetFormToBlank();
+    msg.style.color = 'var(--green)';
+    msg.textContent = 'Tersimpan ✓';
+    setTimeout(()=>msg.textContent='', 1800);
+  }
   renderTodayList();
   renderAll();
+  renderGallery();
+  renderDataTable();
 });
+
 
 function renderTodayList(){
   const today = document.getElementById('f-date').value || fmt(new Date());
@@ -530,15 +854,26 @@ function renderTodayList(){
       <td>${esc(e.qc)}</td>
       <td>${esc(e.problemType)}</td>
       <td class="desc-cell">${esc(e.desc)}</td>
-      <td><button class="btn danger small" data-del="${e.id}">Hapus</button></td>
+      <td style="white-space:nowrap;">
+        <button class="btn ghost small" data-edit="${e.id}">Edit</button>
+        <button class="btn danger small" data-del="${e.id}">Hapus</button>
+      </td>
     </tr>`).join('') + '</tbody></table>';
+  box.querySelectorAll('[data-edit]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const target = entries.find(x=>x.id===b.dataset.edit);
+      if(target) startEdit(target);
+    });
+  });
   box.querySelectorAll('[data-del]').forEach(b=>{
     b.addEventListener('click', async ()=>{
       if(!ensureConfigured()) return;
+      const target = entries.find(x=>x.id===b.dataset.del);
       const { error } = await sb.from('problem_entries').delete().eq('id', b.dataset.del);
       if(error){ showToast('Gagal menghapus: '+error.message); return; }
+      await deletePhotosForEntry(target);
       entries = entries.filter(x=>x.id!==b.dataset.del);
-      renderTodayList(); renderAll(); renderDataTable();
+      renderTodayList(); renderAll(); renderDataTable(); renderGallery();
     });
   });
 }
@@ -548,11 +883,233 @@ function esc(s){
   const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML;
 }
 
+/* ---------- UPLOAD FOTO ---------- */
+async function uploadPhoto(file, pathPrefix){
+  const ext = (file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'') || 'jpg';
+  const path = `${pathPrefix}.${ext}`;
+  const { error } = await sb.storage.from('problem-photos').upload(path, file, { upsert: true });
+  if(error) throw error;
+  const { data } = sb.storage.from('problem-photos').getPublicUrl(path);
+  return data.publicUrl;
+}
+function pathFromPublicUrl(url){
+  if(!url) return null;
+  const marker = '/problem-photos/';
+  const idx = url.indexOf(marker);
+  if(idx===-1) return null;
+  return decodeURIComponent(url.slice(idx+marker.length));
+}
+async function deletePhotosForEntry(entry){
+  if(!sb || !entry) return;
+  const palletPaths = (entry.pallets||[]).map(p=>pathFromPublicUrl(p.photo));
+  const files = [pathFromPublicUrl(entry.photoProblem), pathFromPublicUrl(entry.photoNc), ...palletPaths].filter(Boolean);
+  if(files.length){
+    try{ await sb.storage.from('problem-photos').remove(files); }catch(e){ console.error('Gagal hapus file foto:', e); }
+  }
+}
+function bindPhotoPreview(inputId, previewId){
+  const input = document.getElementById(inputId);
+  const preview = document.getElementById(previewId);
+  input.addEventListener('change', ()=>{
+    const file = input.files[0];
+    if(!file){ preview.classList.remove('show'); preview.src=''; return; }
+    preview.src = URL.createObjectURL(file);
+    preview.classList.add('show');
+  });
+}
+bindPhotoPreview('f-photo-problem','preview-problem');
+bindPhotoPreview('f-photo-nc','preview-nc');
+
+/* ---------- BARIS PALET DINAMIS ---------- */
+let palletFormState = [ { number:'', file:null, existingPhoto:'' } ];
+
+function renderPalletRows(){
+  const box = document.getElementById('palletRows');
+  box.innerHTML = palletFormState.map((p,i)=>`
+    <div class="pallet-row" data-idx="${i}">
+      <input type="text" class="pallet-number-input" placeholder="Nomor Palet cth. PLT-0001" value="${esc(p.number)}">
+      <div class="photo-input-wrap">
+        <input type="file" accept="image/*" class="pallet-photo-input">
+        <img class="photo-preview pallet-preview ${p.existingPhoto || p.file ? 'show':''}" src="${p.file ? '' : esc(p.existingPhoto||'')}">
+      </div>
+      <button type="button" class="btn danger small remove-pallet-row">Hapus</button>
+    </div>`).join('');
+
+  box.querySelectorAll('.pallet-row').forEach(row=>{
+    const idx = Number(row.dataset.idx);
+    row.querySelector('.pallet-number-input').addEventListener('input', (ev)=>{
+      palletFormState[idx].number = ev.target.value;
+    });
+    const fileInput = row.querySelector('.pallet-photo-input');
+    const preview = row.querySelector('.pallet-preview');
+    fileInput.addEventListener('change', ()=>{
+      const file = fileInput.files[0];
+      palletFormState[idx].file = file || null;
+      if(file){
+        preview.src = URL.createObjectURL(file);
+        preview.classList.add('show');
+      }else if(palletFormState[idx].existingPhoto){
+        preview.src = palletFormState[idx].existingPhoto;
+        preview.classList.add('show');
+      }else{
+        preview.src=''; preview.classList.remove('show');
+      }
+    });
+    row.querySelector('.remove-pallet-row').addEventListener('click', ()=>{
+      palletFormState.splice(idx,1);
+      if(palletFormState.length===0) palletFormState.push({ number:'', file:null, existingPhoto:'' });
+      renderPalletRows();
+    });
+  });
+}
+document.getElementById('addPalletRow').addEventListener('click', ()=>{
+  palletFormState.push({ number:'', file:null, existingPhoto:'' });
+  renderPalletRows();
+});
+renderPalletRows();
+
+/* ---------- MODE EDIT ---------- */
+let editingId = null;
+let editingExistingPhotoProblem = '';
+let editingExistingPhotoNc = '';
+
+function resetFormToBlank(){
+  document.getElementById('entryForm').reset();
+  document.getElementById('preview-problem').classList.remove('show');
+  document.getElementById('preview-problem').src='';
+  document.getElementById('preview-nc').classList.remove('show');
+  document.getElementById('preview-nc').src='';
+  document.getElementById('f-qty-total').value='';
+  document.getElementById('f-reject-pct').value='';
+  palletFormState = [ { number:'', file:null, existingPhoto:'' } ];
+  renderPalletRows();
+  editingId = null;
+  editingExistingPhotoProblem = '';
+  editingExistingPhotoNc = '';
+  document.getElementById('submitBtnMain').textContent = 'Simpan Problem';
+  document.getElementById('cancelEditBtn').style.display = 'none';
+}
+
+function startEdit(entry){
+  editingId = entry.id;
+  editingExistingPhotoProblem = entry.photoProblem || '';
+  editingExistingPhotoNc = entry.photoNc || '';
+
+  document.getElementById('f-date').value = entry.date || '';
+  document.getElementById('f-project').value = entry.projectNumber || '';
+  document.getElementById('f-shift').value = entry.shift || '';
+  document.getElementById('f-machine').value = entry.machine || '';
+  document.getElementById('f-operator').value = entry.operator || '';
+  document.getElementById('f-qc').value = entry.qc || '';
+  document.getElementById('f-problemtype').value = entry.problemType || '';
+  document.getElementById('f-downtime').value = entry.downtime || '';
+  document.getElementById('f-desc').value = entry.desc || '';
+  document.getElementById('f-qty-production').value = entry.qtyProduction!=null ? entry.qtyProduction : '';
+  document.getElementById('f-total-reject').value = entry.totalReject!=null ? entry.totalReject : '';
+  updateRejectPreview();
+
+  document.getElementById('f-photo-problem').value = '';
+  document.getElementById('f-photo-nc').value = '';
+  const pp = document.getElementById('preview-problem');
+  if(entry.photoProblem){ pp.src = entry.photoProblem; pp.classList.add('show'); }
+  else{ pp.src=''; pp.classList.remove('show'); }
+  const pn = document.getElementById('preview-nc');
+  if(entry.photoNc){ pn.src = entry.photoNc; pn.classList.add('show'); }
+  else{ pn.src=''; pn.classList.remove('show'); }
+
+  palletFormState = (entry.pallets && entry.pallets.length>0)
+    ? entry.pallets.map(p=>({ number:p.number||'', file:null, existingPhoto:p.photo||'' }))
+    : [ { number:'', file:null, existingPhoto:'' } ];
+  renderPalletRows();
+
+  document.getElementById('submitBtnMain').textContent = 'Update Problem';
+  document.getElementById('cancelEditBtn').style.display = 'inline-block';
+
+  document.querySelector('.tab-btn[data-tab="input"]').click();
+  document.getElementById('entryForm').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+document.getElementById('cancelEditBtn').addEventListener('click', resetFormToBlank);
+
+/* ---------- KALKULASI QTY TOTAL & % REJECT ---------- */
+function calcRejectStats(qtyProduction, totalReject){
+  const qp = Number(qtyProduction)||0;
+  const tr = Number(totalReject)||0;
+  const qtyTotal = qp - tr;
+  const rejectPct = qp > 0 ? (tr/qp*100) : 0;
+  return { qtyTotal, rejectPct };
+}
+function updateRejectPreview(){
+  const qp = document.getElementById('f-qty-production').value;
+  const tr = document.getElementById('f-total-reject').value;
+  const { qtyTotal, rejectPct } = calcRejectStats(qp, tr);
+  document.getElementById('f-qty-total').value = (qp==='' && tr==='') ? '' : qtyTotal;
+  document.getElementById('f-reject-pct').value = (qp==='' && tr==='') ? '' : rejectPct.toFixed(2)+'%';
+}
+document.getElementById('f-qty-production').addEventListener('input', updateRejectPreview);
+document.getElementById('f-total-reject').addEventListener('input', updateRejectPreview);
+
+/* ---------- LIGHTBOX ---------- */
+function openLightbox(url){
+  if(!url) return;
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightbox').classList.add('show');
+}
+document.getElementById('lightbox').addEventListener('click', ()=>{
+  document.getElementById('lightbox').classList.remove('show');
+  document.getElementById('lightboxImg').src = '';
+});
+
+/* ---------- KARTU FOTO (dipakai di Ringkasan & Galeri) ---------- */
+function photoCardHtml(e){
+  const col = (url, label) => url
+    ? `<div class="photo-col"><span class="cap">${label}</span><img src="${esc(url)}" data-lightbox="${esc(url)}" alt="${label}"></div>`
+    : `<div class="photo-col"><span class="cap">${label}</span><div class="no-photo">Tidak ada foto</div></div>`;
+  const pallets = e.pallets||[];
+  const palletHtml = pallets.length===0 ? '' : `<div class="pallet-list">${pallets.map(p=>`
+    <div class="pallet-chip">
+      ${p.photo ? `<img src="${esc(p.photo)}" data-lightbox="${esc(p.photo)}" alt="Label Palet ${esc(p.number)}">` : '<div class="no-photo-sm">-</div>'}
+      <span>${esc(p.number||'(tanpa nomor)')}</span>
+    </div>`).join('')}</div>`;
+  return `<div class="photo-card">
+    <div class="photo-row">
+      ${col(e.photoProblem,'Problem')}
+      ${col(e.photoNc,'NC')}
+    </div>
+    ${palletHtml}
+    <div class="info">
+      <div class="meta">${esc(e.date)} · <span class="mtag">${esc(e.machine)}</span></div>
+      <div class="desc">${esc(e.problemType)} — ${esc(e.desc)}</div>
+    </div>
+  </div>`;
+}
+function bindLightboxTriggers(container){
+  container.querySelectorAll('[data-lightbox]').forEach(img=>{
+    img.addEventListener('click', ()=> openLightbox(img.dataset.lightbox));
+  });
+}
+function renderRecentPhotos(){
+  const box = document.getElementById('recentPhotos');
+  const wk = weekEntries().filter(e=>e.photoProblem||e.photoNc||(e.pallets&&e.pallets.length))
+    .slice().sort((a,b)=> b.date.localeCompare(a.date)).slice(0,6);
+  if(wk.length===0){ box.innerHTML = '<div class="empty">Belum ada foto problem minggu ini.</div>'; return; }
+  box.innerHTML = wk.map(photoCardHtml).join('');
+  bindLightboxTriggers(box);
+}
+function renderGallery(){
+  const grid = document.getElementById('galleryGrid');
+  const withPhotos = entries.filter(e=>e.photoProblem||e.photoNc||(e.pallets&&e.pallets.length))
+    .slice().sort((a,b)=> b.date.localeCompare(a.date));
+  if(withPhotos.length===0){ grid.innerHTML = '<div class="empty">Belum ada problem dengan foto.</div>'; return; }
+  grid.innerHTML = withPhotos.map(photoCardHtml).join('');
+  bindLightboxTriggers(grid);
+}
+
 /* ---------- RINGKASAN (WEEKLY SUMMARY) ---------- */
 function weekEntries(){
-  const start = fmt(currentWeekStart);
-  const end = fmt(addDays(currentWeekStart,6));
-  return entries.filter(e => e.date >= start && e.date <= end);
+  const { start, end } = getPeriodRange();
+  const s = fmt(start), e = fmt(end);
+  return entries.filter(x => x.date >= s && x.date <= e);
 }
 
 function countBy(list, key){
@@ -561,12 +1118,20 @@ function countBy(list, key){
   return Object.entries(m).sort((a,b)=>b[1]-a[1]);
 }
 
+function periodLabelWord(){
+  if(periodMode==='day') return 'hari ini';
+  if(periodMode==='month') return 'bulan ini';
+  return 'minggu ini';
+}
+
 function renderRingkasan(){
   const wk = weekEntries();
   const byMachine = countBy(wk,'machine');
   const byOperator = countBy(wk,'operator');
   const byQc = countBy(wk,'qc');
   const byProblem = countBy(wk,'problemType');
+  const byProject = countBy(wk,'projectNumber');
+  const plabel = periodLabelWord();
 
   const topMachine = byMachine[0];
   const topOperator = byOperator[0];
@@ -574,7 +1139,7 @@ function renderRingkasan(){
   const totalDowntime = wk.reduce((s,e)=> s + (parseInt(e.downtime)||0), 0);
 
   const kpis = [
-    {label:'Total Problem Minggu Ini', value: wk.length, sub: wk.length===0?'Tidak ada data':'entri tercatat', cls:''},
+    {label:'Total Problem '+(periodMode==='day'?'Hari Ini':periodMode==='month'?'Bulan Ini':'Minggu Ini'), value: wk.length, sub: wk.length===0?'Tidak ada data':'entri tercatat', cls:''},
     {label:'Mesin Paling Bermasalah', value: topMachine?topMachine[0]:'—', sub: topMachine?topMachine[1]+' problem':'', cls:'red'},
     {label:'Operator Paling Sering Terkait', value: topOperator?topOperator[0]:'—', sub: topOperator?topOperator[1]+' problem':'', cls:''},
     {label:'QC Paling Sering Terkait', value: topQc?topQc[0]:'—', sub: topQc?topQc[1]+' problem':'', cls:'green'},
@@ -586,8 +1151,72 @@ function renderRingkasan(){
       <div class="kpi-sub">${esc(k.sub)}</div>
     </div>`).join('');
 
+  const totalQtyProduction = wk.reduce((s,e)=> s + (e.qtyProduction||0), 0);
+  const totalRejectQty = wk.reduce((s,e)=> s + (e.totalReject||0), 0);
+  const totalQtyOk = totalQtyProduction - totalRejectQty;
+  const overallRejectPct = totalQtyProduction > 0 ? (totalRejectQty/totalQtyProduction*100) : 0;
+  const rejectKpis = [
+    {label:'Total Qty Production', value: totalQtyProduction.toLocaleString('id-ID'), sub:'unit '+plabel, cls:''},
+    {label:'Total Reject', value: totalRejectQty.toLocaleString('id-ID'), sub:'unit reject', cls:'red'},
+    {label:'Qty Total (OK)', value: totalQtyOk.toLocaleString('id-ID'), sub:'production − reject', cls:'green'},
+    {label:'% Reject', value: overallRejectPct.toFixed(2)+'%', sub:'dari total production', cls: overallRejectPct>5?'red':''},
+  ];
+  document.getElementById('rejectPanelLabel').textContent =
+    periodMode==='day' ? 'Hari Ini' : periodMode==='month' ? 'Bulan Ini' : 'Minggu Ini';
+  document.getElementById('rejectKpiGrid').innerHTML = rejectKpis.map(k=>`
+    <div class="kpi ${k.cls}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${esc(String(k.value))}</div>
+      <div class="kpi-sub">${esc(k.sub)}</div>
+    </div>`).join('');
+
+  renderHotlistReject(wk);
   renderBarList('barMachine', byMachine);
   renderBarList('barProblem', byProblem.slice(0,8));
+  renderBarList('barProject', byProject.slice(0,8));
+  renderRecentPhotos();
+}
+
+function renderHotlistReject(wk){
+  const box = document.getElementById('hotlistReject');
+  const byMachineAgg = {};
+  wk.forEach(e=>{
+    if(!e.machine) return;
+    if(!byMachineAgg[e.machine]) byMachineAgg[e.machine] = { qtyProduction:0, totalReject:0 };
+    byMachineAgg[e.machine].qtyProduction += (e.qtyProduction||0);
+    byMachineAgg[e.machine].totalReject += (e.totalReject||0);
+  });
+  const ranked = Object.entries(byMachineAgg)
+    .filter(([,v])=> v.totalReject > 0)
+    .map(([machine,v])=>({
+      machine, totalReject: v.totalReject, qtyProduction: v.qtyProduction,
+      pct: v.qtyProduction>0 ? (v.totalReject/v.qtyProduction*100) : 0
+    }))
+    .sort((a,b)=> b.totalReject - a.totalReject)
+    .slice(0,5);
+
+  if(ranked.length===0){
+    box.innerHTML = '<div class="empty">Belum ada data reject pada periode ini.</div>';
+    return;
+  }
+  const maxReject = ranked[0].totalReject;
+  box.innerHTML = ranked.map((r,i)=>{
+    const rank = i+1;
+    const rankCls = rank<=3 ? 'rank-'+rank : '';
+    const barPct = maxReject>0 ? Math.round((r.totalReject/maxReject)*100) : 0;
+    const fire = rank===1 ? '🔥🔥🔥' : rank===2 ? '🔥🔥' : rank===3 ? '🔥' : '';
+    return `<div class="hot-row ${rankCls}">
+      <div class="hot-rank">#${rank}</div>
+      <div class="hot-info">
+        <div class="hot-name">${esc(r.machine)} ${fire?'<span class="hot-fire">'+fire+'</span>':''}</div>
+        <div class="hot-bar-wrap"><div class="hot-bar" style="width:${barPct}%;"></div></div>
+      </div>
+      <div class="hot-stats">
+        <div class="hot-reject">${r.totalReject.toLocaleString('id-ID')} reject</div>
+        <div class="hot-pct">${r.pct.toFixed(2)}% dari produksi</div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function renderBarList(elId, pairs){
@@ -603,58 +1232,87 @@ function renderBarList(elId, pairs){
 }
 
 /* ---------- DATA LENGKAP ---------- */
-function renderDataTable(){
+function getFilteredEntries(){
   const from = document.getElementById('filt-from').value;
   const to = document.getElementById('filt-to').value;
+  const fp = document.getElementById('filt-project').value;
   const fm = document.getElementById('filt-machine').value;
   const fo = document.getElementById('filt-operator').value;
   const fq = document.getElementById('filt-qc').value;
-
   let list = entries.slice().sort((a,b)=> b.date.localeCompare(a.date) || (b.id>a.id?1:-1));
   if(from) list = list.filter(e=>e.date>=from);
   if(to) list = list.filter(e=>e.date<=to);
+  if(fp) list = list.filter(e=>e.projectNumber===fp);
   if(fm) list = list.filter(e=>e.machine===fm);
   if(fo) list = list.filter(e=>e.operator===fo);
   if(fq) list = list.filter(e=>e.qc===fq);
+  return list;
+}
+
+function renderDataTable(){
+  const list = getFilteredEntries();
 
   const tbody = document.getElementById('dataTableBody');
   if(list.length===0){
-    tbody.innerHTML = '<tr><td colspan="9" class="empty">Tidak ada data yang cocok.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="15" class="empty">Tidak ada data yang cocok.</td></tr>';
     return;
   }
   tbody.innerHTML = list.map(e=>`
     <tr>
       <td class="mono">${esc(e.date)}</td>
+      <td class="mono">${esc(e.projectNumber||'-')}</td>
       <td>${esc(e.shift||'-')}</td>
       <td><span class="mtag">${esc(e.machine)}</span></td>
+      <td class="mono">${(e.pallets&&e.pallets.length) ? esc(e.pallets.map(p=>p.number||'-').join(', ')) : '-'}</td>
       <td>${esc(e.operator)}</td>
       <td>${esc(e.qc)}</td>
       <td>${esc(e.problemType)}</td>
       <td class="desc-cell">${esc(e.desc)}</td>
+      <td class="mono">${e.qtyProduction!=null?e.qtyProduction.toLocaleString('id-ID'):'-'}</td>
+      <td class="mono">${e.totalReject!=null?e.totalReject.toLocaleString('id-ID'):'-'}</td>
+      <td class="mono">${e.qtyTotal!=null?e.qtyTotal.toLocaleString('id-ID'):'-'}</td>
+      <td class="mono">${e.rejectPercentage!=null?e.rejectPercentage.toFixed(2)+'%':'-'}</td>
       <td class="mono">${e.downtime?esc(e.downtime)+' mnt':'-'}</td>
-      <td><button class="btn danger small" data-del2="${e.id}">Hapus</button></td>
+      <td style="white-space:nowrap;">
+        <button class="btn ghost small" data-edit2="${e.id}">Edit</button>
+        <button class="btn danger small" data-del2="${e.id}">Hapus</button>
+      </td>
     </tr>`).join('');
+  tbody.querySelectorAll('[data-edit2]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const target = entries.find(x=>x.id===b.dataset.edit2);
+      if(target) startEdit(target);
+    });
+  });
   tbody.querySelectorAll('[data-del2]').forEach(b=>{
     b.addEventListener('click', async ()=>{
       if(!ensureConfigured()) return;
+      const target = entries.find(x=>x.id===b.dataset.del2);
       const { error } = await sb.from('problem_entries').delete().eq('id', b.dataset.del2);
       if(error){ showToast('Gagal menghapus: '+error.message); return; }
+      await deletePhotosForEntry(target);
       entries = entries.filter(x=>x.id!==b.dataset.del2);
-      renderDataTable(); renderAll(); renderTodayList();
+      renderDataTable(); renderAll(); renderTodayList(); renderGallery();
     });
   });
 }
-['filt-from','filt-to','filt-machine','filt-operator','filt-qc'].forEach(id=>{
+['filt-from','filt-to','filt-project','filt-machine','filt-operator','filt-qc'].forEach(id=>{
   document.getElementById(id).addEventListener('change', renderDataTable);
 });
 document.getElementById('clearFilters').addEventListener('click', ()=>{
-  ['filt-from','filt-to','filt-machine','filt-operator','filt-qc'].forEach(id=>document.getElementById(id).value='');
+  ['filt-from','filt-to','filt-project','filt-machine','filt-operator','filt-qc'].forEach(id=>document.getElementById(id).value='');
   renderDataTable();
 });
 document.getElementById('exportCsv').addEventListener('click', ()=>{
-  const rows = [['Tanggal','Shift','Mesin','Operator','QC','Jenis Problem','Deskripsi','Downtime (menit)']];
-  entries.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>{
-    rows.push([e.date,e.shift,e.machine,e.operator,e.qc,e.problemType,e.desc,e.downtime]);
+  const list = getFilteredEntries().slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const rows = [['Tanggal','Nomor Project','Shift','Mesin','Nomor Palet','Operator','QC','Jenis Problem','Deskripsi','Qty Production','Total Reject','Qty Total','% Reject','Downtime (menit)','Foto Problem','Foto NC','Foto Label Palet (semua)']];
+  list.forEach(e=>{
+    const pallets = e.pallets||[];
+    const palletNumbers = pallets.map(p=>p.number).filter(Boolean).join(' | ');
+    const palletPhotos = pallets.map(p=>p.photo).filter(Boolean).join(' | ');
+    rows.push([e.date,e.projectNumber,e.shift,e.machine,palletNumbers,e.operator,e.qc,e.problemType,e.desc,
+      e.qtyProduction,e.totalReject,e.qtyTotal,e.rejectPercentage!=null?e.rejectPercentage.toFixed(2)+'%':'',
+      e.downtime,e.photoProblem,e.photoNc,palletPhotos]);
   });
   const csv = rows.map(r=>r.map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(',')).join('\n');
   const blob = new Blob([csv],{type:'text/csv'});
@@ -662,6 +1320,150 @@ document.getElementById('exportCsv').addEventListener('click', ()=>{
   const a = document.createElement('a');
   a.href = url; a.download = 'data-problem-produksi.csv'; a.click();
   URL.revokeObjectURL(url);
+});
+
+async function fetchImageForExcel(url){
+  if(!url) return null;
+  try{
+    const res = await fetch(url);
+    if(!res.ok) return null;
+    const blob = await res.blob();
+    const buffer = await blob.arrayBuffer();
+    let extension = 'png';
+    if(blob.type.includes('jpeg') || blob.type.includes('jpg')) extension = 'jpeg';
+    else if(blob.type.includes('gif')) extension = 'gif';
+    else if(blob.type.includes('png')) extension = 'png';
+    return { buffer, extension };
+  }catch(err){
+    console.error('Gagal mengambil foto untuk Excel:', url, err);
+    return null;
+  }
+}
+
+document.getElementById('exportExcel').addEventListener('click', async ()=>{
+  const btn = document.getElementById('exportExcel');
+  if(typeof ExcelJS === 'undefined'){ showToast('Gagal memuat library Excel, cek koneksi internet'); return; }
+  const list = getFilteredEntries().slice().sort((a,b)=>a.date.localeCompare(b.date));
+  if(list.length===0){ showToast('Tidak ada data untuk diekspor'); return; }
+
+  btn.disabled = true;
+  const originalText = btn.textContent;
+  try{
+    const wb = new ExcelJS.Workbook();
+    wb.creator = 'Panel Problem Produksi';
+    wb.created = new Date();
+
+    const ws = wb.addWorksheet('Data Problem', { views:[{ state:'frozen', ySplit:1 }] });
+    const columnDefs = [
+      { name:'Tanggal', width:13 },
+      { name:'Nomor Project', width:16 },
+      { name:'Shift', width:10 },
+      { name:'Mesin', width:14 },
+      { name:'Nomor Palet', width:14 },
+      { name:'Operator', width:18 },
+      { name:'QC', width:18 },
+      { name:'Jenis Problem', width:22 },
+      { name:'Deskripsi', width:45 },
+      { name:'Qty Production', width:14 },
+      { name:'Total Reject', width:13 },
+      { name:'Qty Total', width:12 },
+      { name:'% Reject', width:11 },
+      { name:'Downtime (menit)', width:16 },
+      { name:'Foto Problem', width:16 },
+      { name:'Foto NC', width:16 },
+      { name:'Foto Label Palet', width:16 }
+    ];
+    ws.columns = columnDefs.map(c=>({ width:c.width }));
+
+    const rows = list.map(e=>{
+      const pallets = e.pallets||[];
+      const palletNumbers = pallets.map(p=>p.number).filter(Boolean).join(', ') || '-';
+      return [
+        e.date, e.projectNumber||'-', e.shift||'-', e.machine, palletNumbers, e.operator, e.qc, e.problemType, e.desc,
+        e.qtyProduction!=null ? e.qtyProduction : null,
+        e.totalReject!=null ? e.totalReject : null,
+        e.qtyTotal!=null ? e.qtyTotal : null,
+        e.rejectPercentage!=null ? Number(e.rejectPercentage.toFixed(2)) : null,
+        e.downtime ? Number(e.downtime) : null, '', '', ''
+      ];
+    });
+
+    ws.addTable({
+      name: 'DataProblemProduksi',
+      ref: 'A1',
+      headerRow: true,
+      totalsRow: false,
+      style: { theme: 'TableStyleMedium9', showRowStripes: true },
+      columns: columnDefs.map(c=>({ name:c.name, filterButton:true })),
+      rows: rows
+    });
+
+    ws.getRow(1).font = { bold:true, color:{ argb:'FFFFFFFF' } };
+    ws.getRow(1).alignment = { vertical:'middle' };
+    ws.getColumn(9).alignment = { wrapText:true, vertical:'top' };
+    ws.getColumn(13).numFmt = '0.00"%"';
+
+    // Ambil dan sisipkan foto langsung ke dalam sel (kolom Foto Problem, Foto NC)
+    const photoCols = [
+      { key:'photoProblem', colIndex: 14 },
+      { key:'photoNc', colIndex: 15 }
+    ];
+    const PALLET_PHOTO_COL = 16; // kolom "Foto Label Palet" (nol-basis)
+    let done = 0;
+    const totalPhotos = list.reduce((n,e)=> n + photoCols.filter(pc=>e[pc.key]).length + Math.min(1,(e.pallets||[]).filter(p=>p.photo).length), 0);
+
+    for(let i=0;i<list.length;i++){
+      const e = list[i];
+      const excelRow = i + 2; // baris 1 = header
+      let rowHasPhoto = false;
+      for(const pc of photoCols){
+        const url = e[pc.key];
+        if(!url) continue;
+        btn.textContent = totalPhotos ? `Mengambil foto ${++done}/${totalPhotos}...` : 'Membuat file...';
+        const img = await fetchImageForExcel(url);
+        if(img){
+          const imgId = wb.addImage({ buffer: img.buffer, extension: img.extension });
+          ws.addImage(imgId, {
+            tl: { col: pc.colIndex, row: excelRow - 1 },
+            ext: { width: 90, height: 90 }
+          });
+          rowHasPhoto = true;
+        }
+      }
+      const pallets = (e.pallets||[]).filter(p=>p.photo);
+      if(pallets.length>0){
+        btn.textContent = totalPhotos ? `Mengambil foto ${++done}/${totalPhotos}...` : 'Membuat file...';
+        const img = await fetchImageForExcel(pallets[0].photo);
+        if(img){
+          const imgId = wb.addImage({ buffer: img.buffer, extension: img.extension });
+          ws.addImage(imgId, {
+            tl: { col: PALLET_PHOTO_COL, row: excelRow - 1 },
+            ext: { width: 90, height: 90 }
+          });
+          rowHasPhoto = true;
+        }
+        if(pallets.length>1){
+          ws.getCell(excelRow, PALLET_PHOTO_COL+1).note = `Ada ${pallets.length} foto label palet untuk baris ini. Hanya foto pertama yang ditampilkan di sini — buka aplikasi untuk melihat semua foto label palet.`;
+        }
+      }
+      if(rowHasPhoto) ws.getRow(excelRow).height = 70;
+    }
+
+    btn.textContent = 'Menyusun file...';
+    const buf = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buf], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const today = new Date().toISOString().slice(0,10);
+    a.href = url; a.download = `data-problem-produksi-${today}.xlsx`; a.click();
+    URL.revokeObjectURL(url);
+  }catch(err){
+    console.error(err);
+    showToast('Gagal membuat file Excel: '+err.message);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
 });
 
 /* ---------- MASTER DATA ---------- */
@@ -704,6 +1506,7 @@ document.querySelectorAll('[data-add]').forEach(btn=>{
 function renderAll(){
   renderWeekRange();
   renderRingkasan();
+  refreshProjectOptions();
 }
 
 async function init(){
@@ -714,6 +1517,7 @@ async function init(){
   renderMasterLists();
   renderTodayList();
   renderAll();
+  renderGallery();
 }
 init();
 </script>
