@@ -20,6 +20,14 @@
   --red-dim:#5c2626;
   --green:#4fa97a;
   --green-dim:#245239;
+  --blue:#5b8fd1;
+  --blue-dim:#233a56;
+  --purple:#a374e0;
+  --purple-dim:#3a2a57;
+  --teal:#3fc3c9;
+  --teal-dim:#1e4a4c;
+  --pink:#e0699a;
+  --pink-dim:#5a2740;
 }
 *{box-sizing:border-box;}
 body{
@@ -52,7 +60,9 @@ header.top{
   font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--bg);
   background:var(--amber); padding:2px 6px; border-radius:2px; font-weight:600;letter-spacing:.05em;
 }
-.brand h1{font-size:22px;margin:0;font-weight:600;}
+.brand h1{font-size:22px;margin:0;font-weight:600;
+  background:linear-gradient(90deg,var(--amber),var(--pink) 60%,var(--purple));
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
 .week-nav{display:flex;align-items:center;gap:10px;}
 .week-nav button{
   background:var(--panel-2);border:1px solid var(--line);color:var(--text);
@@ -89,6 +99,16 @@ main{max-width:1200px;margin:0 auto;padding:22px 20px 60px;}
 }
 .kpi.red::before{background:var(--red);}
 .kpi.green::before{background:var(--green);}
+.kpi.blue::before{background:var(--blue);}
+.kpi.purple::before{background:var(--purple);}
+.kpi.pink::before{background:var(--pink);}
+.kpi.teal::before{background:var(--teal);}
+.kpi.blue .kpi-value{color:var(--blue);}
+.kpi.purple .kpi-value{color:var(--purple);}
+.kpi.pink .kpi-value{color:var(--pink);}
+.kpi.teal .kpi-value{color:var(--teal);}
+.kpi.red .kpi-value{color:var(--red);}
+.kpi.green .kpi-value{color:var(--green);}
 .kpi-label{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.05em;font-size:11px;color:var(--text-dim);margin-bottom:8px;}
 .kpi-value{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:var(--text);line-height:1.15;}
 .kpi-sub{font-size:12px;color:var(--text-dim);margin-top:6px;}
@@ -220,6 +240,8 @@ tr:hover td{background:var(--panel-2);}
 }
 .pallet-row input[type=text]{flex:1;min-width:140px;}
 .pallet-row .photo-input-wrap{flex:1;min-width:180px;margin-bottom:0;}
+.pallet-row .pallet-status-select{flex:1;min-width:200px;background:var(--panel-2);border:1px solid var(--line);color:var(--text);
+  padding:9px 10px;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;}
 .pallet-row .remove-pallet-row{flex-shrink:0;}
 
 /* chip palet di kartu foto */
@@ -231,6 +253,9 @@ tr:hover td{background:var(--panel-2);}
 .pallet-chip img{width:26px;height:26px;object-fit:cover;border-radius:3px;cursor:zoom-in;}
 .pallet-chip .no-photo-sm{width:26px;height:26px;display:flex;align-items:center;justify-content:center;
   background:var(--panel-2);border-radius:3px;font-size:9px;color:var(--text-dim);}
+.pallet-chip.has-note{border-color:var(--red);}
+.note-flag{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--red);white-space:nowrap;}
+.pallet-row .pallet-note-input{margin-top:2px;}
 
 .btn.editing-active{outline:2px solid var(--amber);}
 
@@ -261,13 +286,36 @@ tr:hover td{background:var(--panel-2);}
 .hot-row.rank-2 .hot-rank{color:#e0703d;}
 .hot-row.rank-3 .hot-rank{color:var(--amber);}
 .hot-info{flex:1;min-width:0;}
-.hot-name{font-size:13px;font-weight:600;margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.hot-name{font-size:13px;font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:6px;}
+.hot-sub{font-size:10.5px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;margin-bottom:5px;}
 .hot-fire{font-size:12px;}
+.hot-thumb{width:40px;height:40px;border-radius:4px;object-fit:cover;flex-shrink:0;cursor:zoom-in;border:1px solid var(--line);}
+.hot-thumb-empty{
+  display:flex;align-items:center;justify-content:center;background:var(--panel);color:var(--text-dim);
+  font-size:9px;font-family:'IBM Plex Mono',monospace;cursor:default;
+}
 .hot-bar-wrap{height:6px;background:var(--line);border-radius:3px;overflow:hidden;}
 .hot-bar{height:100%;background:linear-gradient(90deg,var(--red),var(--amber));border-radius:3px;}
 .hot-stats{text-align:right;flex-shrink:0;}
 .hot-reject{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--red);font-weight:700;}
 .hot-pct{font-size:11px;color:var(--text-dim);}
+
+/* charts */
+.chart-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;}
+@media(max-width:900px){.chart-grid{grid-template-columns:1fr;}}
+.chart-box{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:14px;height:300px;position:relative;}
+.chart-box h3{margin:0 0 10px;font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.04em;font-size:12px;color:var(--text-dim);}
+.chart-box canvas{max-height:230px;}
+
+/* sortable table header */
+th.sortable{cursor:pointer;user-select:none;white-space:nowrap;}
+th.sortable:hover{color:var(--amber);}
+th.sortable .arrow{display:inline-block;margin-left:3px;font-size:9px;color:var(--amber);}
+tr.high-reject td{background:rgba(209,77,77,.10);}
+tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
+.filters label.chk{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-dim);background:var(--panel-2);
+  border:1px solid var(--line);border-radius:4px;padding:0 10px;text-transform:none;font-family:'IBM Plex Sans',sans-serif;letter-spacing:0;}
+.filters label.chk input{width:auto;margin:0;}
 </style>
 </head>
 <body>
@@ -310,9 +358,22 @@ tr:hover td{background:var(--panel-2);}
       <div class="barlist" id="barMachine"></div>
     </div>
     <div class="panel">
-      <h2>🔥 Hot List — Reject Terbesar <span id="rejectPanelLabel">Minggu Ini</span></h2>
+      <h2>🔥 Top 10 Hot List — Reject Terbesar <span id="rejectPanelLabel">Minggu Ini</span></h2>
       <div class="kpi-grid" id="rejectKpiGrid" style="margin-bottom:0;"></div>
       <div class="hotlist" id="hotlistReject"></div>
+    </div>
+    <div class="panel">
+      <h2>Grafik Problem <span class="n" id="rangeLabel2"></span></h2>
+      <div class="chart-grid">
+        <div class="chart-box">
+          <h3>Tren Jumlah Problem Harian</h3>
+          <canvas id="trendChart"></canvas>
+        </div>
+        <div class="chart-box">
+          <h3>Distribusi Jenis Problem</h3>
+          <canvas id="distChart"></canvas>
+        </div>
+      </div>
     </div>
     <div class="panel">
       <h2>Jenis Problem Paling Sering</h2>
@@ -447,6 +508,7 @@ tr:hover td{background:var(--panel-2);}
         <select id="filt-machine"><option value="">Semua Mesin</option></select>
         <select id="filt-operator"><option value="">Semua Operator</option></select>
         <select id="filt-qc"><option value="">Semua QC</option></select>
+        <label class="chk"><input type="checkbox" id="filt-highreject"> Reject &gt; 3,5%</label>
         <button class="btn ghost small" id="clearFilters">Reset Filter</button>
         <button class="btn small" id="exportCsv" style="margin-left:auto;">Ekspor CSV</button>
         <button class="btn small" id="exportExcel">Ekspor Excel</button>
@@ -457,7 +519,7 @@ tr:hover td{background:var(--panel-2);}
             <tr>
               <th>Tanggal</th><th>No. Project</th><th>Shift</th><th>Mesin</th><th>No. Palet</th><th>Operator</th><th>QC</th>
               <th>Jenis Problem</th><th>Deskripsi</th><th>Qty Production</th><th>Total Reject</th>
-              <th>Qty Total</th><th>% Reject</th><th>Downtime</th><th></th>
+              <th>Qty Total</th><th class="sortable" id="th-pct">% Reject</th><th>Downtime</th><th></th>
             </tr>
           </thead>
           <tbody id="dataTableBody"></tbody>
@@ -501,6 +563,7 @@ tr:hover td{background:var(--panel-2);}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script>
 /* ============ KONFIGURASI SUPABASE ============
    Ganti 2 nilai di bawah ini dengan milik project Supabase Anda:
@@ -525,6 +588,13 @@ let entries = [];
 let currentAnchor = mondayOf(new Date());
 let periodMode = 'week';
 let dataReady = false;
+const BAR_COLORS = ['#e8a33d','#5b8fd1','#e0699a','#3fc3c9','#a374e0','#d14d4d','#4fa97a','#e0703d','#d1b34f','#8993a1'];
+function colorForName(name){
+  const s = String(name||'');
+  let hash = 0;
+  for(let i=0;i<s.length;i++){ hash = (hash*31 + s.charCodeAt(i)) % 997; }
+  return BAR_COLORS[hash % BAR_COLORS.length];
+}
 
 function mondayOf(d){
   const date = new Date(d); const day = date.getDay();
@@ -779,7 +849,9 @@ document.getElementById('entryForm').addEventListener('submit', async (ev)=>{
         photoUrl = newUrl;
       }
       const number = (row.number||'').trim();
-      if(number || photoUrl) pallets.push({ number, photo: photoUrl });
+      const status = row.status === 'kelolosan' ? 'kelolosan' : 'ditemukan';
+      const note = (row.note||'').trim();
+      if(number || photoUrl || note || status==='kelolosan') pallets.push({ number, photo: photoUrl, status, note });
     }
   }catch(err){
     submitBtn.disabled = false;
@@ -849,7 +921,7 @@ function renderTodayList(){
   box.innerHTML = '<table><thead><tr><th>Shift</th><th>Mesin</th><th>Operator</th><th>QC</th><th>Jenis</th><th>Deskripsi</th><th></th></tr></thead><tbody>'+
     todays.map(e=>`<tr>
       <td>${e.shift||'-'}</td>
-      <td><span class="mtag">${esc(e.machine)}</span></td>
+      <td><span class="mtag" style="color:${colorForName(e.machine)};border-color:${colorForName(e.machine)}66;">${esc(e.machine)}</span></td>
       <td>${esc(e.operator)}</td>
       <td>${esc(e.qc)}</td>
       <td>${esc(e.problemType)}</td>
@@ -921,7 +993,7 @@ bindPhotoPreview('f-photo-problem','preview-problem');
 bindPhotoPreview('f-photo-nc','preview-nc');
 
 /* ---------- BARIS PALET DINAMIS ---------- */
-let palletFormState = [ { number:'', file:null, existingPhoto:'' } ];
+let palletFormState = [ { number:'', file:null, existingPhoto:'', status:'ditemukan', note:'' } ];
 
 function renderPalletRows(){
   const box = document.getElementById('palletRows');
@@ -932,6 +1004,11 @@ function renderPalletRows(){
         <input type="file" accept="image/*" class="pallet-photo-input">
         <img class="photo-preview pallet-preview ${p.existingPhoto || p.file ? 'show':''}" src="${p.file ? '' : esc(p.existingPhoto||'')}">
       </div>
+      <select class="pallet-status-select">
+        <option value="ditemukan" ${p.status!=='kelolosan'?'selected':''}>✅ Ditemukan QC</option>
+        <option value="kelolosan" ${p.status==='kelolosan'?'selected':''}>⚠️ Kelolosan QC (lolos inspeksi)</option>
+      </select>
+      <input type="text" class="pallet-note-input" placeholder="Catatan tambahan (opsional)" value="${esc(p.note||'')}" style="flex:1 1 100%;">
       <button type="button" class="btn danger small remove-pallet-row">Hapus</button>
     </div>`).join('');
 
@@ -939,6 +1016,12 @@ function renderPalletRows(){
     const idx = Number(row.dataset.idx);
     row.querySelector('.pallet-number-input').addEventListener('input', (ev)=>{
       palletFormState[idx].number = ev.target.value;
+    });
+    row.querySelector('.pallet-status-select').addEventListener('change', (ev)=>{
+      palletFormState[idx].status = ev.target.value;
+    });
+    row.querySelector('.pallet-note-input').addEventListener('input', (ev)=>{
+      palletFormState[idx].note = ev.target.value;
     });
     const fileInput = row.querySelector('.pallet-photo-input');
     const preview = row.querySelector('.pallet-preview');
@@ -957,13 +1040,13 @@ function renderPalletRows(){
     });
     row.querySelector('.remove-pallet-row').addEventListener('click', ()=>{
       palletFormState.splice(idx,1);
-      if(palletFormState.length===0) palletFormState.push({ number:'', file:null, existingPhoto:'' });
+      if(palletFormState.length===0) palletFormState.push({ number:'', file:null, existingPhoto:'', status:'ditemukan', note:'' });
       renderPalletRows();
     });
   });
 }
 document.getElementById('addPalletRow').addEventListener('click', ()=>{
-  palletFormState.push({ number:'', file:null, existingPhoto:'' });
+  palletFormState.push({ number:'', file:null, existingPhoto:'', status:'ditemukan', note:'' });
   renderPalletRows();
 });
 renderPalletRows();
@@ -981,7 +1064,7 @@ function resetFormToBlank(){
   document.getElementById('preview-nc').src='';
   document.getElementById('f-qty-total').value='';
   document.getElementById('f-reject-pct').value='';
-  palletFormState = [ { number:'', file:null, existingPhoto:'' } ];
+  palletFormState = [ { number:'', file:null, existingPhoto:'', status:'ditemukan', note:'' } ];
   renderPalletRows();
   editingId = null;
   editingExistingPhotoProblem = '';
@@ -1018,8 +1101,8 @@ function startEdit(entry){
   else{ pn.src=''; pn.classList.remove('show'); }
 
   palletFormState = (entry.pallets && entry.pallets.length>0)
-    ? entry.pallets.map(p=>({ number:p.number||'', file:null, existingPhoto:p.photo||'' }))
-    : [ { number:'', file:null, existingPhoto:'' } ];
+    ? entry.pallets.map(p=>({ number:p.number||'', file:null, existingPhoto:p.photo||'', status:p.status||'ditemukan', note:p.note||'' }))
+    : [ { number:'', file:null, existingPhoto:'', status:'ditemukan', note:'' } ];
   renderPalletRows();
 
   document.getElementById('submitBtnMain').textContent = 'Update Problem';
@@ -1067,9 +1150,10 @@ function photoCardHtml(e){
     : `<div class="photo-col"><span class="cap">${label}</span><div class="no-photo">Tidak ada foto</div></div>`;
   const pallets = e.pallets||[];
   const palletHtml = pallets.length===0 ? '' : `<div class="pallet-list">${pallets.map(p=>`
-    <div class="pallet-chip">
+    <div class="pallet-chip${p.status==='kelolosan'?' has-note':''}" ${p.note?`title="${esc(p.note)}"`:''}>
       ${p.photo ? `<img src="${esc(p.photo)}" data-lightbox="${esc(p.photo)}" alt="Label Palet ${esc(p.number)}">` : '<div class="no-photo-sm">-</div>'}
       <span>${esc(p.number||'(tanpa nomor)')}</span>
+      ${p.status==='kelolosan'?'<span class="note-flag">⚠ Kelolosan</span>':''}
     </div>`).join('')}</div>`;
   return `<div class="photo-card">
     <div class="photo-row">
@@ -1078,7 +1162,7 @@ function photoCardHtml(e){
     </div>
     ${palletHtml}
     <div class="info">
-      <div class="meta">${esc(e.date)} · <span class="mtag">${esc(e.machine)}</span></div>
+      <div class="meta">${esc(e.date)} · <span class="mtag" style="color:${colorForName(e.machine)};border-color:${colorForName(e.machine)}66;">${esc(e.machine)}</span></div>
       <div class="desc">${esc(e.problemType)} — ${esc(e.desc)}</div>
     </div>
   </div>`;
@@ -1118,6 +1202,10 @@ function countBy(list, key){
   return Object.entries(m).sort((a,b)=>b[1]-a[1]);
 }
 
+function entryHasKelolosan(e){
+  return (e.pallets||[]).some(p=> p.status === 'kelolosan');
+}
+
 function periodLabelWord(){
   if(periodMode==='day') return 'hari ini';
   if(periodMode==='month') return 'bulan ini';
@@ -1128,21 +1216,21 @@ function renderRingkasan(){
   const wk = weekEntries();
   const byMachine = countBy(wk,'machine');
   const byOperator = countBy(wk,'operator');
-  const byQc = countBy(wk,'qc');
+  const byQcKelolosan = countBy(wk.filter(entryHasKelolosan),'qc');
   const byProblem = countBy(wk,'problemType');
   const byProject = countBy(wk,'projectNumber');
   const plabel = periodLabelWord();
 
   const topMachine = byMachine[0];
   const topOperator = byOperator[0];
-  const topQc = byQc[0];
+  const topQcKelolosan = byQcKelolosan[0];
   const totalDowntime = wk.reduce((s,e)=> s + (parseInt(e.downtime)||0), 0);
 
   const kpis = [
-    {label:'Total Problem '+(periodMode==='day'?'Hari Ini':periodMode==='month'?'Bulan Ini':'Minggu Ini'), value: wk.length, sub: wk.length===0?'Tidak ada data':'entri tercatat', cls:''},
+    {label:'Total Problem '+(periodMode==='day'?'Hari Ini':periodMode==='month'?'Bulan Ini':'Minggu Ini'), value: wk.length, sub: wk.length===0?'Tidak ada data':'entri tercatat', cls:'blue'},
     {label:'Mesin Paling Bermasalah', value: topMachine?topMachine[0]:'—', sub: topMachine?topMachine[1]+' problem':'', cls:'red'},
-    {label:'Operator Paling Sering Terkait', value: topOperator?topOperator[0]:'—', sub: topOperator?topOperator[1]+' problem':'', cls:''},
-    {label:'QC Paling Sering Terkait', value: topQc?topQc[0]:'—', sub: topQc?topQc[1]+' problem':'', cls:'green'},
+    {label:'Operator Paling Sering Terkait', value: topOperator?topOperator[0]:'—', sub: topOperator?topOperator[1]+' problem':'', cls:'purple'},
+    {label:'QC Paling Sering Kelolosan', value: topQcKelolosan?topQcKelolosan[0]:'—', sub: topQcKelolosan?topQcKelolosan[1]+' kali kelolosan (lolos inspeksi)':'Belum ada kelolosan tercatat', cls:'pink'},
   ];
   document.getElementById('kpiGrid').innerHTML = kpis.map(k=>`
     <div class="kpi ${k.cls}">
@@ -1156,10 +1244,10 @@ function renderRingkasan(){
   const totalQtyOk = totalQtyProduction - totalRejectQty;
   const overallRejectPct = totalQtyProduction > 0 ? (totalRejectQty/totalQtyProduction*100) : 0;
   const rejectKpis = [
-    {label:'Total Qty Production', value: totalQtyProduction.toLocaleString('id-ID'), sub:'unit '+plabel, cls:''},
+    {label:'Total Qty Production', value: totalQtyProduction.toLocaleString('id-ID'), sub:'unit '+plabel, cls:'blue'},
     {label:'Total Reject', value: totalRejectQty.toLocaleString('id-ID'), sub:'unit reject', cls:'red'},
     {label:'Qty Total (OK)', value: totalQtyOk.toLocaleString('id-ID'), sub:'production − reject', cls:'green'},
-    {label:'% Reject', value: overallRejectPct.toFixed(2)+'%', sub:'dari total production', cls: overallRejectPct>5?'red':''},
+    {label:'% Reject', value: overallRejectPct.toFixed(2)+'%', sub:'dari total production', cls: overallRejectPct>5?'red':'teal'},
   ];
   document.getElementById('rejectPanelLabel').textContent =
     periodMode==='day' ? 'Hari Ini' : periodMode==='month' ? 'Bulan Ini' : 'Minggu Ini';
@@ -1175,63 +1263,152 @@ function renderRingkasan(){
   renderBarList('barProblem', byProblem.slice(0,8));
   renderBarList('barProject', byProject.slice(0,8));
   renderRecentPhotos();
+  document.getElementById('rangeLabel2').textContent = document.getElementById('weekRange').textContent;
+  renderCharts(wk, byProblem);
+}
+
+/* ---------- GRAFIK (CHART.JS) ---------- */
+let trendChartInst = null;
+let distChartInst = null;
+const CHART_COLORS = BAR_COLORS;
+
+function renderCharts(wk, byProblem){
+  if(typeof Chart === 'undefined') return;
+
+  // --- Tren jumlah problem harian (mengisi semua tanggal dalam periode, termasuk 0) ---
+  const { start, end } = getPeriodRange();
+  const days = [];
+  const cursor = new Date(start);
+  while(cursor <= end){ days.push(fmt(cursor)); cursor.setDate(cursor.getDate()+1); }
+  const countsByDate = {};
+  wk.forEach(e=>{ countsByDate[e.date] = (countsByDate[e.date]||0) + 1; });
+  const trendLabels = days.map(d=> fmtDisplay(new Date(d+'T00:00:00')));
+  const trendData = days.map(d=> countsByDate[d]||0);
+
+  const trendCtx = document.getElementById('trendChart').getContext('2d');
+  if(trendChartInst) trendChartInst.destroy();
+  trendChartInst = new Chart(trendCtx, {
+    type: 'bar',
+    data: {
+      labels: trendLabels,
+      datasets: [{
+        label: 'Jumlah Problem',
+        data: trendData,
+        backgroundColor: trendData.map((_,i)=> BAR_COLORS[i % BAR_COLORS.length]),
+        borderRadius: 3,
+        maxBarThickness: 28
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#8993a1', font:{ family:'IBM Plex Mono', size:10 } }, grid: { color:'#2e3944' } },
+        y: { beginAtZero:true, ticks: { color: '#8993a1', precision:0, font:{ family:'IBM Plex Mono', size:10 } }, grid: { color:'#2e3944' } }
+      }
+    }
+  });
+
+  // --- Distribusi jenis problem (doughnut) ---
+  const topProblems = byProblem.slice(0,7);
+  const restCount = byProblem.slice(7).reduce((s,p)=> s+p[1], 0);
+  const distLabels = topProblems.map(p=>p[0]);
+  const distData = topProblems.map(p=>p[1]);
+  if(restCount>0){ distLabels.push('Lainnya'); distData.push(restCount); }
+
+  const distCtx = document.getElementById('distChart').getContext('2d');
+  if(distChartInst) distChartInst.destroy();
+  if(distData.length===0){
+    distChartInst = null;
+  } else {
+    distChartInst = new Chart(distCtx, {
+      type: 'doughnut',
+      data: {
+        labels: distLabels,
+        datasets: [{
+          data: distData,
+          backgroundColor: CHART_COLORS,
+          borderColor: '#1b2126',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position:'bottom', labels: { color:'#e9ecef', font:{ size:10.5, family:'IBM Plex Sans' }, boxWidth:10, padding:8 } }
+        }
+      }
+    });
+  }
 }
 
 function renderHotlistReject(wk){
   const box = document.getElementById('hotlistReject');
-  const byMachineAgg = {};
-  wk.forEach(e=>{
-    if(!e.machine) return;
-    if(!byMachineAgg[e.machine]) byMachineAgg[e.machine] = { qtyProduction:0, totalReject:0 };
-    byMachineAgg[e.machine].qtyProduction += (e.qtyProduction||0);
-    byMachineAgg[e.machine].totalReject += (e.totalReject||0);
-  });
-  const ranked = Object.entries(byMachineAgg)
-    .filter(([,v])=> v.totalReject > 0)
-    .map(([machine,v])=>({
-      machine, totalReject: v.totalReject, qtyProduction: v.qtyProduction,
-      pct: v.qtyProduction>0 ? (v.totalReject/v.qtyProduction*100) : 0
+  const ranked = wk
+    .filter(e => e.qtyProduction!=null && e.qtyProduction>0 && e.totalReject!=null && e.totalReject>0)
+    .map(e => ({
+      entry: e,
+      pct: e.rejectPercentage!=null ? e.rejectPercentage : (e.totalReject/e.qtyProduction*100)
     }))
-    .sort((a,b)=> b.totalReject - a.totalReject)
-    .slice(0,5);
+    .sort((a,b)=> b.pct - a.pct)
+    .slice(0,10);
 
   if(ranked.length===0){
     box.innerHTML = '<div class="empty">Belum ada data reject pada periode ini.</div>';
     return;
   }
-  const maxReject = ranked[0].totalReject;
+  const maxPct = ranked[0].pct;
   box.innerHTML = ranked.map((r,i)=>{
+    const e = r.entry;
     const rank = i+1;
     const rankCls = rank<=3 ? 'rank-'+rank : '';
-    const barPct = maxReject>0 ? Math.round((r.totalReject/maxReject)*100) : 0;
+    const rankColor = colorForName(e.machine+e.problemType);
+    const rowStyle = rank>3 ? `style="border-left:3px solid ${rankColor};"` : '';
+    const barPct = maxPct>0 ? Math.round((r.pct/maxPct)*100) : 0;
     const fire = rank===1 ? '🔥🔥🔥' : rank===2 ? '🔥🔥' : rank===3 ? '🔥' : '';
-    return `<div class="hot-row ${rankCls}">
+    const thumb = e.photoNc
+      ? `<img class="hot-thumb" src="${esc(e.photoNc)}" data-lightbox="${esc(e.photoNc)}" alt="Foto NC">`
+      : `<div class="hot-thumb hot-thumb-empty">NC</div>`;
+    return `<div class="hot-row ${rankCls}" ${rowStyle}>
       <div class="hot-rank">#${rank}</div>
+      ${thumb}
       <div class="hot-info">
-        <div class="hot-name">${esc(r.machine)} ${fire?'<span class="hot-fire">'+fire+'</span>':''}</div>
-        <div class="hot-bar-wrap"><div class="hot-bar" style="width:${barPct}%;"></div></div>
+        <div class="hot-name">${esc(e.machine)} · ${esc(e.problemType)} ${fire?'<span class="hot-fire">'+fire+'</span>':''}</div>
+        <div class="hot-sub">${esc(e.date)}${e.projectNumber?' · '+esc(e.projectNumber):''}</div>
+        <div class="hot-bar-wrap"><div class="hot-bar" style="width:${barPct}%;${rank>3?`background:${rankColor};`:''}"></div></div>
       </div>
       <div class="hot-stats">
-        <div class="hot-reject">${r.totalReject.toLocaleString('id-ID')} reject</div>
-        <div class="hot-pct">${r.pct.toFixed(2)}% dari produksi</div>
+        <div class="hot-reject">${r.pct.toFixed(2)}%</div>
+        <div class="hot-pct">${e.totalReject.toLocaleString('id-ID')} / ${e.qtyProduction.toLocaleString('id-ID')} unit</div>
       </div>
     </div>`;
   }).join('');
+  bindLightboxTriggers(box);
 }
 
 function renderBarList(elId, pairs){
   const box = document.getElementById(elId);
   if(pairs.length===0){ box.innerHTML = '<div class="empty">Tidak ada data untuk minggu ini.</div>'; return; }
   const max = pairs[0][1];
-  box.innerHTML = pairs.map(([label,count])=>`
+  box.innerHTML = pairs.map(([label,count],i)=>`
     <div class="barrow">
       <div class="lbl">${esc(label)}</div>
-      <div class="track"><div class="fill" style="width:${Math.max(6,(count/max*100))}%"></div></div>
+      <div class="track"><div class="fill" style="width:${Math.max(6,(count/max*100))}%;background:${BAR_COLORS[i%BAR_COLORS.length]}"></div></div>
       <div class="val">${count}</div>
     </div>`).join('');
 }
 
 /* ---------- DATA LENGKAP ---------- */
+let dataSort = { key: null, dir: -1 }; // dir: 1 asc, -1 desc
+
+function entryRejectPct(e){
+  if(e.rejectPercentage!=null) return e.rejectPercentage;
+  if(e.qtyProduction>0 && e.totalReject!=null) return e.totalReject/e.qtyProduction*100;
+  return null;
+}
+
 function getFilteredEntries(){
   const from = document.getElementById('filt-from').value;
   const to = document.getElementById('filt-to').value;
@@ -1239,6 +1416,7 @@ function getFilteredEntries(){
   const fm = document.getElementById('filt-machine').value;
   const fo = document.getElementById('filt-operator').value;
   const fq = document.getElementById('filt-qc').value;
+  const highOnly = document.getElementById('filt-highreject').checked;
   let list = entries.slice().sort((a,b)=> b.date.localeCompare(a.date) || (b.id>a.id?1:-1));
   if(from) list = list.filter(e=>e.date>=from);
   if(to) list = list.filter(e=>e.date<=to);
@@ -1246,6 +1424,16 @@ function getFilteredEntries(){
   if(fm) list = list.filter(e=>e.machine===fm);
   if(fo) list = list.filter(e=>e.operator===fo);
   if(fq) list = list.filter(e=>e.qc===fq);
+  if(highOnly) list = list.filter(e=> (entryRejectPct(e)||0) > 3.5);
+  if(dataSort.key==='pct'){
+    list = list.sort((a,b)=>{
+      const pa = entryRejectPct(a), pb = entryRejectPct(b);
+      if(pa==null && pb==null) return 0;
+      if(pa==null) return 1;
+      if(pb==null) return -1;
+      return (pa-pb) * dataSort.dir;
+    });
+  }
   return list;
 }
 
@@ -1257,13 +1445,16 @@ function renderDataTable(){
     tbody.innerHTML = '<tr><td colspan="15" class="empty">Tidak ada data yang cocok.</td></tr>';
     return;
   }
-  tbody.innerHTML = list.map(e=>`
-    <tr>
+  tbody.innerHTML = list.map(e=>{
+    const pct = entryRejectPct(e);
+    const isHigh = pct!=null && pct>3.5;
+    return `
+    <tr class="${isHigh?'high-reject':''}">
       <td class="mono">${esc(e.date)}</td>
       <td class="mono">${esc(e.projectNumber||'-')}</td>
       <td>${esc(e.shift||'-')}</td>
-      <td><span class="mtag">${esc(e.machine)}</span></td>
-      <td class="mono">${(e.pallets&&e.pallets.length) ? esc(e.pallets.map(p=>p.number||'-').join(', ')) : '-'}</td>
+      <td><span class="mtag" style="color:${colorForName(e.machine)};border-color:${colorForName(e.machine)}66;">${esc(e.machine)}</span></td>
+      <td class="mono">${(e.pallets&&e.pallets.length) ? esc(e.pallets.map(p=>p.number||'-').join(', ')) : '-'}${entryHasKelolosan(e)?' <span class="note-flag">⚠ Kelolosan QC</span>':''}</td>
       <td>${esc(e.operator)}</td>
       <td>${esc(e.qc)}</td>
       <td>${esc(e.problemType)}</td>
@@ -1271,13 +1462,16 @@ function renderDataTable(){
       <td class="mono">${e.qtyProduction!=null?e.qtyProduction.toLocaleString('id-ID'):'-'}</td>
       <td class="mono">${e.totalReject!=null?e.totalReject.toLocaleString('id-ID'):'-'}</td>
       <td class="mono">${e.qtyTotal!=null?e.qtyTotal.toLocaleString('id-ID'):'-'}</td>
-      <td class="mono">${e.rejectPercentage!=null?e.rejectPercentage.toFixed(2)+'%':'-'}</td>
+      <td class="mono pct-cell">${pct!=null?pct.toFixed(2)+'%':'-'}</td>
       <td class="mono">${e.downtime?esc(e.downtime)+' mnt':'-'}</td>
       <td style="white-space:nowrap;">
         <button class="btn ghost small" data-edit2="${e.id}">Edit</button>
         <button class="btn danger small" data-del2="${e.id}">Hapus</button>
       </td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
+  const th = document.getElementById('th-pct');
+  th.innerHTML = '% Reject' + (dataSort.key==='pct' ? `<span class="arrow">${dataSort.dir===1?'▲':'▼'}</span>` : '');
   tbody.querySelectorAll('[data-edit2]').forEach(b=>{
     b.addEventListener('click', ()=>{
       const target = entries.find(x=>x.id===b.dataset.edit2);
@@ -1296,23 +1490,32 @@ function renderDataTable(){
     });
   });
 }
-['filt-from','filt-to','filt-project','filt-machine','filt-operator','filt-qc'].forEach(id=>{
+['filt-from','filt-to','filt-project','filt-machine','filt-operator','filt-qc','filt-highreject'].forEach(id=>{
   document.getElementById(id).addEventListener('change', renderDataTable);
+});
+document.getElementById('th-pct').addEventListener('click', ()=>{
+  if(dataSort.key==='pct'){ dataSort.dir = dataSort.dir===1 ? -1 : 1; }
+  else { dataSort.key = 'pct'; dataSort.dir = -1; }
+  renderDataTable();
 });
 document.getElementById('clearFilters').addEventListener('click', ()=>{
   ['filt-from','filt-to','filt-project','filt-machine','filt-operator','filt-qc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('filt-highreject').checked = false;
+  dataSort = { key:null, dir:-1 };
   renderDataTable();
 });
 document.getElementById('exportCsv').addEventListener('click', ()=>{
   const list = getFilteredEntries().slice().sort((a,b)=>a.date.localeCompare(b.date));
-  const rows = [['Tanggal','Nomor Project','Shift','Mesin','Nomor Palet','Operator','QC','Jenis Problem','Deskripsi','Qty Production','Total Reject','Qty Total','% Reject','Downtime (menit)','Foto Problem','Foto NC','Foto Label Palet (semua)']];
+  const rows = [['Tanggal','Nomor Project','Shift','Mesin','Nomor Palet','Operator','QC','Jenis Problem','Deskripsi','Qty Production','Total Reject','Qty Total','% Reject','Downtime (menit)','Foto Problem','Foto NC','Foto Label Palet (semua)','Status Deteksi QC','Catatan Palet']];
   list.forEach(e=>{
     const pallets = e.pallets||[];
     const palletNumbers = pallets.map(p=>p.number).filter(Boolean).join(' | ');
     const palletPhotos = pallets.map(p=>p.photo).filter(Boolean).join(' | ');
+    const palletStatus = pallets.map(p=> (p.number||'-') + ': ' + (p.status==='kelolosan'?'Kelolosan':'Ditemukan')).join(' | ');
+    const palletNotes = pallets.map(p=>p.note).filter(Boolean).join(' | ');
     rows.push([e.date,e.projectNumber,e.shift,e.machine,palletNumbers,e.operator,e.qc,e.problemType,e.desc,
       e.qtyProduction,e.totalReject,e.qtyTotal,e.rejectPercentage!=null?e.rejectPercentage.toFixed(2)+'%':'',
-      e.downtime,e.photoProblem,e.photoNc,palletPhotos]);
+      e.downtime,e.photoProblem,e.photoNc,palletPhotos,palletStatus,palletNotes]);
   });
   const csv = rows.map(r=>r.map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(',')).join('\n');
   const blob = new Blob([csv],{type:'text/csv'});
@@ -1371,20 +1574,24 @@ document.getElementById('exportExcel').addEventListener('click', async ()=>{
       { name:'Downtime (menit)', width:16 },
       { name:'Foto Problem', width:16 },
       { name:'Foto NC', width:16 },
-      { name:'Foto Label Palet', width:16 }
+      { name:'Foto Label Palet', width:16 },
+      { name:'Status Deteksi QC', width:30 },
+      { name:'Catatan Palet', width:28 }
     ];
     ws.columns = columnDefs.map(c=>({ width:c.width }));
 
     const rows = list.map(e=>{
       const pallets = e.pallets||[];
       const palletNumbers = pallets.map(p=>p.number).filter(Boolean).join(', ') || '-';
+      const palletStatus = pallets.map(p=> (p.number||'-') + ': ' + (p.status==='kelolosan'?'Kelolosan':'Ditemukan')).join(' | ') || '';
+      const palletNotes = pallets.map(p=>p.note).filter(Boolean).join(' | ') || '';
       return [
         e.date, e.projectNumber||'-', e.shift||'-', e.machine, palletNumbers, e.operator, e.qc, e.problemType, e.desc,
         e.qtyProduction!=null ? e.qtyProduction : null,
         e.totalReject!=null ? e.totalReject : null,
         e.qtyTotal!=null ? e.qtyTotal : null,
         e.rejectPercentage!=null ? Number(e.rejectPercentage.toFixed(2)) : null,
-        e.downtime ? Number(e.downtime) : null, '', '', ''
+        e.downtime ? Number(e.downtime) : null, '', '', '', palletStatus, palletNotes
       ];
     });
 
@@ -1402,6 +1609,8 @@ document.getElementById('exportExcel').addEventListener('click', async ()=>{
     ws.getRow(1).alignment = { vertical:'middle' };
     ws.getColumn(9).alignment = { wrapText:true, vertical:'top' };
     ws.getColumn(13).numFmt = '0.00"%"';
+    ws.getColumn(18).alignment = { wrapText:true, vertical:'top' };
+    ws.getColumn(19).alignment = { wrapText:true, vertical:'top' };
 
     // Ambil dan sisipkan foto langsung ke dalam sel (kolom Foto Problem, Foto NC)
     const photoCols = [
