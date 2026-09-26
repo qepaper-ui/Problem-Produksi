@@ -8,163 +8,219 @@
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap');
 
 :root{
-  --bg:#12161a;
-  --panel:#1b2126;
-  --panel-2:#212932;
-  --line:#2e3944;
-  --text:#e9ecef;
-  --text-dim:#8993a1;
-  --amber:#e8a33d;
-  --amber-dim:#8a6323;
-  --red:#d14d4d;
-  --red-dim:#5c2626;
-  --green:#4fa97a;
-  --green-dim:#245239;
-  --blue:#5b8fd1;
-  --blue-dim:#233a56;
-  --purple:#a374e0;
-  --purple-dim:#3a2a57;
-  --teal:#3fc3c9;
-  --teal-dim:#1e4a4c;
-  --pink:#e0699a;
-  --pink-dim:#5a2740;
+  --bg:#0b0f2a;
+  --bg-2:#141a3d;
+  --panel:#131a3a;
+  --panel-2:#1a2147;
+  --line:#2a3266;
+  --text:#e9ecf7;
+  --text-dim:#8891b8;
+  --amber:#fb923c;
+  --amber-dim:#5a3a1e;
+  --red:#f0506a;
+  --red-dim:#5c1f30;
+  --green:#3ecf8e;
+  --green-dim:#1c4a38;
+  --blue:#4e8ff5;
+  --blue-dim:#1c3468;
+  --purple:#9b6ff0;
+  --purple-dim:#352a63;
+  --teal:#34d1d1;
+  --teal-dim:#1a4a4f;
+  --pink:#ec6bb0;
+  --pink-dim:#5a2748;
 }
 *{box-sizing:border-box;}
 body{
   margin:0;
-  background:var(--bg);
+  background:
+    radial-gradient(1200px 700px at 15% -10%, rgba(78,143,245,.16), transparent 60%),
+    radial-gradient(1000px 700px at 100% 0%, rgba(155,111,240,.14), transparent 55%),
+    linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 40%);
+  background-attachment:fixed;
   color:var(--text);
   font-family:'IBM Plex Sans',sans-serif;
   -webkit-font-smoothing:antialiased;
 }
 .mono{font-family:'IBM Plex Mono',monospace;}
-.display{font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:.04em;}
+.display{font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:.03em;}
 
-/* hazard stripe signature element */
+/* accent line under header, replaces hazard stripe */
 .hazard{
-  height:6px;
-  background-image:repeating-linear-gradient(135deg,var(--amber) 0 10px, #1a1a1a 10px 20px);
-  opacity:.85;
+  height:2px;
+  background-image:linear-gradient(90deg, var(--blue), var(--purple) 50%, var(--pink));
+  opacity:.7;
 }
 
 header.top{
-  background:var(--panel);
+  background:rgba(19,26,58,.72);
+  backdrop-filter:blur(10px);
   border-bottom:1px solid var(--line);
 }
+
+/* Judul utama: tengah-atas, teks bergerak (shimmer) + sentuhan animasi 3D */
+.title-bar{
+  text-align:center;
+  padding:16px 18px 2px;
+  perspective:700px;
+}
+.site-title{
+  display:inline-block;
+  margin:0;
+  font-size:28px;
+  font-weight:700;
+  background:linear-gradient(90deg, var(--blue), var(--purple), var(--pink), var(--teal), var(--blue));
+  background-size:300% auto;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  filter:drop-shadow(0 6px 10px rgba(78,143,245,.28));
+  transform-style:preserve-3d;
+  animation:titleShine 6s linear infinite, titleFloat3d 4.5s ease-in-out infinite;
+}
+@keyframes titleShine{
+  0%{background-position:0% center;}
+  100%{background-position:300% center;}
+}
+@keyframes titleFloat3d{
+  0%,100%{ transform:perspective(700px) rotateX(0deg) translateY(0); }
+  50%{ transform:perspective(700px) rotateX(10deg) translateY(-4px); }
+}
+@media(prefers-reduced-motion:reduce){
+  .site-title{animation:none;}
+}
 .top-inner{
-  max-width:1200px;margin:0 auto;padding:18px 20px 14px;
+  max-width:1360px;margin:0 auto;padding:14px 18px 12px;
   display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
 }
 .brand{display:flex;align-items:baseline;gap:10px;}
 .brand .tag{
-  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--bg);
-  background:var(--amber); padding:2px 6px; border-radius:2px; font-weight:600;letter-spacing:.05em;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:#081025;
+  background:var(--teal); padding:2px 6px; border-radius:3px; font-weight:600;letter-spacing:.05em;
 }
-.brand h1{font-size:22px;margin:0;font-weight:600;
-  background:linear-gradient(90deg,var(--amber),var(--pink) 60%,var(--purple));
-  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.brand h1{font-size:21px;margin:0;font-weight:600;color:var(--text);letter-spacing:.02em;}
 .week-nav{display:flex;align-items:center;gap:10px;}
 .week-nav button{
   background:var(--panel-2);border:1px solid var(--line);color:var(--text);
-  width:30px;height:30px;border-radius:4px;cursor:pointer;font-size:14px;
+  width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:14px;
 }
-.week-nav button:hover{border-color:var(--amber);color:var(--amber);}
+.week-nav button:hover{border-color:var(--blue);color:var(--blue);}
 .week-range{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--text-dim);
-  background:var(--panel-2);border:1px solid var(--line);padding:6px 10px;border-radius:4px;min-width:190px;text-align:center;}
+  background:var(--panel-2);border:1px solid var(--line);padding:6px 10px;border-radius:6px;min-width:190px;text-align:center;}
 
 nav.tabs{
-  max-width:1200px;margin:0 auto;padding:0 20px;
+  max-width:1360px;margin:0 auto;padding:0 18px;
   display:flex;gap:2px;border-bottom:1px solid var(--line);
 }
 nav.tabs button{
   background:transparent;border:none;color:var(--text-dim);
-  padding:12px 16px;font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.05em;
-  font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;
+  padding:10px 14px;font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.05em;
+  font-size:12.5px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;
 }
-nav.tabs button.active{color:var(--amber);border-bottom:2px solid var(--amber);}
+nav.tabs button.active{color:var(--blue);border-bottom:2px solid var(--blue);}
 nav.tabs button:hover:not(.active){color:var(--text);}
 
-main{max-width:1200px;margin:0 auto;padding:22px 20px 60px;}
+main{max-width:1360px;margin:0 auto;padding:16px 18px 50px;}
 .hidden{display:none !important;}
 
+/* Dashboard grid (dense monitoring layout) */
+.dash-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-bottom:12px;align-items:stretch;}
+.dash-grid .panel{margin-bottom:0;height:100%;}
+.g-3{grid-column:span 3;}
+.g-4{grid-column:span 4;}
+.g-5{grid-column:span 5;}
+.g-6{grid-column:span 6;}
+.g-7{grid-column:span 7;}
+.g-8{grid-column:span 8;}
+.g-9{grid-column:span 9;}
+.g-12{grid-column:span 12;}
+@media(max-width:1100px){
+  .g-3,.g-4,.g-5{grid-column:span 6;}
+  .g-7,.g-8,.g-9{grid-column:span 12;}
+}
+@media(max-width:700px){
+  .dash-grid{grid-template-columns:1fr;}
+  .g-3,.g-4,.g-5,.g-6,.g-7,.g-8,.g-9,.g-12{grid-column:span 1;}
+}
+
 /* KPI cards */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.panel .kpi-grid:last-child{margin-bottom:0;}
+.dash-grid .kpi-grid{grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:0;flex:1;align-content:stretch;}
+.dash-grid .kpi-grid .kpi{display:flex;flex-direction:column;justify-content:center;}
 @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
 .kpi{
-  background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;
+  background:linear-gradient(160deg, var(--panel-2), var(--panel));
+  border:1px solid var(--line);border-radius:10px;padding:12px 14px;
   position:relative;overflow:hidden;
 }
 .kpi::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--amber);
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg, var(--kpi-accent, var(--blue)), transparent);opacity:.9;
 }
-.kpi.red::before{background:var(--red);}
-.kpi.green::before{background:var(--green);}
-.kpi.blue::before{background:var(--blue);}
-.kpi.purple::before{background:var(--purple);}
-.kpi.pink::before{background:var(--pink);}
-.kpi.teal::before{background:var(--teal);}
-.kpi.blue .kpi-value{color:var(--blue);}
-.kpi.purple .kpi-value{color:var(--purple);}
-.kpi.pink .kpi-value{color:var(--pink);}
-.kpi.teal .kpi-value{color:var(--teal);}
-.kpi.red .kpi-value{color:var(--red);}
-.kpi.green .kpi-value{color:var(--green);}
-.kpi-label{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.05em;font-size:11px;color:var(--text-dim);margin-bottom:8px;}
-.kpi-value{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:var(--text);line-height:1.15;}
-.kpi-sub{font-size:12px;color:var(--text-dim);margin-top:6px;}
-.kpi-count{display:inline-block;background:var(--amber-dim);color:var(--amber);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:1px 6px;border-radius:3px;margin-left:6px;}
+.kpi.blue{--kpi-accent:var(--blue);} .kpi.blue .kpi-value{color:var(--blue);}
+.kpi.purple{--kpi-accent:var(--purple);} .kpi.purple .kpi-value{color:var(--purple);}
+.kpi.pink{--kpi-accent:var(--pink);} .kpi.pink .kpi-value{color:var(--pink);}
+.kpi.teal{--kpi-accent:var(--teal);} .kpi.teal .kpi-value{color:var(--teal);}
+.kpi.red{--kpi-accent:var(--red);} .kpi.red .kpi-value{color:var(--red);}
+.kpi.green{--kpi-accent:var(--green);} .kpi.green .kpi-value{color:var(--green);}
+.kpi-label{font-family:'IBM Plex Sans',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:9.5px;color:var(--text-dim);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.kpi-value{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;color:var(--text);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.kpi-sub{font-size:10.5px;color:var(--text-dim);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.kpi-count{display:inline-block;background:var(--blue-dim);color:var(--blue);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:1px 6px;border-radius:4px;margin-left:6px;}
 
 .panel{
-  background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px;margin-bottom:18px;
+  background:linear-gradient(160deg, rgba(26,33,71,.85), rgba(19,26,58,.85));
+  border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,.16);display:flex;flex-direction:column;
 }
-.panel h2{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.05em;font-size:14px;margin:0 0 14px;color:var(--text);}
-.panel h2 .n{color:var(--amber);}
+.panel h2{font-family:'IBM Plex Sans',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:11.5px;margin:0 0 12px;color:var(--text-dim);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.panel h2 .n{color:var(--blue);font-weight:500;text-transform:none;letter-spacing:0;font-size:10.5px;}
 
 /* bar list (top problems / machine freq) */
-.barlist{display:flex;flex-direction:column;gap:10px;}
-.barrow{display:grid;grid-template-columns:140px 1fr 40px;align-items:center;gap:10px;}
-.barrow .lbl{font-size:12.5px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.barrow .track{background:var(--panel-2);border-radius:3px;height:14px;overflow:hidden;}
-.barrow .fill{background:var(--amber);height:100%;border-radius:3px;}
-.barrow .val{font-family:'IBM Plex Mono',monospace;font-size:12px;text-align:right;color:var(--text);}
+.barlist{display:flex;flex-direction:column;gap:9px;flex:1;justify-content:center;}
+.barrow{display:grid;grid-template-columns:110px 1fr 34px;align-items:center;gap:10px;}
+.barrow .lbl{font-size:11.5px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.barrow .track{background:rgba(255,255,255,.06);border-radius:3px;height:10px;overflow:hidden;}
+.barrow .fill{background:linear-gradient(90deg, var(--blue), var(--teal));height:100%;border-radius:3px;}
+.barrow .val{font-family:'IBM Plex Mono',monospace;font-size:11.5px;text-align:right;color:var(--text);}
 
 /* machine tag */
 .mtag{
   font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--panel-2);
-  border:1px solid var(--line);color:var(--amber);padding:2px 6px;border-radius:3px;letter-spacing:.03em;
+  border:1px solid var(--line);color:var(--teal);padding:2px 6px;border-radius:4px;letter-spacing:.03em;
 }
 
 /* forms */
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 @media(max-width:700px){.form-grid{grid-template-columns:1fr;}}
-label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:5px;font-family:'Oswald',sans-serif;letter-spacing:.04em;text-transform:uppercase;}
+label{display:block;font-size:11.5px;color:var(--text-dim);margin-bottom:5px;font-family:'IBM Plex Sans',sans-serif;font-weight:600;letter-spacing:.04em;text-transform:uppercase;}
 input[type=text],input[type=date],input[type=number],select,textarea{
   width:100%;background:var(--panel-2);border:1px solid var(--line);color:var(--text);
-  padding:9px 10px;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;
+  padding:9px 10px;border-radius:6px;font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;
 }
 textarea{resize:vertical;min-height:70px;}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--amber);}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);}
 .field{margin-bottom:14px;}
 .btn{
-  background:var(--amber);color:#1a1206;border:none;padding:10px 18px;border-radius:4px;
-  font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.05em;font-weight:600;
-  font-size:13px;cursor:pointer;
+  background:linear-gradient(135deg, var(--blue), var(--purple));color:#fff;border:none;padding:10px 18px;border-radius:6px;
+  font-family:'IBM Plex Sans',sans-serif;text-transform:uppercase;letter-spacing:.04em;font-weight:600;
+  font-size:12.5px;cursor:pointer;
 }
-.btn:hover{background:#f0b354;}
+.btn:hover{filter:brightness(1.12);}
 .btn.ghost{background:transparent;color:var(--text-dim);border:1px solid var(--line);}
 .btn.ghost:hover{color:var(--text);border-color:var(--text-dim);}
-.btn.danger{background:var(--red-dim);color:#ffb4b4;}
+.btn.danger{background:var(--red-dim);color:#ffb4c4;}
 .btn.danger:hover{background:var(--red);color:#fff;}
 .btn.small{padding:6px 10px;font-size:11px;}
 
 /* table */
 table{width:100%;border-collapse:collapse;font-size:13px;}
 th{
-  text-align:left;font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.04em;
-  font-size:11px;color:var(--text-dim);border-bottom:1px solid var(--line);padding:8px 8px;
+  text-align:left;font-family:'IBM Plex Sans',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.04em;
+  font-size:10.5px;color:var(--text-dim);border-bottom:1px solid var(--line);padding:8px 8px;
 }
 td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top;}
-tr:hover td{background:var(--panel-2);}
+tr:hover td{background:rgba(255,255,255,.04);}
 .desc-cell{max-width:280px;color:var(--text-dim);}
 .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
 .filters select,.filters input{width:auto;min-width:130px;}
@@ -173,7 +229,7 @@ tr:hover td{background:var(--panel-2);}
 /* master data manage */
 .master-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
 @media(max-width:900px){.master-cols{grid-template-columns:repeat(2,1fr);}}
-.master-col h3{font-family:'Oswald',sans-serif;text-transform:uppercase;font-size:12.5px;color:var(--amber);margin:0 0 10px;letter-spacing:.04em;}
+.master-col h3{font-family:'IBM Plex Sans',sans-serif;font-weight:600;text-transform:uppercase;font-size:12px;color:var(--blue);margin:0 0 10px;letter-spacing:.04em;}
 .master-list{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:6px;}
 .master-list li{
   display:flex;justify-content:space-between;align-items:center;background:var(--panel-2);
@@ -185,7 +241,7 @@ tr:hover td{background:var(--panel-2);}
 .addrow input{flex:1;}
 
 .toast{
-  position:fixed;bottom:20px;right:20px;background:var(--panel);border:1px solid var(--amber);
+  position:fixed;bottom:20px;right:20px;background:var(--panel);border:1px solid var(--blue);
   color:var(--text);padding:10px 16px;border-radius:6px;font-size:13px;box-shadow:0 4px 20px rgba(0,0,0,.4);
   opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none;
 }
@@ -217,7 +273,7 @@ tr:hover td{background:var(--panel-2);}
   font-size:10.5px;text-align:center;padding:6px;
 }
 .photo-card .photo-col .cap{
-  position:absolute;top:0;left:0;background:rgba(18,22,26,.75);color:var(--amber);
+  position:absolute;top:0;left:0;background:rgba(11,15,42,.8);color:var(--teal);
   font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;
   padding:2px 6px;
 }
@@ -259,13 +315,21 @@ tr:hover td{background:var(--panel-2);}
 
 .btn.editing-active{outline:2px solid var(--amber);}
 
-.period-toggle{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-right:10px;}
+.period-toggle{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-right:10px;}
 .period-btn{
   background:var(--panel-2);color:var(--text-dim);border:none;border-right:1px solid var(--line);
   padding:6px 12px;font-size:12px;font-family:'IBM Plex Mono',monospace;cursor:pointer;
 }
 .period-btn:last-child{border-right:none;}
-.period-btn.active{background:var(--amber);color:#1a1300;}
+.period-btn.active{background:var(--blue);color:#fff;}
+.custom-range{display:flex;align-items:center;gap:6px;margin-left:6px;}
+.custom-range.hidden{display:none;}
+.custom-range input[type=date]{
+  width:auto;background:var(--panel-2);border:1px solid var(--line);color:var(--text);
+  padding:5px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:12px;
+}
+.custom-range .to-sep{color:var(--text-dim);font-size:12px;}
+.custom-range .btn.small{padding:6px 10px;font-size:11px;}
 .project-summary-row{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
 .project-summary-row select{width:auto;min-width:200px;}
 
@@ -273,18 +337,18 @@ tr:hover td{background:var(--panel-2);}
 .hotlist{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
 .hot-row{
   display:flex;align-items:center;gap:12px;background:var(--panel-2);border:1px solid var(--line);
-  border-radius:6px;padding:10px 12px;
+  border-radius:8px;padding:10px 12px;
 }
-.hot-row.rank-1{border-color:var(--red);background:linear-gradient(90deg, rgba(209,77,77,.18), transparent 70%);}
-.hot-row.rank-2{border-color:#e0703d;background:linear-gradient(90deg, rgba(224,112,61,.14), transparent 70%);}
-.hot-row.rank-3{border-color:var(--amber);background:linear-gradient(90deg, rgba(232,163,61,.12), transparent 70%);}
+.hot-row.rank-1{border-color:var(--red);background:linear-gradient(90deg, rgba(240,80,106,.18), transparent 70%);}
+.hot-row.rank-2{border-color:var(--amber);background:linear-gradient(90deg, rgba(251,146,60,.14), transparent 70%);}
+.hot-row.rank-3{border-color:var(--purple);background:linear-gradient(90deg, rgba(155,111,240,.12), transparent 70%);}
 .hot-rank{
   font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:14px;width:30px;text-align:center;
   color:var(--text-dim);flex-shrink:0;
 }
 .hot-row.rank-1 .hot-rank{color:var(--red);font-size:16px;}
-.hot-row.rank-2 .hot-rank{color:#e0703d;}
-.hot-row.rank-3 .hot-rank{color:var(--amber);}
+.hot-row.rank-2 .hot-rank{color:var(--amber);}
+.hot-row.rank-3 .hot-rank{color:var(--purple);}
 .hot-info{flex:1;min-width:0;}
 .hot-name{font-size:13px;font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:6px;}
 .hot-sub{font-size:10.5px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;margin-bottom:5px;}
@@ -295,46 +359,64 @@ tr:hover td{background:var(--panel-2);}
   font-size:9px;font-family:'IBM Plex Mono',monospace;cursor:default;
 }
 .hot-bar-wrap{height:6px;background:var(--line);border-radius:3px;overflow:hidden;}
-.hot-bar{height:100%;background:linear-gradient(90deg,var(--red),var(--amber));border-radius:3px;}
+.hot-bar{height:100%;background:linear-gradient(90deg,var(--red),var(--pink));border-radius:3px;}
 .hot-stats{text-align:right;flex-shrink:0;}
 .hot-reject{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--red);font-weight:700;}
 .hot-pct{font-size:11px;color:var(--text-dim);}
 
 /* charts */
-.chart-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;}
+.chart-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;height:100%;}
 @media(max-width:900px){.chart-grid{grid-template-columns:1fr;}}
-.chart-box{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:14px;height:300px;position:relative;}
-.chart-box h3{margin:0 0 10px;font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.04em;font-size:12px;color:var(--text-dim);}
-.chart-box canvas{max-height:230px;}
+.chart-box{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:12px;height:220px;position:relative;}
+.chart-box h3{margin:0 0 8px;font-family:'IBM Plex Sans',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:10.5px;color:var(--text-dim);}
+.chart-box canvas{max-height:165px;}
+.panel.g-panel-fill{height:100%;}
+.dash-grid .chart-box{height:100%;min-height:210px;}
 
 /* sortable table header */
 th.sortable{cursor:pointer;user-select:none;white-space:nowrap;}
-th.sortable:hover{color:var(--amber);}
-th.sortable .arrow{display:inline-block;margin-left:3px;font-size:9px;color:var(--amber);}
-tr.high-reject td{background:rgba(209,77,77,.10);}
+th.sortable:hover{color:var(--blue);}
+th.sortable .arrow{display:inline-block;margin-left:3px;font-size:9px;color:var(--blue);}
+tr.high-reject td{background:rgba(240,80,106,.10);}
 tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
 .filters label.chk{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-dim);background:var(--panel-2);
   border:1px solid var(--line);border-radius:4px;padding:0 10px;text-transform:none;font-family:'IBM Plex Sans',sans-serif;letter-spacing:0;}
 .filters label.chk input{width:auto;margin:0;}
+
+/* thumbnail foto di tabel Data Lengkap */
+.table-photos{display:flex;gap:4px;flex-wrap:nowrap;}
+.table-thumb{width:30px;height:30px;border-radius:4px;object-fit:cover;border:1px solid var(--line);cursor:zoom-in;flex-shrink:0;}
+.table-thumb:hover{border-color:var(--blue);}
+.table-thumb-empty{width:30px;height:30px;border-radius:4px;display:flex;align-items:center;justify-content:center;
+  background:var(--panel-2);color:var(--text-dim);font-size:11px;flex-shrink:0;}
 </style>
 </head>
 <body>
 
 <header class="top">
+  <div class="title-bar">
+    <h1 class="site-title display">Panel Problem Produksi</h1>
+  </div>
   <div class="top-inner">
     <div class="brand">
       <span class="tag">LANTAI PRODUKSI</span>
-      <h1 class="display">Panel Problem Produksi</h1>
     </div>
     <div class="week-nav">
       <div class="period-toggle" id="periodToggle">
         <button class="period-btn" data-period="day">Harian</button>
         <button class="period-btn active" data-period="week">Mingguan</button>
         <button class="period-btn" data-period="month">Bulanan</button>
+        <button class="period-btn" data-period="custom">Bebas</button>
       </div>
       <button id="prevWeek">‹</button>
       <div class="week-range mono" id="weekRange">–</div>
       <button id="nextWeek">›</button>
+      <div class="custom-range hidden" id="customRange">
+        <input type="date" id="customFrom">
+        <span class="to-sep">–</span>
+        <input type="date" id="customTo">
+        <button class="btn small" id="applyCustomRange" type="button">Terapkan</button>
+      </div>
     </div>
   </div>
   <div class="hazard"></div>
@@ -352,37 +434,57 @@ tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
 
   <!-- RINGKASAN -->
   <section id="tab-ringkasan" class="hidden">
-    <div class="kpi-grid" id="kpiGrid"></div>
-    <div class="panel">
-      <h2>Mesin Paling Bermasalah <span class="n" id="rangeLabel1"></span></h2>
-      <div class="barlist" id="barMachine"></div>
+
+    <!-- Baris 1: ringkasan utama + kualitas produksi, berdampingan seperti kartu status pada dashboard -->
+    <div class="dash-grid">
+      <div class="panel g-6">
+        <h2>Ringkasan Problem <span class="n" id="rangeLabelKpi"></span></h2>
+        <div class="kpi-grid" id="kpiGrid"></div>
+      </div>
+      <div class="panel g-6">
+        <h2>Kualitas Produksi <span class="n" id="rejectPanelLabel">Minggu Ini</span></h2>
+        <div class="kpi-grid" id="rejectKpiGrid"></div>
+      </div>
     </div>
-    <div class="panel">
-      <h2>🔥 Top 10 Hot List — Reject Terbesar <span id="rejectPanelLabel">Minggu Ini</span></h2>
-      <div class="kpi-grid" id="rejectKpiGrid" style="margin-bottom:0;"></div>
-      <div class="hotlist" id="hotlistReject"></div>
-    </div>
-    <div class="panel">
-      <h2>Grafik Problem <span class="n" id="rangeLabel2"></span></h2>
-      <div class="chart-grid">
-        <div class="chart-box">
-          <h3>Tren Jumlah Problem Harian</h3>
+
+    <!-- Baris 2: tren harian, distribusi jenis problem (donut), mesin paling bermasalah -->
+    <div class="dash-grid">
+      <div class="panel g-5">
+        <h2>Tren Problem Harian <span class="n" id="rangeLabel2"></span></h2>
+        <div class="chart-box" style="height:100%;">
           <canvas id="trendChart"></canvas>
         </div>
-        <div class="chart-box">
-          <h3>Distribusi Jenis Problem</h3>
+      </div>
+      <div class="panel g-3">
+        <h2>Distribusi Jenis Problem</h2>
+        <div class="chart-box" style="height:100%;">
           <canvas id="distChart"></canvas>
         </div>
       </div>
+      <div class="panel g-4">
+        <h2>Mesin Paling Bermasalah <span class="n" id="rangeLabel1"></span></h2>
+        <div class="barlist" id="barMachine"></div>
+      </div>
     </div>
+
+    <!-- Baris 3: hot list reject terbesar, full width -->
     <div class="panel">
-      <h2>Jenis Problem Paling Sering</h2>
-      <div class="barlist" id="barProblem"></div>
+      <h2>🔥 Top 10 Hot List — Reject Terbesar</h2>
+      <div class="hotlist" id="hotlistReject"></div>
     </div>
-    <div class="panel">
-      <h2>Problem per Nomor Project</h2>
-      <div class="barlist" id="barProject"></div>
+
+    <!-- Baris 4: dua barlist berdampingan -->
+    <div class="dash-grid">
+      <div class="panel g-6">
+        <h2>Jenis Problem Paling Sering</h2>
+        <div class="barlist" id="barProblem"></div>
+      </div>
+      <div class="panel g-6">
+        <h2>Problem per Nomor Project</h2>
+        <div class="barlist" id="barProject"></div>
+      </div>
     </div>
+
     <div class="panel">
       <h2>Problem Terbaru Dengan Foto</h2>
       <div class="gallery-grid" id="recentPhotos"></div>
@@ -519,7 +621,7 @@ tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
             <tr>
               <th>Tanggal</th><th>No. Project</th><th>Shift</th><th>Mesin</th><th>No. Palet</th><th>Operator</th><th>QC</th>
               <th>Jenis Problem</th><th>Deskripsi</th><th>Qty Production</th><th>Total Reject</th>
-              <th>Qty Total</th><th class="sortable" id="th-pct">% Reject</th><th>Downtime</th><th></th>
+              <th>Qty Total</th><th class="sortable" id="th-pct">% Reject</th><th>Downtime</th><th>Foto</th><th></th>
             </tr>
           </thead>
           <tbody id="dataTableBody"></tbody>
@@ -587,8 +689,10 @@ let master = { mesin: [], operator: [], qc: [], jenisProblem: [] };
 let entries = [];
 let currentAnchor = mondayOf(new Date());
 let periodMode = 'week';
+let customStart = null;
+let customEnd = null;
 let dataReady = false;
-const BAR_COLORS = ['#e8a33d','#5b8fd1','#e0699a','#3fc3c9','#a374e0','#d14d4d','#4fa97a','#e0703d','#d1b34f','#8993a1'];
+const BAR_COLORS = ['#4e8ff5','#9b6ff0','#34d1d1','#3ecf8e','#ec6bb0','#fb923c','#f0506a','#6b7fd7','#5fd4f0','#8891b8'];
 function colorForName(name){
   const s = String(name||'');
   let hash = 0;
@@ -620,6 +724,11 @@ function getPeriodRange(){
   }
   if(periodMode==='month'){
     return { start: firstOfMonth(currentAnchor), end: lastOfMonth(currentAnchor) };
+  }
+  if(periodMode==='custom'){
+    if(customStart && customEnd) return { start: customStart, end: customEnd };
+    const d = new Date(); d.setHours(0,0,0,0);
+    return { start: d, end: d };
   }
   const start = mondayOf(currentAnchor);
   return { start, end: addDays(start, 6) };
@@ -720,12 +829,30 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
 document.getElementById('prevWeek').addEventListener('click', ()=>{
   if(periodMode==='day') currentAnchor = addDays(currentAnchor, -1);
   else if(periodMode==='month') currentAnchor = addMonths(currentAnchor, -1);
+  else if(periodMode==='custom'){
+    if(customStart && customEnd){
+      const span = Math.round((customEnd-customStart)/86400000)+1;
+      customStart = addDays(customStart, -span);
+      customEnd = addDays(customEnd, -span);
+      document.getElementById('customFrom').value = fmt(customStart);
+      document.getElementById('customTo').value = fmt(customEnd);
+    }
+  }
   else currentAnchor = addDays(currentAnchor, -7);
   renderAll();
 });
 document.getElementById('nextWeek').addEventListener('click', ()=>{
   if(periodMode==='day') currentAnchor = addDays(currentAnchor, 1);
   else if(periodMode==='month') currentAnchor = addMonths(currentAnchor, 1);
+  else if(periodMode==='custom'){
+    if(customStart && customEnd){
+      const span = Math.round((customEnd-customStart)/86400000)+1;
+      customStart = addDays(customStart, span);
+      customEnd = addDays(customEnd, span);
+      document.getElementById('customFrom').value = fmt(customStart);
+      document.getElementById('customTo').value = fmt(customEnd);
+    }
+  }
   else currentAnchor = addDays(currentAnchor, 7);
   renderAll();
 });
@@ -733,8 +860,34 @@ document.querySelectorAll('.period-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     periodMode = btn.dataset.period;
     document.querySelectorAll('.period-btn').forEach(b=>b.classList.toggle('active', b===btn));
+    const customRangeEl = document.getElementById('customRange');
+    if(periodMode==='custom'){
+      customRangeEl.classList.remove('hidden');
+      if(!customStart || !customEnd){
+        const end = new Date(); end.setHours(0,0,0,0);
+        const start = addDays(end, -6);
+        customStart = start; customEnd = end;
+      }
+      document.getElementById('customFrom').value = fmt(customStart);
+      document.getElementById('customTo').value = fmt(customEnd);
+    } else {
+      customRangeEl.classList.add('hidden');
+    }
     renderAll();
   });
+});
+document.getElementById('applyCustomRange').addEventListener('click', ()=>{
+  const fromVal = document.getElementById('customFrom').value;
+  const toVal = document.getElementById('customTo').value;
+  if(!fromVal || !toVal){ showToast('Pilih tanggal mulai dan tanggal akhir'); return; }
+  let s = new Date(fromVal+'T00:00:00');
+  let e = new Date(toVal+'T00:00:00');
+  if(s > e){ const tmp = s; s = e; e = tmp; }
+  customStart = s; customEnd = e;
+  document.getElementById('customFrom').value = fmt(s);
+  document.getElementById('customTo').value = fmt(e);
+  renderAll();
+  showToast('Periode diterapkan: '+fmtDisplay(s)+' – '+fmtDisplay(e));
 });
 
 function renderWeekRange(){
@@ -1209,6 +1362,7 @@ function entryHasKelolosan(e){
 function periodLabelWord(){
   if(periodMode==='day') return 'hari ini';
   if(periodMode==='month') return 'bulan ini';
+  if(periodMode==='custom') return 'periode ini';
   return 'minggu ini';
 }
 
@@ -1227,7 +1381,7 @@ function renderRingkasan(){
   const totalDowntime = wk.reduce((s,e)=> s + (parseInt(e.downtime)||0), 0);
 
   const kpis = [
-    {label:'Total Problem '+(periodMode==='day'?'Hari Ini':periodMode==='month'?'Bulan Ini':'Minggu Ini'), value: wk.length, sub: wk.length===0?'Tidak ada data':'entri tercatat', cls:'blue'},
+    {label:'Total Problem '+(periodMode==='day'?'Hari Ini':periodMode==='month'?'Bulan Ini':periodMode==='custom'?'Periode Ini':'Minggu Ini'), value: wk.length, sub: wk.length===0?'Tidak ada data':'entri tercatat', cls:'blue'},
     {label:'Mesin Paling Bermasalah', value: topMachine?topMachine[0]:'—', sub: topMachine?topMachine[1]+' problem':'', cls:'red'},
     {label:'Operator Paling Sering Terkait', value: topOperator?topOperator[0]:'—', sub: topOperator?topOperator[1]+' problem':'', cls:'purple'},
     {label:'QC Paling Sering Kelolosan', value: topQcKelolosan?topQcKelolosan[0]:'—', sub: topQcKelolosan?topQcKelolosan[1]+' kali kelolosan (lolos inspeksi)':'Belum ada kelolosan tercatat', cls:'pink'},
@@ -1250,7 +1404,7 @@ function renderRingkasan(){
     {label:'% Reject', value: overallRejectPct.toFixed(2)+'%', sub:'dari total production', cls: overallRejectPct>5?'red':'teal'},
   ];
   document.getElementById('rejectPanelLabel').textContent =
-    periodMode==='day' ? 'Hari Ini' : periodMode==='month' ? 'Bulan Ini' : 'Minggu Ini';
+    periodMode==='day' ? 'Hari Ini' : periodMode==='month' ? 'Bulan Ini' : periodMode==='custom' ? 'Periode Ini' : 'Minggu Ini';
   document.getElementById('rejectKpiGrid').innerHTML = rejectKpis.map(k=>`
     <div class="kpi ${k.cls}">
       <div class="kpi-label">${k.label}</div>
@@ -1304,8 +1458,8 @@ function renderCharts(wk, byProblem){
       maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { color: '#8993a1', font:{ family:'IBM Plex Mono', size:10 } }, grid: { color:'#2e3944' } },
-        y: { beginAtZero:true, ticks: { color: '#8993a1', precision:0, font:{ family:'IBM Plex Mono', size:10 } }, grid: { color:'#2e3944' } }
+        x: { ticks: { color: '#8891b8', font:{ family:'IBM Plex Mono', size:10 } }, grid: { color:'#2a3266' } },
+        y: { beginAtZero:true, ticks: { color: '#8891b8', precision:0, font:{ family:'IBM Plex Mono', size:10 } }, grid: { color:'#2a3266' } }
       }
     }
   });
@@ -1329,7 +1483,7 @@ function renderCharts(wk, byProblem){
         datasets: [{
           data: distData,
           backgroundColor: CHART_COLORS,
-          borderColor: '#1b2126',
+          borderColor: '#131a3a',
           borderWidth: 2
         }]
       },
@@ -1337,7 +1491,7 @@ function renderCharts(wk, byProblem){
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position:'bottom', labels: { color:'#e9ecef', font:{ size:10.5, family:'IBM Plex Sans' }, boxWidth:10, padding:8 } }
+          legend: { position:'bottom', labels: { color:'#e9ecf7', font:{ size:10.5, family:'IBM Plex Sans' }, boxWidth:10, padding:8 } }
         }
       }
     });
@@ -1442,12 +1596,18 @@ function renderDataTable(){
 
   const tbody = document.getElementById('dataTableBody');
   if(list.length===0){
-    tbody.innerHTML = '<tr><td colspan="15" class="empty">Tidak ada data yang cocok.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="16" class="empty">Tidak ada data yang cocok.</td></tr>';
     return;
   }
   tbody.innerHTML = list.map(e=>{
     const pct = entryRejectPct(e);
     const isHigh = pct!=null && pct>3.5;
+    const palletPhotos = (e.pallets||[]).filter(p=>p.photo);
+    const photoThumbs = [
+      e.photoProblem ? `<img class="table-thumb" src="${esc(e.photoProblem)}" data-lightbox="${esc(e.photoProblem)}" title="Foto Problem" alt="Foto Problem">` : '',
+      e.photoNc ? `<img class="table-thumb" src="${esc(e.photoNc)}" data-lightbox="${esc(e.photoNc)}" title="Foto NC" alt="Foto NC">` : '',
+      palletPhotos.length ? `<img class="table-thumb" src="${esc(palletPhotos[0].photo)}" data-lightbox="${esc(palletPhotos[0].photo)}" title="Foto Label Palet${palletPhotos.length>1?' (1 dari '+palletPhotos.length+')':''}" alt="Foto Label Palet">` : ''
+    ].filter(Boolean).join('');
     return `
     <tr class="${isHigh?'high-reject':''}">
       <td class="mono">${esc(e.date)}</td>
@@ -1464,6 +1624,7 @@ function renderDataTable(){
       <td class="mono">${e.qtyTotal!=null?e.qtyTotal.toLocaleString('id-ID'):'-'}</td>
       <td class="mono pct-cell">${pct!=null?pct.toFixed(2)+'%':'-'}</td>
       <td class="mono">${e.downtime?esc(e.downtime)+' mnt':'-'}</td>
+      <td><div class="table-photos">${photoThumbs || '<span class="table-thumb-empty">-</span>'}</div></td>
       <td style="white-space:nowrap;">
         <button class="btn ghost small" data-edit2="${e.id}">Edit</button>
         <button class="btn danger small" data-del2="${e.id}">Hapus</button>
@@ -1472,6 +1633,7 @@ function renderDataTable(){
   }).join('');
   const th = document.getElementById('th-pct');
   th.innerHTML = '% Reject' + (dataSort.key==='pct' ? `<span class="arrow">${dataSort.dir===1?'▲':'▼'}</span>` : '');
+  bindLightboxTriggers(tbody);
   tbody.querySelectorAll('[data-edit2]').forEach(b=>{
     b.addEventListener('click', ()=>{
       const target = entries.find(x=>x.id===b.dataset.edit2);
