@@ -290,6 +290,15 @@ tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
 
 .plog-cm-block{background:rgba(78,143,245,.05);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:14px;}
 .plog-cm-block .plog-cm-head{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--blue);font-size:13px;margin-bottom:10px;border-bottom:1px solid var(--line);padding-bottom:6px;}
+.mp-prog-row td{background:var(--panel-2);border-top:1px solid var(--line);font-weight:600;cursor:pointer;}
+.mp-prog-row:hover td{background:var(--blue-dim);}
+.mp-prog-row .pname{display:flex;align-items:center;gap:8px;color:var(--teal);}
+.mp-prog-row .arr{display:inline-block;width:12px;font-size:10px;color:var(--text-dim);transition:transform .15s;}
+.mp-prog-row.collapsed .arr{transform:rotate(-90deg);}
+.mp-prog-row .pcount{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--text-dim);}
+.mp-sub-row td:first-child{padding-left:34px;}
+.mp-sub-row.hide{display:none;}
+.mp-grp-row td{background:var(--panel-2);border-top:1px solid var(--line);font-weight:600;color:var(--teal);}
 </style>
 </head>
 <body>
@@ -356,19 +365,23 @@ tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
 
   <section id="tab-monitor" class="hidden">
     <div class="panel">
-      <h2>Monitoring Project &amp; Proses</h2>
+      <h2>Monitoring Program &amp; Proses</h2>
       <div class="project-summary-row">
-        <select id="mp-project"><option value="">- Pilih project -</option></select>
+        <select id="mp-project"><option value="">- Pilih program -</option></select>
         <span style="color:var(--text-dim);font-size:12.5px;">Klik tombol status pada tiap proses untuk mengubah: Belum &rarr; Proses &rarr; Selesai.</span>
       </div>
       <div class="kpi-grid" id="mpKpi"></div>
-      <div class="mp-pipeline" id="mpPipeline"><div class="empty">Pilih project untuk melihat proses.</div></div>
+      <div class="mp-pipeline" id="mpPipeline"><div class="empty">Pilih program untuk melihat proses.</div></div>
     </div>
     <div class="panel">
-      <h2>Rekap Semua Project <span class="n" id="mpCount"></span></h2>
-      <div style="overflow-x:auto;">
-        <table id="mpTable"><thead><tr><th>No. Project</th><th>Progres Proses</th><th>Proses Berjalan</th><th>Total Problem</th><th>Total NC</th><th>Proses NC Terbanyak</th></tr></thead><tbody id="mpTableBody"></tbody></table>
-      </div>
+      <h2>Monitoring Pilot per Proses <span class="n" id="mpPilotScope"></span></h2>
+      <div style="color:var(--text-dim);font-size:12.5px;margin-bottom:8px;">Klik proses untuk melihat temuan yang ditemukan saat Pilot Production.</div>
+      <div id="mpPilotChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;"></div>
+      <div id="mpPilotList"></div>
+    </div>
+    <div class="panel">
+      <h2>Rekap NC per Proses &amp; Mesin <span class="n" id="ncmScope"></span></h2>
+      <div style="overflow-x:auto;"><table id="ncmTable"></table></div>
     </div>
   </section>
 
@@ -842,6 +855,7 @@ function refreshFormSelects(){
   populateSelect(document.getElementById('filt-machine'), master.mesin, 'Semua Mesin');
   populateSelect(document.getElementById('filt-operator'), master.operator, 'Semua Operator');
   populateSelect(document.getElementById('filt-qc'), master.qc, 'Semua QC');
+  syncProcessFromMachine();
 }
 
 /* ==================== REFRESH PROJECT OPTIONS (dari entries + problemLogs) ==================== */
@@ -872,7 +886,7 @@ document.getElementById('entryForm').addEventListener('submit', async (ev)=>{
   const submitBtn = document.getElementById('submitBtnMain'); const msg = document.getElementById('saveMsg');
   const isEdit = !!editingId; const entryId = isEdit ? editingId : uid();
   const fileProblem = document.getElementById('f-photo-problem').files[0]; const fileNc = document.getElementById('f-photo-nc').files[0];
-  const base = { date: document.getElementById('f-date').value, projectNumber: normStr(document.getElementById('f-project').value), shift: document.getElementById('f-shift').value, machine: document.getElementById('f-machine').value, operator: document.getElementById('f-operator').value, qc: document.getElementById('f-qc').value, problemType: document.getElementById('f-problemtype').value, process: document.getElementById('f-process').value, ncCount: document.getElementById('f-nc-count').value===''? null : Number(document.getElementById('f-nc-count').value), downtime: document.getElementById('f-downtime').value || '', desc: document.getElementById('f-desc').value.trim(), qtyProduction: document.getElementById('f-qty-production').value===''? null : Number(document.getElementById('f-qty-production').value), totalReject: document.getElementById('f-total-reject').value===''? null : Number(document.getElementById('f-total-reject').value) };
+  const base = { date: document.getElementById('f-date').value, projectNumber: normStr(document.getElementById('f-project').value), shift: document.getElementById('f-shift').value, machine: document.getElementById('f-machine').value, operator: document.getElementById('f-operator').value, qc: document.getElementById('f-qc').value, problemType: document.getElementById('f-problemtype').value, process: processOfMachine(document.getElementById('f-machine').value) || document.getElementById('f-process').value, ncCount: document.getElementById('f-nc-count').value===''? null : Number(document.getElementById('f-nc-count').value), downtime: document.getElementById('f-downtime').value || '', desc: document.getElementById('f-desc').value.trim(), qtyProduction: document.getElementById('f-qty-production').value===''? null : Number(document.getElementById('f-qty-production').value), totalReject: document.getElementById('f-total-reject').value===''? null : Number(document.getElementById('f-total-reject').value) };
   if(!base.machine || !base.operator || !base.qc || !base.problemType || !base.desc){ showToast('Lengkapi semua field wajib'); return; }
   const { qtyTotal, rejectPct } = calcRejectStats(base.qtyProduction, base.totalReject);
   base.qtyTotal = (base.qtyProduction==null && base.totalReject==null) ? null : qtyTotal;
@@ -971,7 +985,7 @@ renderPalletRows();
 
 /* EDIT MODE */
 let editingId = null, editingExistingPhotoProblem = '', editingExistingPhotoNc = '';
-function resetFormToBlank(){
+function resetFormToBlank(){ setTimeout(syncProcessFromMachine,0);
   document.getElementById('entryForm').reset();
   document.getElementById('preview-problem').classList.remove('show'); document.getElementById('preview-problem').src='';
   document.getElementById('preview-nc').classList.remove('show'); document.getElementById('preview-nc').src='';
@@ -992,7 +1006,7 @@ function startEdit(entry){
   document.getElementById('f-operator').value = entry.operator || '';
   document.getElementById('f-qc').value = entry.qc || '';
   document.getElementById('f-problemtype').value = entry.problemType || '';
-  document.getElementById('f-process').value = entry.process || '';
+  document.getElementById('f-process').value = entry.process || ''; syncProcessFromMachine();
   document.getElementById('f-nc-count').value = entry.ncCount!=null ? entry.ncCount : '';
   document.getElementById('f-downtime').value = entry.downtime || '';
   document.getElementById('f-desc').value = entry.desc || '';
@@ -1210,6 +1224,7 @@ document.getElementById('exportExcel').addEventListener('click', async ()=>{
 });
 
 /* MONITORING PROJECT */
+let mpPilotProc = '';
 const MP_STATUS = ['belum','proses','selesai'];
 const MP_LABEL = { belum:'Belum', proses:'Proses', selesai:'Selesai' };
 function entryNc(e){ if(e.ncCount!=null) return e.ncCount; return e.photoNc ? 1 : 0; }
@@ -1225,8 +1240,8 @@ function projectStats(project){
   const target = normStr(project);
   const list = entries.filter(e => normStr(e.projectNumber) === target);
   const procs = master.proses;
-  const perProc = procs.map(pr=>{ const es = list.filter(e=>e.process===pr); return { name: pr, status: ppStatus(target, pr), problems: es.length, nc: es.reduce((a,e)=>a+entryNc(e),0) }; });
-  const noProc = list.filter(e=>!e.process || !procs.includes(e.process));
+  const perProc = procs.map(pr=>{ const es = list.filter(e=>entryProc(e)===pr); return { name: pr, status: ppStatus(target, pr), problems: es.length, nc: es.reduce((a,e)=>a+entryNc(e),0) }; });
+  const noProc = list.filter(e=>!entryProc(e) || !procs.includes(entryProc(e)));
   const ncNoProc = noProc.reduce((a,e)=>a+entryNc(e),0);
   const totalNc = perProc.reduce((a,p)=>a+p.nc,0) + ncNoProc;
   const done = perProc.filter(p=>p.status==='selesai').length;
@@ -1248,39 +1263,126 @@ async function setProcessStatus(project, proc, status){
   renderMonitor();
 }
 
+function projectProgramMap(){
+  const cnt = {};
+  problemLogs.forEach(l=>{ const pj = normStr(l.projectNumber), pg = normStr(l.program); if(pj && pg){ cnt[pj] = cnt[pj] || {}; cnt[pj][pg] = (cnt[pj][pg]||0) + 1; } });
+  const map = {}; Object.keys(cnt).forEach(pj=>{ map[pj] = Object.keys(cnt[pj]).sort((x,y)=>cnt[pj][y]-cnt[pj][x])[0]; });
+  return map;
+}
+const MACHINE_RULES = [ ['polar',['polar']], ['printing',['printing']], ['diecut',['bobst','boobst','mk','diecut']], ['folderglue',['fg','folderglue']] ];
+const normKey = v => String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+function processOfMachine(machine){
+  const nm = normKey(machine); if(!nm) return '';
+  for(const pr of master.proses){
+    const np = normKey(pr); const kws = [];
+    MACHINE_RULES.forEach(([pk,mk])=>{ if(np.includes(pk)) kws.push(...mk); });
+    if(kws.some(k=>nm.startsWith(k)) || (np && nm.startsWith(np))) return pr;
+  }
+  return '';
+}
+function entryProc(e){ return processOfMachine(e.machine) || entryProc(e) || ''; }
+function syncProcessFromMachine(){
+  const el = document.getElementById('f-process'); if(!el) return;
+  const pr = processOfMachine(document.getElementById('f-machine').value);
+  if(pr){ el.value = pr; el.style.pointerEvents = 'none'; el.style.opacity = '.7'; el.title = 'Otomatis mengikuti mesin'; }
+  else { el.style.pointerEvents = ''; el.style.opacity = ''; el.title = ''; }
+}
+function machinesOfProcess(proc){
+  const np = normKey(proc); const set = new Set();
+  const kws = []; MACHINE_RULES.forEach(([pk,mk])=>{ if(np.includes(pk)) kws.push(...mk); });
+  master.mesin.forEach(m=>{ const nm = normKey(m); if(kws.some(k=>nm.startsWith(k)) || (np && nm.startsWith(np))) set.add(m); });
+  entries.forEach(e=>{ if(entryProc(e)===proc && e.machine) set.add(e.machine); });
+  return Array.from(set).sort(naturalCompare);
+}
+function renderNcMatrix(){
+  const tbl = document.getElementById('ncmTable'); const sel = document.getElementById('mp-project');
+  const pmap = projectProgramMap(); const NOP = 'Tanpa Program'; const prog = sel.value;
+  const progOfEntry = e => pmap[normStr(e.projectNumber)] || NOP;
+  let cols;
+  if(prog){ cols = programProjects(prog).sort(naturalCompare).map(p=>({ label:p, es: entries.filter(e=>normStr(e.projectNumber)===p) })); }
+  else { const names = Array.from(new Set(entries.map(progOfEntry))).sort((x,y)=>((x===NOP)-(y===NOP))||naturalCompare(x,y)); cols = names.map(n=>({ label:n, es: entries.filter(e=>progOfEntry(e)===n) })); }
+  document.getElementById('ncmScope').textContent = prog ? prog+' · per No. Project' : 'Semua program';
+  if(!cols.length || !master.proses.length){ tbl.innerHTML = '<tbody><tr><td class="empty">Belum ada data NC.</td></tr></tbody>'; return; }
+  const ncOf = (es,fn) => es.filter(fn).reduce((a,e)=>a+entryNc(e),0);
+  const numCell = n => `<td class="mono" style="color:${n>0?'var(--red)':'var(--text-dim)'};${n>0?'font-weight:600;':''}">${n}</td>`;
+  const rowHtml = (cls,label,fn)=>{ const vals = cols.map(c=>ncOf(c.es,fn)); const tot = vals.reduce((a,b)=>a+b,0); return {tot, html:`<tr class="${cls}"><td>${label}</td>${vals.map(numCell).join('')}${numCell(tot)}</tr>`}; };
+  let body = ''; let grand = 0;
+  master.proses.forEach(pr=>{
+    const ms = machinesOfProcess(pr);
+    const head = rowHtml('mp-grp-row', esc(pr), e=>entryProc(e)===pr);
+    const nomach = ncOf(entries.filter(e=>entryProc(e)===pr && !e.machine), ()=>true);
+    const subs = ms.map(m=>rowHtml('mp-sub-row', esc(m), e=>entryProc(e)===pr && e.machine===m).html).join('')
+      + (nomach>0 ? rowHtml('mp-sub-row','<i>(mesin tidak tercatat)</i>', e=>entryProc(e)===pr && !e.machine).html : '');
+    grand += head.tot; body += head.html + subs;
+  });
+  const other = rowHtml('mp-grp-row','Tanpa proses / lainnya', e=>!entryProc(e) || !master.proses.includes(entryProc(e)));
+  if(other.tot>0){ body += other.html; grand += other.tot; }
+  const colTot = cols.map(c=>c.es.reduce((a,e)=>a+entryNc(e),0));
+  tbl.innerHTML = `<thead><tr><th>Proses / Mesin</th>${cols.map(c=>`<th>${esc(c.label)}</th>`).join('')}<th>Total NC</th></tr></thead><tbody>${body}<tr><td style="font-weight:700;">Total</td>${colTot.map(numCell).join('')}${numCell(grand)}</tr></tbody>`;
+}
+function programProjects(prog){ const pm = projectProgramMap(); return projectList().filter(p => (pm[p] || 'Tanpa Program') === prog); }
+function renderMonitorPilot(){
+  const chips = document.getElementById('mpPilotChips'), list = document.getElementById('mpPilotList'); if(!chips || !list) return;
+  const prog = document.getElementById('mp-project').value;
+  const projSet = prog ? new Set(programProjects(prog)) : null;
+  document.getElementById('mpPilotScope').textContent = prog || 'Semua program';
+  const procOf = l => processOfMachine(l.machine) || l.process || '';
+  const logs = problemLogs.filter(l => phaseToCauseCode(l.phase)==='PP' && (!projSet || projSet.has(normStr(l.projectNumber))));
+  const known = new Set(master.proses);
+  const groups = master.proses.map(n=>({ name:n, items: logs.filter(l=>procOf(l)===n) }));
+  const other = logs.filter(l=>!known.has(procOf(l))); if(other.length) groups.push({ name:'Tanpa proses', items: other });
+  if(!groups.some(g=>g.name===mpPilotProc)) mpPilotProc = '';
+  if(!groups.length){ chips.innerHTML = ''; list.innerHTML = '<div class="empty">Belum ada daftar proses.</div>'; return; }
+  chips.innerHTML = groups.map(g=>{
+    const open = g.items.filter(l=>l.status!=='Closed').length; const on = g.name===mpPilotProc;
+    return `<button type="button" class="btn ${on?'':'ghost'} mp-pilot-chip" data-proc="${esc(g.name)}">${esc(g.name)} <span class="mono" style="margin-left:6px;color:${g.items.length?'var(--red)':'var(--text-dim)'};">${g.items.length}</span>${open?` <span class="mp-badge b-proses" style="margin-left:4px;">${open} open</span>`:''}</button>`;
+  }).join('');
+  chips.querySelectorAll('.mp-pilot-chip').forEach(b=>{ b.addEventListener('click', ()=>{ mpPilotProc = (mpPilotProc===b.dataset.proc) ? '' : b.dataset.proc; renderMonitorPilot(); }); });
+  if(!mpPilotProc){ list.innerHTML = `<div class="empty">${logs.length} temuan Pilot Production${prog?' di program ini':''}. Pilih proses di atas untuk melihat detailnya.</div>`; return; }
+  const g = groups.find(x=>x.name===mpPilotProc);
+  if(!g.items.length){ list.innerHTML = `<div class="empty">Tidak ada temuan Pilot Production di proses ${esc(g.name)}.</div>`; return; }
+  const items = g.items.slice().sort((x,y)=> (y.date||'').localeCompare(x.date||''));
+  const stCls = st => st==='Closed' ? 'b-selesai' : st==='In Progress' ? 'b-proses' : 'b-ng';
+  const cell = v => v ? esc(v) : '<span style="color:var(--text-dim)">-</span>';
+  list.innerHTML = `<div style="overflow-x:auto;"><table><thead><tr><th>Tanggal</th><th>No. Project</th><th>Mesin</th><th>Kategori</th><th>Temuan</th><th>Root Cause</th><th>Action</th><th>PIC</th><th>Status</th></tr></thead><tbody>${items.map(l=>`<tr><td class="mono">${cell(l.date)}</td><td class="mono">${cell(l.projectNumber)}</td><td>${cell(l.machine)}</td><td>${cell(l.category)}</td><td>${cell(l.problem)}</td><td>${cell(l.rootCause)}</td><td>${cell(l.action)}</td><td>${cell(l.pic)}</td><td><span class="mp-badge ${stCls(l.status)}">${esc(l.status||'Open')}</span></td></tr>`).join('')}</tbody></table></div>`;
+}
 function renderMonitor(){
   const sec = document.getElementById('tab-monitor'); if(!sec) return;
   const sel = document.getElementById('mp-project');
   const projects = projectList(); const cur = sel.value;
-  sel.innerHTML = '<option value="">- Pilih project -</option>' + projects.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join('');
-  if(projects.includes(cur)) sel.value = cur;
+  const pmap = projectProgramMap(); const NOPROG_SEL = 'Tanpa Program';
+  const selNames = Array.from(new Set(projects.map(p=>pmap[p] || NOPROG_SEL))).sort((x,y)=> ((x===NOPROG_SEL)-(y===NOPROG_SEL)) || naturalCompare(x,y));
+  sel.innerHTML = '<option value="">- Pilih program -</option>' + selNames.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join('');
+  if(selNames.includes(cur)) sel.value = cur;
   const kpi = document.getElementById('mpKpi'); const pipe = document.getElementById('mpPipeline');
   const oldLog = pipe.parentElement.querySelector('.mp-log-panel'); if(oldLog) oldLog.remove();
-  const project = sel.value;
-  if(!project){ kpi.innerHTML = ''; pipe.innerHTML = '<div class="empty">Pilih project untuk melihat proses.</div>'; }
+  const program = sel.value; const projs = program ? programProjects(program) : []; const projSet = new Set(projs);
+  if(!program){ kpi.innerHTML = ''; pipe.innerHTML = '<div class="empty">Pilih program untuk melihat proses.</div>'; }
   else {
-    const st = projectStats(project); const rejPct = st.qtyProd>0 ? (st.reject/st.qtyProd*100) : 0;
-    kpi.innerHTML = `<div class="kpi red"><div class="kpi-label">Total NC</div><div class="kpi-value">${st.totalNc}</div></div><div class="kpi blue"><div class="kpi-label">Proses Selesai</div><div class="kpi-value">${st.done}/${st.total}</div></div><div class="kpi purple"><div class="kpi-label">Total Problem</div><div class="kpi-value">${st.totalProblems}</div></div><div class="kpi teal"><div class="kpi-label">% Reject</div><div class="kpi-value">${rejPct.toFixed(2)}%</div></div>`;
-    if(st.perProc.length===0){ pipe.innerHTML = '<div class="empty">Belum ada daftar proses.</div>'; }
+    const sts = projs.map(p=>({ p, st: projectStats(p) }));
+    const sum = f => sts.reduce((t,x)=>t+f(x.st),0);
+    const qty = sum(s=>s.qtyProd), rej = sum(s=>s.reject); const rejPct = qty>0 ? rej/qty*100 : 0;
+    kpi.innerHTML = `<div class="kpi red"><div class="kpi-label">Total NC</div><div class="kpi-value">${sum(s=>s.totalNc)}</div></div><div class="kpi blue"><div class="kpi-label">Jumlah Project</div><div class="kpi-value">${projs.length}</div></div><div class="kpi purple"><div class="kpi-label">Total Problem</div><div class="kpi-value">${sum(s=>s.totalProblems)}</div></div><div class="kpi teal"><div class="kpi-label">% Reject</div><div class="kpi-value">${rejPct.toFixed(2)}%</div></div>`;
+    const procs = master.proses;
+    if(!procs.length || !sts.length){ pipe.innerHTML = '<div class="empty">Belum ada daftar proses.</div>'; }
     else {
-      pipe.innerHTML = st.perProc.map((p,i)=>`<div class="mp-step st-${p.status}"><div class="seq">PROSES ${i+1}</div><div class="nm">${esc(p.name)}</div><button class="btn ghost stbtn" data-proc="${esc(p.name)}" data-st="${p.status}">${MP_LABEL[p.status]} &rarr; ${MP_LABEL[MP_STATUS[(MP_STATUS.indexOf(p.status)+1)%3]]}</button><div class="nums"><span>Problem <b>${p.problems}</b></span><span>NC <b class="nc">${p.nc}</b></span></div></div>`).join('') + (st.noProcCount ? `<div class="mp-step"><div class="seq">TANPA PROSES</div><div class="nm">Belum dipilih</div><div class="nums"><span>Problem <b>${st.noProcCount}</b></span><span>NC <b class="nc">${st.ncNoProc}</b></span></div></div>` : '');
-      pipe.querySelectorAll('.stbtn').forEach(b=>{ b.addEventListener('click', ()=>{ const next = MP_STATUS[(MP_STATUS.indexOf(b.dataset.st)+1)%3]; setProcessStatus(project, b.dataset.proc, next); }); });
+      sts.sort((x,y)=> y.st.totalNc-x.st.totalNc || naturalCompare(x.p,y.p));
+      const cell = (p,x)=>{ const pp = x.st.perProc.find(q=>q.name===x.pr); return `<td><button class="btn ghost stbtn" style="padding:3px 8px;font-size:11px;" data-project="${esc(p)}" data-proc="${esc(x.pr)}" data-st="${pp.status}"><span class="mp-badge b-${pp.status}">${MP_LABEL[pp.status]}</span></button><div class="mono" style="font-size:11px;margin-top:3px;color:${pp.nc>0?'var(--red)':'var(--text-dim)'};">NC ${pp.nc} · P ${pp.problems}</div></td>`; };
+      const totRow = procs.map(pr=>{ const nc = sts.reduce((t,x)=>t+(x.st.perProc.find(q=>q.name===pr)||{nc:0}).nc,0); return `<td class="mono" style="color:${nc>0?'var(--red)':'var(--text-dim)'};font-weight:600;">NC ${nc}</td>`; }).join('');
+      pipe.innerHTML = `<div style="grid-column:1/-1;overflow-x:auto;"><table><thead><tr><th>No. Project</th>${procs.map(pr=>`<th>${esc(pr)}</th>`).join('')}<th>Total NC</th></tr></thead><tbody>${sts.map(({p,st})=>`<tr><td class="mono">${esc(p)}</td>${procs.map(pr=>cell(p,{st,pr})).join('')}<td class="mono" style="color:${st.totalNc>0?'var(--red)':'var(--text-dim)'};font-weight:600;">${st.totalNc}</td></tr>`).join('')}<tr><td class="mono" style="font-weight:600;">Total Program</td>${totRow}<td class="mono" style="color:var(--red);font-weight:700;">${sum(s=>s.totalNc)}</td></tr></tbody></table></div>`;
+      pipe.querySelectorAll('.stbtn').forEach(b=>{ b.addEventListener('click', ()=>{ const next = MP_STATUS[(MP_STATUS.indexOf(b.dataset.st)+1)%3]; setProcessStatus(b.dataset.project, b.dataset.proc, next); }); });
     }
-    const logsProject = problemLogs.filter(l => normStr(l.projectNumber) === normStr(project)).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+    const logsProject = problemLogs.filter(l => projSet.has(normStr(l.projectNumber))).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
     const logBox = document.createElement('div'); logBox.className = 'panel mp-log-panel'; logBox.style.marginTop = '12px';
-    logBox.innerHTML = `<h2>Historical Problem Log <span class="n">${logsProject.length} temuan</span></h2>` + (logsProject.length===0 ? '<div class="empty">Belum ada temuan untuk project ini.</div>' : logsProject.map(l=>{
+    logBox.innerHTML = `<h2>Historical Problem Log <span class="n">${logsProject.length} temuan</span></h2>` + (logsProject.length===0 ? '<div class="empty">Belum ada temuan untuk program ini.</div>' : logsProject.map(l=>{
       return `<div class="plog-row st-${l.status==='Closed'?'closed':l.status==='In Progress'?'progress':'open'}" style="margin-bottom:8px;"><div class="plog-summary"><div class="plog-arrow">▶</div><div class="plog-badge-no">${esc(l.projectNumber||'-')}</div><div class="plog-title-mini"><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:3px;"><span class="plog-tag ${plogPhaseClass(l.phase)}">${esc(l.phase||'-')}</span>${l.program?`<span class="plog-tag cat" style="color:var(--teal);">${esc(l.program)}</span>`:''}<span class="plog-tag cat">${esc(l.category||'-')}</span><span class="plog-tag st-${l.status==='Closed'?'closed':l.status==='In Progress'?'progress':'open'}">${esc(l.status)}</span></div><div><b>${esc(l.date||'-')}</b> — ${esc((l.problem||'').slice(0,120))}${(l.problem||'').length>120?'…':''}</div></div><div class="plog-summary-meta">${l.pic?esc(l.pic):''}</div><div class="plog-actions-mini"><button data-mplog-toggle>Detail</button></div></div><div class="plog-body-wrap"><div class="plog-body"><div class="plog-body-grid"><div class="plog-box bad"><h4>Non-compliance Findings</h4><p>${esc(l.problem||'-')}</p>${(l.photosProblem||[]).length?`<div class="plog-imgs">${l.photosProblem.map(u=>`<img src="${esc(u)}" data-lightbox="${esc(u)}">`).join('')}</div>`:''}</div><div class="plog-box warn"><h4>Root Cause</h4><p>${esc(l.rootCause||'-')}</p></div></div><div class="plog-body-grid" style="margin-top:12px;"><div class="plog-box good"><h4>CM 1</h4><p>${esc(l.action||'-')}</p>${l.pic?`<div style="margin-top:6px;font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;">PIC: ${esc(l.pic)}${l.implDate?' · Due: '+esc(l.implDate):''}${l.result1?' · Result: '+esc(l.result1):''}</div>`:''}${(l.photosAction||[]).length?`<div class="plog-imgs">${l.photosAction.map(u=>`<img src="${esc(u)}" data-lightbox="${esc(u)}">`).join('')}</div>`:''}</div><div class="plog-box good"><h4>CM 2</h4><p>${esc(l.action2||'-')}</p>${l.pic2?`<div style="margin-top:6px;font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;">PIC: ${esc(l.pic2)}${l.implDate2?' · Due: '+esc(l.implDate2):''}${l.result2?' · Result: '+esc(l.result2):''}</div>`:''}${(l.photosAction2||[]).length?`<div class="plog-imgs">${l.photosAction2.map(u=>`<img src="${esc(u)}" data-lightbox="${esc(u)}">`).join('')}</div>`:''}</div></div>${l.preventive?`<div class="plog-body-grid" style="margin-top:12px;"><div class="plog-box prev" style="grid-column:1 / -1;"><h4>Preventive Action (3)</h4><p>${esc(l.preventive)}</p></div></div>`:''}</div></div></div>`;
     }).join(''));
     pipe.insertAdjacentElement('afterend', logBox); bindLightboxTriggers(logBox);
     logBox.querySelectorAll('.plog-summary').forEach(sum=>{ sum.addEventListener('click', (e)=>{ if(e.target.closest('button')) return; sum.parentElement.classList.toggle('expanded'); }); });
     logBox.querySelectorAll('[data-mplog-toggle]').forEach(b=>{ b.addEventListener('click', (e)=>{ e.stopPropagation(); b.closest('.plog-row').classList.toggle('expanded'); }); });
   }
-  const tb = document.getElementById('mpTableBody');
-  document.getElementById('mpCount').textContent = projects.length ? projects.length+' project' : '';
-  if(projects.length===0){ tb.innerHTML = '<tr><td colspan="6" class="empty">Belum ada project.</td></tr>'; return; }
-  const rows = projects.map(p=>({ p, st: projectStats(p) })).sort((a,b)=>b.st.totalNc-a.st.totalNc);
-  tb.innerHTML = rows.map(({p,st})=>{ const pct = st.total>0 ? Math.round(st.done/st.total*100) : 0; return `<tr class="clickable" data-project="${esc(p)}"><td class="mono">${esc(p)}</td><td><div style="display:flex;align-items:center;gap:8px;"><div class="mp-prog" style="flex:1"><div style="width:${pct}%"></div></div><span class="mono" style="font-size:12px;">${st.done}/${st.total}</span></div></td><td>${st.running.length ? st.running.map(r=>`<span class="mp-badge b-proses">${esc(r)}</span>`).join(' ') : '<span style="color:var(--text-dim)">-</span>'}</td><td class="mono">${st.totalProblems}</td><td class="mono" style="color:${st.totalNc>0?'var(--red)':'var(--text-dim)'};font-weight:600;">${st.totalNc}</td><td>${st.topNc && st.topNc.nc>0 ? esc(st.topNc.name)+' ('+st.topNc.nc+')' : '-'}</td></tr>`; }).join('');
-  tb.querySelectorAll('tr.clickable').forEach(tr=>{ tr.addEventListener('click', ()=>{ sel.value = tr.dataset.project; renderMonitor(); sec.scrollIntoView({behavior:'smooth'}); }); });
+  renderMonitorPilot();
+  renderNcMatrix();
 }
 document.getElementById('mp-project').addEventListener('change', renderMonitor);
 
@@ -1845,6 +1947,7 @@ const VSTAT = ['NOT YET','ON PROGRESS','FINISH','N/A'];
 const MONTHS_X = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
 let pilotDocs = [], pilotItems = [], curDocId = '', pilotView = 'dash';
 let visSel = { program:'', part:'' };
+let pmProc = '';
 let pcpForm = null, sampForm = null, pdCharts = [];
 let visState = null;
 
@@ -2071,13 +2174,55 @@ function pilotStats(){
   cl.groups.forEach(g=>g.items.forEach(it=>{ if(it.noStatus) return; clTotal++; if(it.status==='OK') clOk++; if(it.status==='NOT OK') clNg++; }));
   return { doc, cells, active, finish, open, statusCount, pcpOk, pcpNg, rej, cl, clOk, clTotal, clNg };
 }
+function renderPmProcDetail(S){
+  const box = P$('pmProcDetail'); if(!box) return;
+  document.querySelectorAll('[data-pm-proc]').forEach(th=>{ const on = th.dataset.pmProc===pmProc; th.style.color = on ? 'var(--teal)' : ''; const a = th.querySelector('.arr'); if(a) a.textContent = on ? '▴' : '▾'; });
+  if(!pmProc){ box.innerHTML = ''; return; }
+  if(pmProc==='Dimensi'){
+    const rs = pcpRows().sort((x,y)=> (y.ng>0)-(x.ng>0) || naturalCompare(x.part,y.part));
+    const ngT = rs.reduce((t,r)=>t+r.ng,0);
+    const body = rs.length ? `<div style="overflow-x:auto;"><table><thead><tr><th>Part</th><th>Critical Point</th><th>Acceptance</th><th>Diukur</th><th>NG</th><th>Min – Max</th><th>Hasil</th></tr></thead><tbody>${rs.map(r=>`<tr style="${r.ng?'background:var(--red-dim);':''}"><td>${esc(r.part)}</td><td>${esc(r.name)}</td><td class="mono">${esc(r.acc)}</td><td class="mono">${r.n}</td><td class="mono" style="color:${r.ng?'var(--red)':'var(--text-dim)'};">${r.ng}</td><td class="mono">${r.min==null?'-':r.min+' – '+r.max}</td><td>${r.judged?`<span class="mp-badge ${r.ng?'b-ng':'b-selesai'}">${r.ng?'NG':'OK'}</span>`:'-'}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">Belum ada data PCP Critical Dimension.</div>';
+    box.innerHTML = `<div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px;"><div style="font-weight:600;margin-bottom:8px;">Rincian Dimensi <span class="n">${rs.length} critical point · ${ngT} ukuran NG</span></div>${body}</div>`;
+    return;
+  }
+  const stCls = { 'FINISH':'b-selesai','ON PROGRESS':'b-proses','NOT YET':'b-belum','N/A':'b-belum' };
+  const rows = []; let total = 0;
+  S.doc.programs.forEach(p=>S.doc.parts.forEach(pt=>{
+    const d = S.cells[`${p}|${pt}|${pmProc}`];
+    const fs = normFindings(d).filter(f=>f.text || f.problem.length || f.sample.length);
+    if(fs.length){ rows.push({ p, pt, d, fs }); total += fs.length; }
+  }));
+  const imgs = l => l.length ? `<div class="pl-cmp-imgs">${l.map(u=>`<img src="${esc(u)}" data-lightbox="${esc(u)}" loading="lazy">`).join('')}</div>` : '';
+  const body = rows.length ? `<div style="overflow-x:auto;"><table><thead><tr><th>Program</th><th>Part</th><th>Temuan</th><th>Improvement</th><th>Status</th></tr></thead><tbody>${rows.map(({p,pt,d,fs})=>`<tr><td class="mono">${esc(p)}</td><td>${esc(pt)}</td><td>${fs.map((f,n)=>`<div style="margin-bottom:6px;">${n+1}. ${esc(f.text||'-')}${imgs(f.problem)}</div>`).join('')}</td><td>${esc(d.improvement||'-')}</td><td><span class="mp-badge ${stCls[d.status]||'b-belum'}">${esc(d.status||'NOT YET')}</span></td></tr>`).join('')}</tbody></table></div>` : `<div class="empty">Belum ada temuan di proses ${esc(pmProc)}.</div>`;
+  box.innerHTML = `<div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px;"><div style="font-weight:600;margin-bottom:8px;">Temuan proses ${esc(pmProc)} <span class="n">${total} temuan · ${rows.length} part</span></div>${body}</div>`;
+}
+function pcpRows(){
+  const rows = [];
+  itemsOfKind('pcp').forEach(it=>{
+    const d = it.data;
+    (d.points||[]).forEach((pt,i)=>{
+      const a = parseAcc(pt.acc);
+      const vals = (d.rows||[]).map(r=>parseFloat(String(r[i]==null?'':r[i]).replace(',','.'))).filter(v=>!isNaN(v));
+      const ng = a ? vals.filter(v=>Math.abs(v-a.nom) > a.tol + 1e-9).length : 0;
+      rows.push({ part:d.part||'-', name:pt.name||'-', acc:pt.acc||'-', n:vals.length, ng, min: vals.length?Math.min(...vals):null, max: vals.length?Math.max(...vals):null, judged: !!a && vals.length>0 });
+    });
+  });
+  return rows;
+}
 function renderPilotDash(){
   const S = pilotStats(); const view = P$('pilotView');
   const pct = (a,b)=> b>0 ? Math.round(a/b*100) : 0;
   const totRej = Object.values(S.rej).reduce((a,r)=>a+r.c+r.m+r.n,0);
   const stCls = { 'FINISH':'b-selesai','ON PROGRESS':'b-proses','NOT YET':'b-belum','N/A':'b-belum' };
   const matrixRows = []; S.doc.programs.forEach(p=>S.doc.parts.forEach(pt=>matrixRows.push([p,pt])));
-  view.innerHTML = `<div class="kpi-grid"><div class="kpi green"><div class="kpi-label">Progres Visual Check</div><div class="kpi-value">${pct(S.finish,S.active.length)}%</div><div class="kpi-sub">${S.finish} dari ${S.active.length} proses FINISH</div></div><div class="kpi red"><div class="kpi-label">Problem Belum Selesai</div><div class="kpi-value">${S.open.length}</div><div class="kpi-sub">problem tercatat, status belum FINISH</div></div><div class="kpi teal"><div class="kpi-label">PCP Lolos</div><div class="kpi-value">${pct(S.pcpOk,S.pcpOk+S.pcpNg)}%</div><div class="kpi-sub">${S.pcpOk} OK · ${S.pcpNg} NG</div></div><div class="kpi pink"><div class="kpi-label">Total Reject Sampling</div><div class="kpi-value">${totRej}</div><div class="kpi-sub">Critical + Major + Minor</div></div><div class="kpi blue"><div class="kpi-label">Checklist OK</div><div class="kpi-value">${pct(S.clOk,S.clTotal)}%</div><div class="kpi-sub">${S.clOk}/${S.clTotal} poin · ${S.clNg} Not OK</div></div></div><div class="dash-grid"><div class="panel g-7"><h2>Matriks Status Proses</h2><div style="overflow-x:auto;"><table><thead><tr><th>Program</th><th>Part</th>${PROC.map(p=>`<th>${esc(p)}</th>`).join('')}</tr></thead><tbody>${matrixRows.map(([p,pt])=>`<tr><td class="mono">${esc(p)}</td><td>${esc(pt)}</td>${PROC.map(pr=>{ const d=S.cells[`${p}|${pt}|${pr}`]; if(!d) return '<td><span class="mp-badge b-belum">-</span></td>'; return `<td><span class="mp-badge ${stCls[d.status]||'b-belum'}">${esc(d.status)}</span>${normFindings(d).length&&d.status!=='FINISH'?' <span title="Ada problem terbuka" style="color:var(--red)">●</span>':''}</td>`; }).join('')}</tr>`).join('')}</tbody></table></div></div><div class="panel g-5"><h2>Reject Sampling per Program</h2><div style="height:230px;"><canvas id="pdReject"></canvas></div></div></div><div class="dash-grid"><div class="panel g-4"><h2>Distribusi Status</h2><div style="height:220px;"><canvas id="pdStatus"></canvas></div></div><div class="panel g-8"><h2>Daftar Problem Terbuka <span class="n">${S.open.length}</span></h2>${S.open.length? `<div style="overflow-x:auto;"><table><thead><tr><th>Program</th><th>Part</th><th>Proses</th><th>Problem</th><th>Improvement</th><th>Status</th></tr></thead><tbody>${S.open.map(i=>{ const [p,pt,pr]=i.key.split('|'); return `<tr><td class="mono">${esc(p)}</td><td>${esc(pt)}</td><td>${esc(pr)}</td><td>${esc(normFindings(i.data).map((f,n)=>(n+1)+'. '+(f.text||'-')).join(' | '))}</td><td>${esc(i.data.improvement||'-')}</td><td><span class="mp-badge ${stCls[i.data.status]||'b-belum'}">${esc(i.data.status)}</span></td></tr>`;}).join('')}</tbody></table></div>` : '<div class="empty">Tidak ada problem terbuka.</div>'}</div></div><div class="panel"><h2>Perbandingan Problem vs Sample <span class="n" id="pdCmpN"></span></h2><div id="pdCmp"></div></div><div class="panel"><h2>Progres Checklist per Kelompok</h2><div class="barlist" id="pdCheck"></div></div>`;
+  const pcp = pcpRows();
+  const dimOf = pt => { const k = normKey(pt); const rs = pcp.filter(r=>{ const pk = normKey(r.part); return r.judged && pk && (pk===k || (k.length>=3 && pk.length>=3 && (pk.includes(k) || k.includes(pk)))); }); return { n: rs.length, ng: rs.reduce((t,r)=>t+r.ng,0) }; };
+  const dimCell = pt => { const d = dimOf(pt); return d.n ? `<td><span class="mp-badge ${d.ng?'b-ng':'b-selesai'}">${d.ng?('NG '+d.ng):'OK'}</span></td>` : '<td><span class="mp-badge b-belum">-</span></td>'; };
+  const dimNgTotal = pcp.reduce((t,r)=>t+r.ng,0);
+  const pmCount = pr => matrixRows.reduce((a,[p,pt])=>a+normFindings(S.cells[`${p}|${pt}|${pr}`]).filter(f=>f.text||f.problem.length||f.sample.length).length,0);
+  view.innerHTML = `<div class="kpi-grid"><div class="kpi green"><div class="kpi-label">Progres Visual Check</div><div class="kpi-value">${pct(S.finish,S.active.length)}%</div><div class="kpi-sub">${S.finish} dari ${S.active.length} proses FINISH</div></div><div class="kpi red"><div class="kpi-label">Problem Belum Selesai</div><div class="kpi-value">${S.open.length}</div><div class="kpi-sub">problem tercatat, status belum FINISH</div></div><div class="kpi teal"><div class="kpi-label">PCP Lolos</div><div class="kpi-value">${pct(S.pcpOk,S.pcpOk+S.pcpNg)}%</div><div class="kpi-sub">${S.pcpOk} OK · ${S.pcpNg} NG</div></div><div class="kpi pink"><div class="kpi-label">Total Reject Sampling</div><div class="kpi-value">${totRej}</div><div class="kpi-sub">Critical + Major + Minor</div></div><div class="kpi blue"><div class="kpi-label">Checklist OK</div><div class="kpi-value">${pct(S.clOk,S.clTotal)}%</div><div class="kpi-sub">${S.clOk}/${S.clTotal} poin · ${S.clNg} Not OK</div></div></div><div class="dash-grid"><div class="panel g-7"><h2>Matriks Status Proses</h2><div style="overflow-x:auto;"><table><thead><tr><th>Program</th><th>Part</th>${PROC.map(p=>{ const n = pmCount(p); return `<th data-pm-proc="${esc(p)}" title="Klik untuk melihat temuan" style="cursor:pointer;user-select:none;">${esc(p)} <span class="arr">▾</span> <span class="mono" style="color:${n?'var(--red)':'var(--text-dim)'};">${n}</span></th>`; }).join('')}<th data-pm-proc="Dimensi" title="Klik untuk melihat rincian dimensi" style="cursor:pointer;user-select:none;">Dimensi <span class="arr">▾</span> <span class="mono" style="color:${dimNgTotal?'var(--red)':'var(--text-dim)'};">${dimNgTotal}</span></th></tr></thead><tbody>${matrixRows.map(([p,pt])=>`<tr><td class="mono">${esc(p)}</td><td>${esc(pt)}</td>${PROC.map(pr=>{ const d=S.cells[`${p}|${pt}|${pr}`]; if(!d) return '<td><span class="mp-badge b-belum">-</span></td>'; return `<td><span class="mp-badge ${stCls[d.status]||'b-belum'}">${esc(d.status)}</span>${normFindings(d).length&&d.status!=='FINISH'?' <span title="Ada problem terbuka" style="color:var(--red)">●</span>':''}</td>`; }).join('')}${dimCell(pt)}</tr>`).join('')}</tbody></table></div><div id="pmProcDetail"></div></div><div class="panel g-5"><h2>Reject Sampling per Program</h2><div style="height:230px;"><canvas id="pdReject"></canvas></div></div></div><div class="dash-grid"><div class="panel g-4"><h2>Distribusi Status</h2><div style="height:220px;"><canvas id="pdStatus"></canvas></div></div><div class="panel g-8"><h2>Daftar Problem Terbuka <span class="n">${S.open.length}</span></h2>${S.open.length? `<div style="overflow-x:auto;"><table><thead><tr><th>Program</th><th>Part</th><th>Proses</th><th>Problem</th><th>Improvement</th><th>Status</th></tr></thead><tbody>${S.open.map(i=>{ const [p,pt,pr]=i.key.split('|'); return `<tr><td class="mono">${esc(p)}</td><td>${esc(pt)}</td><td>${esc(pr)}</td><td>${esc(normFindings(i.data).map((f,n)=>(n+1)+'. '+(f.text||'-')).join(' | '))}</td><td>${esc(i.data.improvement||'-')}</td><td><span class="mp-badge ${stCls[i.data.status]||'b-belum'}">${esc(i.data.status)}</span></td></tr>`;}).join('')}</tbody></table></div>` : '<div class="empty">Tidak ada problem terbuka.</div>'}</div></div><div class="panel"><h2>Perbandingan Problem vs Sample <span class="n" id="pdCmpN"></span></h2><div id="pdCmp"></div></div><div class="panel"><h2>Progres Checklist per Kelompok</h2><div class="barlist" id="pdCheck"></div></div>`;
+  view.querySelectorAll('[data-pm-proc]').forEach(th=>th.addEventListener('click', ()=>{ pmProc = pmProc===th.dataset.pmProc ? '' : th.dataset.pmProc; renderPmProcDetail(S); }));
+  renderPmProcDetail(S);
   renderCompare(S);
   pdCharts.forEach(c=>c.destroy()); pdCharts = [];
   const txt = '#8891b8', grid = '#2a3266';
@@ -2318,6 +2463,7 @@ function renderMasterLists(){
     });
   });
 }
+document.getElementById('f-machine').addEventListener('change', syncProcessFromMachine);
 document.querySelectorAll('[data-add]').forEach(btn=>{
   btn.addEventListener('click', async ()=>{
     const cat = btn.dataset.add; const input = document.getElementById('add-'+cat); const val = input.value.trim();
