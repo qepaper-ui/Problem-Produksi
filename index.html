@@ -380,11 +380,6 @@ tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
       <div id="mpPilotList"></div>
     </div>
     <div class="panel">
-      <h2>Rekap NC &ge; 10% per Program <span class="n" id="mpHighCount"></span></h2>
-      <div style="color:var(--text-dim);font-size:12.5px;margin-bottom:8px;">Otomatis dari input NC yang % Reject-nya 10% atau lebih. Program mengikuti Monitoring Pilot (No. Project &rarr; judul dokumen).</div>
-      <div id="mpHighBody"></div>
-    </div>
-    <div class="panel">
       <h2>Rekap NC per Proses &amp; Mesin <span class="n" id="ncmScope"></span></h2>
       <div style="overflow-x:auto;"><table id="ncmTable"></table></div>
     </div>
@@ -1269,12 +1264,61 @@ async function setProcessStatus(project, proc, status){
 }
 
 function projectProgramMap(){
-  const map = {};
-  (typeof pilotDocs!=='undefined' ? pilotDocs : []).forEach(d=>{ (d.programs||[]).forEach(pj=>{ const k = normStr(pj); if(k && !map[k] && normStr(d.title)) map[k] = normStr(d.title); }); });
   const cnt = {};
-  problemLogs.forEach(l=>{ const pj = normStr(l.projectNumber), pg = normStr(l.program); if(pj && pg && !map[pj]){ cnt[pj] = cnt[pj] || {}; cnt[pj][pg] = (cnt[pj][pg]||0) + 1; } });
-  Object.keys(cnt).forEach(pj=>{ map[pj] = Object.keys(cnt[pj]).sort((x,y)=>cnt[pj][y]-cnt[pj][x])[0]; });
+  problemLogs.forEach(l=>{ const pj = normStr(l.projectNumber), pg = normStr(l.program); if(pj && pg){ cnt[pj] = cnt[pj] || {}; cnt[pj][pg] = (cnt[pj][pg]||0) + 1; } });
+  const map = {}; Object.keys(cnt).forEach(pj=>{ map[pj] = Object.keys(cnt[pj]).sort((x,y)=>cnt[pj][y]-cnt[pj][x])[0]; });
   return map;
+}
+const MACHINE_RULES = [ ['polar',['polar']], ['printing',['printing']], ['diecut',['bobst','boobst','mk','diecut']], ['folderglue',['fg','folderglue']] ];
+const normKey = v => String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+function processOfMachine(machine){
+  const nm = normKey(machine); if(!nm) return '';
+  for(const pr of master.proses){
+    const np = normKey(pr); const kws = [];
+    MACHINE_RULES.forEach(([pk,mk])=>{ if(np.includes(pk)) kws.push(...mk); });
+    if(kws.some(k=>nm.startsWith(k)) || (np && nm.startsWith(np))) return pr;
+  }
+  return '';
+}
+function entryProc(e){ return processOfMachine(e.machine) || entryProc(e) || ''; }
+function syncProcessFromMachine(){
+  const el = document.getElementById('f-process'); if(!el) return;
+  const pr = processOfMachine(document.getElementById('f-machine').value);
+  if(pr){ el.value = pr; el.style.pointerEvents = 'none'; el.style.opacity = '.7'; el.title = 'Otomatis mengikuti mesin'; }
+  else { el.style.pointerEvents = ''; el.style.opacity = ''; el.title = ''; }
+}
+function machinesOfProcess(proc){
+  const np = normKey(proc); const set = new Set();
+  const kws = []; MACHINE_RULES.forEach(([pk,mk])=>{ if(np.includes(pk)) kws.push(...mk); });
+  master.mesin.forEach(m=>{ const nm = normKey(m); if(kws.some(k=>nm.startsWith(k)) || (np && nm.startsWith(np))) set.add(m); });
+  entries.forEach(e=>{ if(entryProc(e)===proc && e.machine) set.add(e.machine); });
+  return Array.from(set).sort(naturalCompare);
+}
+function renderNcMatrix(){
+  const tbl = document.getElementById('ncmTable'); const sel = document.getElementById('mp-project');
+  const pmap = projectProgramMap(); const NOP = 'Tanpa Program'; const prog = sel.value;
+  const progOfEntry = e => pmap[normStr(e.projectNumber)] || NOP;
+  let cols;
+  if(prog){ cols = programProjects(prog).sort(naturalCompare).map(p=>({ label:p, es: entries.filter(e=>normStr(e.projectNumber)===p) })); }
+  else { const names = Array.from(new Set(entries.map(progOfEntry))).sort((x,y)=>((x===NOP)-(y===NOP))||naturalCompare(x,y)); cols = names.map(n=>({ label:n, es: entries.filter(e=>progOfEntry(e)===n) })); }
+  document.getElementById('ncmScope').textContent = prog ? prog+' · per No. Project' : 'Semua program';
+  if(!cols.length || !master.proses.length){ tbl.innerHTML = '<tbody><tr><td class="empty">Belum ada data NC.</td></tr></tbody>'; return; }
+  const ncOf = (es,fn) => es.filter(fn).reduce((a,e)=>a+entryNc(e),0);
+  const numCell = n => `<td class="mono" style="color:${n>0?'var(--red)':'var(--text-dim)'};${n>0?'font-weight:600;':''}">${n}</td>`;
+  const rowHtml = (cls,label,fn)=>{ const vals = cols.map(c=>ncOf(c.es,fn)); const tot = vals.reduce((a,b)=>a+b,0); return {tot, html:`<tr class="${cls}"><td>${label}</td>${vals.map(numCell).join('')}${numCell(tot)}</tr>`}; };
+  let body = ''; let grand = 0;
+  master.proses.forEach(pr=>{
+    const ms = machinesOfProcess(pr);
+    const head = rowHtml('mp-grp-row', esc(pr), e=>entryProc(e)===pr);
+    const nomach = ncOf(entries.filter(e=>entryProc(e)===pr && !e.machine), ()=>true);
+    const subs = ms.map(m=>rowHtml('mp-sub-row', esc(m), e=>entryProc(e)===pr && e.machine===m).html).join('')
+      + (nomach>0 ? rowHtml('mp-sub-row','<i>(mesin tidak tercatat)</i>', e=>entryProc(e)===pr && !e.machine).html : '');
+    grand += head.tot; body += head.html + subs;
+  });
+  const other = rowHtml('mp-grp-row','Tanpa proses / lainnya', e=>!entryProc(e) || !master.proses.includes(entryProc(e)));
+  if(other.tot>0){ body += other.html; grand += other.tot; }
+  const colTot = cols.map(c=>c.es.reduce((a,e)=>a+entryNc(e),0));
+  tbl.innerHTML = `<thead><tr><th>Proses / Mesin</th>${cols.map(c=>`<th>${esc(c.label)}</th>`).join('')}<th>Total NC</th></tr></thead><tbody>${body}<tr><td style="font-weight:700;">Total</td>${colTot.map(numCell).join('')}${numCell(grand)}</tr></tbody>`;
 }
 function programProjects(prog){ const pm = projectProgramMap(); return projectList().filter(p => (pm[p] || 'Tanpa Program') === prog); }
 function renderMonitorPilot(){
@@ -1301,18 +1345,6 @@ function renderMonitorPilot(){
   const stCls = st => st==='Closed' ? 'b-selesai' : st==='In Progress' ? 'b-proses' : 'b-ng';
   const cell = v => v ? esc(v) : '<span style="color:var(--text-dim)">-</span>';
   list.innerHTML = `<div style="overflow-x:auto;"><table><thead><tr><th>Tanggal</th><th>No. Project</th><th>Mesin</th><th>Kategori</th><th>Temuan</th><th>Root Cause</th><th>Action</th><th>PIC</th><th>Status</th></tr></thead><tbody>${items.map(l=>`<tr><td class="mono">${cell(l.date)}</td><td class="mono">${cell(l.projectNumber)}</td><td>${cell(l.machine)}</td><td>${cell(l.category)}</td><td>${cell(l.problem)}</td><td>${cell(l.rootCause)}</td><td>${cell(l.action)}</td><td>${cell(l.pic)}</td><td><span class="mp-badge ${stCls(l.status)}">${esc(l.status||'Open')}</span></td></tr>`).join('')}</tbody></table></div>`;
-}
-function renderMonitorHigh(){
-  const box = document.getElementById('mpHighBody'); if(!box) return;
-  const sel = document.getElementById('mp-project').value; const pm = projectProgramMap(); const NOPROG = 'Tanpa Program';
-  const groups = {};
-  entries.forEach(e=>{ const pct = entryRejectPct(e); if(pct==null || pct < 10) return; const g = pm[normStr(e.projectNumber)] || NOPROG; if(sel && g!==sel) return; (groups[g] = groups[g] || []).push({ e, pct }); });
-  const names = Object.keys(groups).sort((x,y)=> ((x===NOPROG)-(y===NOPROG)) || groups[y].length-groups[x].length || naturalCompare(x,y));
-  const total = names.reduce((t,n)=>t+groups[n].length,0);
-  document.getElementById('mpHighCount').textContent = total ? (total+' entri · '+names.length+' program') : '';
-  if(!total){ box.innerHTML = '<div class="empty">Belum ada input NC dengan % Reject ≥ 10%.</div>'; return; }
-  const num = v => (v==null||v==='') ? '-' : v;
-  box.innerHTML = `<div style="overflow-x:auto;"><table><thead><tr><th>Program / Tanggal</th><th>No. Project</th><th>Mesin</th><th>Proses</th><th>Jenis Problem</th><th>Qty Prod</th><th>Reject</th><th>% Reject</th></tr></thead><tbody>${names.map(n=>{ const items = groups[n].sort((x,y)=>y.pct-x.pct); return `<tr class="mp-prog-row"><td colspan="8"><div class="pname"><span>${esc(n)}</span><span class="pcount">${items.length} entri</span></div></td></tr>` + items.map(({e,pct})=>`<tr class="high-reject"><td class="mono" style="padding-left:24px;">${esc(e.date||'-')}</td><td class="mono">${esc(e.projectNumber||'-')}</td><td>${esc(e.machine||'-')}</td><td>${esc(entryProc(e)||'-')}</td><td>${esc(e.problemType||'-')}</td><td class="mono">${num(e.qtyProduction)}</td><td class="mono">${num(e.totalReject)}</td><td class="mono pct-cell">${pct.toFixed(2)}%</td></tr>`).join(''); }).join('')}</tbody></table></div>`;
 }
 function renderMonitor(){
   const sec = document.getElementById('tab-monitor'); if(!sec) return;
@@ -1350,7 +1382,6 @@ function renderMonitor(){
     logBox.querySelectorAll('[data-mplog-toggle]').forEach(b=>{ b.addEventListener('click', (e)=>{ e.stopPropagation(); b.closest('.plog-row').classList.toggle('expanded'); }); });
   }
   renderMonitorPilot();
-  renderMonitorHigh();
   renderNcMatrix();
 }
 document.getElementById('mp-project').addEventListener('change', renderMonitor);
