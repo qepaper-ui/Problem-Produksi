@@ -5,310 +5,479 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panel Problem Produksi</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap');
 
 :root{
-  --bg:#0b0f2a; --bg-2:#141a3d; --panel:#131a3a; --panel-2:#1a2147; --line:#2a3266;
-  --text:#e9ecf7; --text-dim:#8891b8;
-  --amber:#fb923c; --amber-dim:#5a3a1e; --red:#f0506a; --red-dim:#5c1f30;
-  --green:#3ecf8e; --green-dim:#1c4a38; --blue:#4e8ff5; --blue-dim:#1c3468;
-  --purple:#9b6ff0; --purple-dim:#352a63; --teal:#34d1d1; --teal-dim:#1a4a4f;
-  --pink:#ec6bb0; --pink-dim:#5a2748;
+  --page-bg:#c9e9f0; --page-bg-2:#d8f0f5;
+  --card:#ffffff; --card-soft:#f7fafb;
+  --text:#2b3a55; --text-dim:#8fa2b8; --text-soft:#a9b8cc;
+  --line:#e8eef2; --line-2:#dbe6ec;
+  --blue:#4a9fe0; --blue-soft:#e3f1fb;
+  --purple:#9b7ff0; --purple-soft:#efe9fd;
+  --teal:#4dd0c1; --teal-soft:#ddf7f3;
+  --amber:#f6b73c; --amber-soft:#fdf1da;
+  --pink:#f07fb0; --pink-soft:#fce4ee;
+  --green:#4ecb8e; --green-soft:#ddf5e8;
+  --red:#f0687c; --red-soft:#fde3e8;
+  --sidebar:#3ba7c9; --sidebar-2:#2e94b6;
+  --shadow:0 8px 24px rgba(74,159,224,.10);
+  --shadow-soft:0 4px 14px rgba(74,159,224,.08);
 }
 *{box-sizing:border-box;}
 body{
-  margin:0;
-  background:
-    radial-gradient(1200px 700px at 15% -10%, rgba(78,143,245,.16), transparent 60%),
-    radial-gradient(1000px 700px at 100% 0%, rgba(155,111,240,.14), transparent 55%),
-    linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 40%);
+  margin:0; background:linear-gradient(135deg, var(--page-bg) 0%, var(--page-bg-2) 100%);
   background-attachment:fixed; color:var(--text);
-  font-family:'IBM Plex Sans',sans-serif; -webkit-font-smoothing:antialiased;
+  font-family:'Nunito',sans-serif; -webkit-font-smoothing:antialiased;
+  min-height:100vh;
 }
 .mono{font-family:'IBM Plex Mono',monospace;}
-.display{font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:.03em;}
-.hazard{height:2px;background-image:linear-gradient(90deg, var(--blue), var(--purple) 50%, var(--pink));opacity:.7;}
-header.top{background:rgba(19,26,58,.72);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
-.title-bar{text-align:center;padding:16px 18px 2px;perspective:700px;}
-.site-title{
-  display:inline-block;margin:0;font-size:28px;font-weight:700;
-  background:linear-gradient(90deg, var(--blue), var(--purple), var(--pink), var(--teal), var(--blue));
-  background-size:300% auto;-webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;color:transparent;
-  filter:drop-shadow(0 6px 10px rgba(78,143,245,.28));
-  transform-style:preserve-3d;
-  animation:titleShine 6s linear infinite, titleFloat3d 4.5s ease-in-out infinite;
+.display{font-family:'Nunito',sans-serif; text-transform:none; letter-spacing:0; font-weight:800;}
+
+/* SIDEBAR */
+.sidebar{
+  position:fixed; left:0; top:0; bottom:0; width:78px;
+  background:linear-gradient(180deg, var(--sidebar) 0%, var(--sidebar-2) 100%);
+  border-radius:0 26px 26px 0; display:flex; flex-direction:column;
+  align-items:center; padding:20px 0; gap:10px; z-index:50;
+  box-shadow:6px 0 24px rgba(59,167,201,.25);
 }
-@keyframes titleShine{0%{background-position:0% center;}100%{background-position:300% center;}}
-@keyframes titleFloat3d{0%,100%{ transform:perspective(700px) rotateX(0deg) translateY(0); }50%{ transform:perspective(700px) rotateX(10deg) translateY(-4px); }}
-@media(prefers-reduced-motion:reduce){.site-title{animation:none;}}
-.top-inner{max-width:1360px;margin:0 auto;padding:14px 18px 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-.brand{display:flex;align-items:baseline;gap:10px;}
-.brand .tag{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#081025;background:var(--teal); padding:2px 6px; border-radius:3px; font-weight:600;letter-spacing:.05em;}
-.week-nav{display:flex;align-items:center;gap:10px;}
-.week-nav button{background:var(--panel-2);border:1px solid var(--line);color:var(--text);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:14px;}
-.week-nav button:hover{border-color:var(--blue);color:var(--blue);}
-.week-range{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--text-dim);background:var(--panel-2);border:1px solid var(--line);padding:6px 10px;border-radius:6px;min-width:190px;text-align:center;}
-nav.tabs{max-width:1360px;margin:0 auto;padding:0 18px;display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto;}
-nav.tabs button{background:transparent;border:none;color:var(--text-dim);padding:10px 14px;font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.05em;font-size:12.5px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
-nav.tabs button.active{color:var(--blue);border-bottom:2px solid var(--blue);}
-nav.tabs button:hover:not(.active){color:var(--text);}
-main{max-width:1360px;margin:0 auto;padding:16px 18px 50px;}
-.hidden{display:none !important;}
-.dash-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-bottom:12px;align-items:stretch;}
-.dash-grid .panel{margin-bottom:0;height:100%;}
-.g-3{grid-column:span 3;}.g-4{grid-column:span 4;}.g-5{grid-column:span 5;}.g-6{grid-column:span 6;}
-.g-7{grid-column:span 7;}.g-8{grid-column:span 8;}.g-9{grid-column:span 9;}.g-12{grid-column:span 12;}
-@media(max-width:1100px){.g-3,.g-4,.g-5{grid-column:span 6;}.g-7,.g-8,.g-9{grid-column:span 12;}}
-@media(max-width:700px){.dash-grid{grid-template-columns:1fr;}.g-3,.g-4,.g-5,.g-6,.g-7,.g-8,.g-9,.g-12{grid-column:span 1;}}
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
-.panel .kpi-grid:last-child{margin-bottom:0;}
-.dash-grid .kpi-grid{grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:0;flex:1;align-content:stretch;}
-.dash-grid .kpi-grid .kpi{display:flex;flex-direction:column;justify-content:center;}
-@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
-.kpi{background:linear-gradient(160deg, var(--panel-2), var(--panel));border:1px solid var(--line);border-radius:10px;padding:12px 14px;position:relative;overflow:hidden;}
-.kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg, var(--kpi-accent, var(--blue)), transparent);opacity:.9;}
-.kpi.blue{--kpi-accent:var(--blue);} .kpi.blue .kpi-value{color:var(--blue);}
-.kpi.purple{--kpi-accent:var(--purple);} .kpi.purple .kpi-value{color:var(--purple);}
-.kpi.pink{--kpi-accent:var(--pink);} .kpi.pink .kpi-value{color:var(--pink);}
-.kpi.teal{--kpi-accent:var(--teal);} .kpi.teal .kpi-value{color:var(--teal);}
-.kpi.red{--kpi-accent:var(--red);} .kpi.red .kpi-value{color:var(--red);}
-.kpi.green{--kpi-accent:var(--green);} .kpi.green .kpi-value{color:var(--green);}
-.kpi-label{font-family:'IBM Plex Sans',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:9.5px;color:var(--text-dim);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.kpi-value{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;color:var(--text);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.kpi-sub{font-size:10.5px;color:var(--text-dim);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.panel{background:linear-gradient(160deg, rgba(26,33,71,.85), rgba(19,26,58,.85));border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px;box-shadow:0 6px 18px rgba(0,0,0,.16);display:flex;flex-direction:column;}
-.panel h2{font-family:'IBM Plex Sans',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:11.5px;margin:0 0 12px;color:var(--text-dim);display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.panel h2 .n{color:var(--blue);font-weight:500;text-transform:none;letter-spacing:0;font-size:10.5px;}
-.barlist{display:flex;flex-direction:column;gap:9px;flex:1;justify-content:center;}
-.barrow{display:grid;grid-template-columns:110px 1fr 34px;align-items:center;gap:10px;}
-.barrow .lbl{font-size:11.5px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.barrow .track{background:rgba(255,255,255,.06);border-radius:3px;height:10px;overflow:hidden;}
-.barrow .fill{background:linear-gradient(90deg, var(--blue), var(--teal));height:100%;border-radius:3px;}
-.barrow .val{font-family:'IBM Plex Mono',monospace;font-size:11.5px;text-align:right;color:var(--text);}
-.mtag{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--panel-2);border:1px solid var(--line);color:var(--teal);padding:2px 6px;border-radius:4px;letter-spacing:.03em;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-@media(max-width:700px){.form-grid{grid-template-columns:1fr;}}
-label{display:block;font-size:11.5px;color:var(--text-dim);margin-bottom:5px;font-family:'IBM Plex Sans',sans-serif;font-weight:600;letter-spacing:.04em;text-transform:uppercase;}
-input[type=text],input[type=date],input[type=number],select,textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:9px 10px;border-radius:6px;font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;}
-textarea{resize:vertical;min-height:70px;}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);}
-.field{margin-bottom:14px;}
-.btn{background:linear-gradient(135deg, var(--blue), var(--purple));color:#fff;border:none;padding:10px 18px;border-radius:6px;font-family:'IBM Plex Sans',sans-serif;text-transform:uppercase;letter-spacing:.04em;font-weight:600;font-size:12.5px;cursor:pointer;}
-.btn:hover{filter:brightness(1.12);}
-.btn.ghost{background:transparent;color:var(--text-dim);border:1px solid var(--line);}
-.btn.ghost:hover{color:var(--text);border-color:var(--text-dim);}
-.btn.danger{background:var(--red-dim);color:#ffb4c4;}
-.btn.danger:hover{background:var(--red);color:#fff;}
-.btn.small{padding:6px 10px;font-size:11px;}
-table{width:100%;border-collapse:collapse;font-size:13px;}
-th{text-align:left;font-family:'IBM Plex Sans',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:10.5px;color:var(--text-dim);border-bottom:1px solid var(--line);padding:8px 8px;}
-td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top;}
-tr:hover td{background:rgba(255,255,255,.04);}
-.desc-cell{max-width:280px;color:var(--text-dim);}
-.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
-.filters select,.filters input{width:auto;min-width:130px;}
-.empty{color:var(--text-dim);font-size:13px;padding:20px 0;text-align:center;}
-.master-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
-@media(max-width:900px){.master-cols{grid-template-columns:repeat(2,1fr);}}
-.master-col h3{font-family:'IBM Plex Sans',sans-serif;font-weight:600;text-transform:uppercase;font-size:12px;color:var(--blue);margin:0 0 10px;letter-spacing:.04em;}
-.master-list{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:6px;}
-.master-list li{display:flex;justify-content:space-between;align-items:center;background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:6px 8px;font-size:12.5px;}
-.master-list li button{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:14px;line-height:1;}
-.master-list li button:hover{color:var(--red);}
-.addrow{display:flex;gap:6px;}
-.addrow input{flex:1;}
-.toast{position:fixed;bottom:20px;right:20px;background:var(--panel);border:1px solid var(--blue);color:var(--text);padding:10px 16px;border-radius:6px;font-size:13px;box-shadow:0 4px 20px rgba(0,0,0,.4);opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none;z-index:1000;}
-.toast.show{opacity:1;transform:translateY(0);}
-.loading{color:var(--text-dim);padding:30px;text-align:center;font-size:13px;}
-.photo-input-wrap{display:flex;align-items:center;gap:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:8px 10px;}
-.photo-input-wrap input[type=file]{color:var(--text-dim);font-size:12px;width:100%;}
-.photo-preview{width:44px;height:44px;border-radius:4px;object-fit:cover;border:1px solid var(--line);flex-shrink:0;display:none;}
-.photo-preview.show{display:block;}
-.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
-.photo-card{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;overflow:hidden;}
-.photo-card .photo-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);}
-.photo-card .photo-col{position:relative;background:var(--panel-2);}
-.photo-card .photo-col img{width:100%;height:120px;object-fit:cover;display:block;cursor:zoom-in;}
-.photo-card .photo-col img:hover{opacity:.85;}
-.photo-card .photo-col .no-photo{height:120px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:10.5px;text-align:center;padding:6px;}
-.photo-card .photo-col .cap{position:absolute;top:0;left:0;background:rgba(11,15,42,.8);color:var(--teal);font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;padding:2px 6px;}
-.photo-card .info{padding:10px;}
-.photo-card .info .meta{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);margin-bottom:4px;}
-.photo-card .info .desc{font-size:12.5px;color:var(--text);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:999;padding:36px;cursor:zoom-out;}
-.lightbox.show{display:flex;}
-.lightbox img{max-width:100%;max-height:100%;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.6);}
-.pallet-row{display:flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:8px;margin-bottom:8px;flex-wrap:wrap;}
-.pallet-row input[type=text]{flex:1;min-width:140px;}
-.pallet-row .photo-input-wrap{flex:1;min-width:180px;margin-bottom:0;}
-.pallet-row .pallet-status-select{flex:1;min-width:200px;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:9px 10px;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;}
-.pallet-row .remove-pallet-row{flex-shrink:0;}
-.pallet-list{display:flex;flex-wrap:wrap;gap:6px;padding:0 10px 10px;}
-.pallet-chip{display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:3px 8px 3px 3px;font-size:11px;color:var(--text-dim);}
-.pallet-chip img{width:26px;height:26px;object-fit:cover;border-radius:3px;cursor:zoom-in;}
-.pallet-chip .no-photo-sm{width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:var(--panel-2);border-radius:3px;font-size:9px;color:var(--text-dim);}
-.pallet-chip.has-note{border-color:var(--red);}
-.note-flag{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--red);white-space:nowrap;}
-.period-toggle{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-right:10px;}
-.period-btn{background:var(--panel-2);color:var(--text-dim);border:none;border-right:1px solid var(--line);padding:6px 12px;font-size:12px;font-family:'IBM Plex Mono',monospace;cursor:pointer;}
-.period-btn:last-child{border-right:none;}
-.period-btn.active{background:var(--blue);color:#fff;}
-.custom-range{display:flex;align-items:center;gap:6px;margin-left:6px;}
-.custom-range.hidden{display:none;}
-.custom-range input[type=date]{width:auto;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:5px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:12px;}
-.custom-range .to-sep{color:var(--text-dim);font-size:12px;}
-.project-summary-row{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
-.project-summary-row select{width:auto;min-width:200px;}
-.pl-proc-grid.pl-wide{grid-template-columns:repeat(auto-fit,minmax(340px,1fr));}
-.pl-find{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px;}
-.pl-find-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:12px;color:var(--text-dim);}
-.pl-cmp-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
-.pl-lbl{display:block;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;}
-.pl-lbl.bad{color:var(--red);} .pl-lbl.good{color:var(--green);}
-.pl-find input[type=file]{width:100%;font-size:11px;margin-top:6px;}
-.pl-thumb img{width:72px;height:72px;}
-.pl-cmp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:12px;}
-.pl-cmp-card{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:12px;}
-.pl-cmp-head{font-size:12.5px;margin-bottom:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
-.pl-cmp-text{font-size:12.5px;color:var(--text-dim);margin-bottom:8px;}
-.pl-cmp-imgs{display:flex;flex-direction:column;gap:6px;}
-.pl-cmp-imgs img{width:100%;max-height:220px;object-fit:contain;background:#0b1030;border-radius:6px;border:1px solid var(--line);cursor:zoom-in;}
-.pl-none{font-size:11.5px;color:var(--text-dim);padding:18px 0;text-align:center;border:1px dashed var(--line);border-radius:6px;}
-.pl-subnav{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;border-top:1px solid var(--line);padding-top:12px;}
-.pl-subbtn{background:var(--panel-2);border:1px solid var(--line);color:var(--text-dim);padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12.5px;font-family:'IBM Plex Sans',sans-serif;}
-.pl-subbtn:hover{color:var(--text);}
-.pl-subbtn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
-.pl-proc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:14px;}
-.pl-proc{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:12px;}
-.pl-proc-h{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--blue);margin-bottom:10px;font-size:14px;}
-.pl-thumbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
-.pl-thumb{position:relative;display:inline-block;}
-.pl-thumb img{width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid var(--line);cursor:zoom-in;}
-.pl-thumb button{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;border:none;background:var(--red);color:#fff;font-size:10px;cursor:pointer;line-height:1;}
-.mp-badge.b-ng{background:var(--red-dim);color:var(--red);}
-.kpi-grid:has(> .kpi:nth-child(5)){grid-template-columns:repeat(5,1fr);}
-@media(max-width:900px){.kpi-grid:has(> .kpi:nth-child(5)){grid-template-columns:repeat(2,1fr);}}
-.mp-pipeline{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:6px;}
-.mp-step{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:12px;position:relative;}
-.mp-step .seq{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);}
-.mp-step .nm{font-weight:600;margin:2px 0 8px;font-size:14px;}
-.mp-step.st-proses{border-color:var(--amber);background:linear-gradient(160deg,rgba(251,146,60,.14),var(--panel-2));}
-.mp-step.st-selesai{border-color:var(--green);background:linear-gradient(160deg,rgba(62,207,142,.12),var(--panel-2));}
-.mp-step .stbtn{width:100%;margin-bottom:8px;font-size:11px;padding:5px 8px;}
-.mp-step .nums{display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim);}
-.mp-step .nums b{font-family:'IBM Plex Mono',monospace;color:var(--text);}
-.mp-step .nums b.nc{color:var(--red);}
-.mp-badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;font-family:'IBM Plex Mono',monospace;}
-.mp-badge.b-belum{background:var(--panel);color:var(--text-dim);border:1px solid var(--line);}
-.mp-badge.b-proses{background:var(--amber-dim);color:var(--amber);}
-.mp-badge.b-selesai{background:var(--green-dim);color:var(--green);}
-#mpTable tr.clickable{cursor:pointer;} #mpTable tr.clickable:hover td{background:var(--panel-2);}
-.mp-prog{height:6px;background:var(--panel);border-radius:4px;overflow:hidden;min-width:80px;}
-.mp-prog > div{height:100%;background:var(--green);}
-.hotlist{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
-.hot-row{display:flex;align-items:center;gap:12px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;}
-.hot-row.rank-1{border-color:var(--red);background:linear-gradient(90deg, rgba(240,80,106,.18), transparent 70%);}
-.hot-row.rank-2{border-color:var(--amber);background:linear-gradient(90deg, rgba(251,146,60,.14), transparent 70%);}
-.hot-row.rank-3{border-color:var(--purple);background:linear-gradient(90deg, rgba(155,111,240,.12), transparent 70%);}
-.hot-rank{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:14px;width:30px;text-align:center;color:var(--text-dim);flex-shrink:0;}
-.hot-row.rank-1 .hot-rank{color:var(--red);font-size:16px;}
-.hot-row.rank-2 .hot-rank{color:var(--amber);}
-.hot-row.rank-3 .hot-rank{color:var(--purple);}
-.hot-info{flex:1;min-width:0;}
-.hot-name{font-size:13px;font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:6px;}
-.hot-sub{font-size:10.5px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;margin-bottom:5px;}
-.hot-fire{font-size:12px;}
-.hot-thumb{width:40px;height:40px;border-radius:4px;object-fit:cover;flex-shrink:0;cursor:zoom-in;border:1px solid var(--line);}
-.hot-thumb-empty{display:flex;align-items:center;justify-content:center;background:var(--panel);color:var(--text-dim);font-size:9px;font-family:'IBM Plex Mono',monospace;cursor:default;}
-.hot-bar-wrap{height:6px;background:var(--line);border-radius:3px;overflow:hidden;}
-.hot-bar{height:100%;background:linear-gradient(90deg,var(--red),var(--pink));border-radius:3px;}
-.hot-stats{text-align:right;flex-shrink:0;}
-.hot-reject{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--red);font-weight:700;}
-.hot-pct{font-size:11px;color:var(--text-dim);}
-.chart-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;height:100%;}
-@media(max-width:900px){.chart-grid{grid-template-columns:1fr;}}
-.chart-box{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:12px;height:220px;position:relative;}
-.chart-box canvas{max-height:165px;}
-.dash-grid .chart-box{height:100%;min-height:210px;}
-th.sortable{cursor:pointer;user-select:none;white-space:nowrap;}
-th.sortable:hover{color:var(--blue);}
-th.sortable .arrow{display:inline-block;margin-left:3px;font-size:9px;color:var(--blue);}
-tr.high-reject td{background:rgba(240,80,106,.10);}
-tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
-.filters label.chk{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-dim);background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:0 10px;text-transform:none;font-family:'IBM Plex Sans',sans-serif;letter-spacing:0;}
-.filters label.chk input{width:auto;margin:0;}
-.table-photos{display:flex;gap:4px;flex-wrap:nowrap;}
-.table-thumb{width:30px;height:30px;border-radius:4px;object-fit:cover;border:1px solid var(--line);cursor:zoom-in;flex-shrink:0;}
-.table-thumb:hover{border-color:var(--blue);}
-.table-thumb-empty{width:30px;height:30px;border-radius:4px;display:flex;align-items:center;justify-content:center;background:var(--panel-2);color:var(--text-dim);font-size:11px;flex-shrink:0;}
+.sidebar .sb-brand{
+  width:44px;height:44px;border-radius:14px;background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin-bottom:14px; box-shadow:0 4px 10px rgba(0,0,0,.08);
+}
+.sidebar .sb-btn{
+  width:46px;height:46px;border-radius:14px;border:none;background:transparent;
+  color:rgba(255,255,255,.75); font-size:20px; cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s; position:relative;
+}
+.sidebar .sb-btn:hover{ background:rgba(255,255,255,.15); color:#fff; }
+.sidebar .sb-btn.active{ background:#fff; color:var(--sidebar); box-shadow:0 4px 10px rgba(0,0,0,.10); }
+.sidebar .sb-spacer{ flex:1; }
+.sidebar .sb-exit{ color:rgba(255,255,255,.7); }
 
-.plog-list{display:flex;flex-direction:column;gap:8px;}
-.plog-row{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;overflow:hidden;transition:border-color .15s;}
-.plog-row:hover{border-color:#3a4590;}
-.plog-row.st-open{border-left:3px solid var(--red);}
-.plog-row.st-progress{border-left:3px solid var(--amber);}
-.plog-row.st-closed{border-left:3px solid var(--green);}
-.plog-summary{display:grid;grid-template-columns:26px 60px 1fr auto auto;gap:10px;align-items:center;padding:10px 12px;cursor:pointer;user-select:none;}
-.plog-summary:hover{background:rgba(255,255,255,.03);}
-.plog-arrow{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);transition:transform .2s;text-align:center;}
-.plog-row.expanded .plog-arrow{transform:rotate(90deg);}
-.plog-badge-no{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:2px 6px;text-align:center;}
-.plog-title-mini{font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.plog-title-mini b{font-weight:600;}
-.plog-tag{font-size:10px;padding:2px 6px;border-radius:99px;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
-.plog-tag.ph-pp{background:var(--purple-dim);color:var(--purple);}
-.plog-tag.ph-prod{background:var(--blue-dim);color:var(--blue);}
-.plog-tag.ph-insp{background:var(--teal-dim);color:var(--teal);}
-.plog-tag.cat{background:var(--panel);color:var(--text-dim);border:1px solid var(--line);}
-.plog-tag.st-open{background:var(--red-dim);color:var(--red);}
-.plog-tag.st-progress{background:var(--amber-dim);color:var(--amber);}
-.plog-tag.st-closed{background:var(--green-dim);color:var(--green);}
-.plog-summary-meta{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);text-align:right;white-space:nowrap;}
-.plog-actions-mini{display:flex;gap:4px;}
-.plog-actions-mini button{background:transparent;border:1px solid var(--line);color:var(--text-dim);padding:3px 8px;font-size:10.5px;border-radius:4px;cursor:pointer;}
-.plog-actions-mini button:hover{color:var(--text);border-color:var(--text-dim);}
-.plog-actions-mini button.danger:hover{color:var(--red);border-color:var(--red);}
-.plog-body-wrap{display:none;padding:0 14px 14px;border-top:1px solid var(--line);}
-.plog-row.expanded .plog-body-wrap{display:block;}
-.plog-body{margin-top:12px;}
-.plog-body-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-@media(max-width:700px){.plog-body-grid{grid-template-columns:1fr;}}
-.plog-box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:9px 11px;}
-.plog-box h4{margin:0 0 6px;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-dim);}
-.plog-box p{margin:0;font-size:12.5px;line-height:1.5;white-space:pre-wrap;word-break:break-word;}
-.plog-box.bad h4{color:var(--red);}
-.plog-box.good h4{color:var(--green);}
-.plog-box.warn h4{color:var(--amber);}
-.plog-box.prev h4{color:var(--purple);}
-.plog-imgs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-.plog-imgs img{width:72px;height:72px;object-fit:cover;border-radius:5px;border:1px solid var(--line);cursor:zoom-in;}
-.plog-imgs img:hover{opacity:.85;}
-.plog-meta-bar{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);padding-bottom:8px;border-bottom:1px dashed var(--line);}
-.plog-meta-bar span{white-space:nowrap;}
-.plog-meta-bar b{color:var(--text);}
+/* HEADER */
+header.top{
+  margin-left:78px; background:transparent; border:none; padding:0;
+  position:sticky; top:0; z-index:40;
+  backdrop-filter:blur(12px);
+}
+.top-inner{
+  max-width:1400px; margin:0 auto; padding:18px 26px 10px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+}
+.brand{ display:flex; align-items:baseline; gap:10px; }
+.brand .tag{
+  font-family:'Nunito',sans-serif; font-size:11px; font-weight:700;
+  color:#fff; background:var(--sidebar); padding:3px 9px; border-radius:8px; letter-spacing:.03em;
+}
+.brand .title-brand{ font-weight:800; font-size:16px; color:var(--text); }
+.week-nav{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.week-nav button{
+  background:#fff; border:none; color:var(--text); width:32px; height:32px;
+  border-radius:10px; cursor:pointer; font-size:14px; font-weight:700;
+  box-shadow:var(--shadow-soft);
+}
+.week-nav button:hover{ color:var(--blue); transform:translateY(-1px); }
+.week-range{
+  font-family:'Nunito',sans-serif; font-size:12.5px; font-weight:700;
+  color:var(--text); background:#fff; border:none; padding:7px 14px; border-radius:10px;
+  min-width:180px; text-align:center; box-shadow:var(--shadow-soft);
+}
+.period-toggle{
+  display:flex; background:#fff; border-radius:10px; padding:3px; gap:2px;
+  box-shadow:var(--shadow-soft); margin-right:8px;
+}
+.period-btn{
+  background:transparent; color:var(--text-dim); border:none;
+  padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer; border-radius:8px;
+  font-family:'Nunito',sans-serif;
+}
+.period-btn.active{ background:var(--blue); color:#fff; }
+.custom-range{ display:flex; align-items:center; gap:6px; margin-left:6px; }
+.custom-range.hidden{ display:none; }
+.custom-range input[type=date]{
+  width:auto; background:#fff; border:none; color:var(--text);
+  padding:6px 10px; border-radius:10px; font-family:'Nunito',sans-serif; font-size:12px; font-weight:600;
+  box-shadow:var(--shadow-soft);
+}
+.custom-range .to-sep{ color:var(--text-dim); font-size:12px; }
+.title-bar{ display:none; }
+.hazard{ display:none; }
 
-.plog-cm-block{background:rgba(78,143,245,.05);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:14px;}
-.plog-cm-block .plog-cm-head{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--blue);font-size:13px;margin-bottom:10px;border-bottom:1px solid var(--line);padding-bottom:6px;}
-.mp-prog-row td{background:var(--panel-2);border-top:1px solid var(--line);font-weight:600;cursor:pointer;}
-.mp-prog-row:hover td{background:var(--blue-dim);}
-.mp-prog-row .pname{display:flex;align-items:center;gap:8px;color:var(--teal);}
-.mp-prog-row .arr{display:inline-block;width:12px;font-size:10px;color:var(--text-dim);transition:transform .15s;}
-.mp-prog-row.collapsed .arr{transform:rotate(-90deg);}
-.mp-prog-row .pcount{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--text-dim);}
-.mp-sub-row td:first-child{padding-left:34px;}
-.mp-sub-row.hide{display:none;}
-.mp-grp-row td{background:var(--panel-2);border-top:1px solid var(--line);font-weight:600;color:var(--teal);}
+/* TABS */
+nav.tabs{
+  max-width:1400px; margin:0 auto; padding:0 26px 14px; display:flex; gap:6px;
+  border:none; overflow-x:auto;
+}
+nav.tabs button{
+  background:#fff; border:none; color:var(--text-dim);
+  padding:9px 16px; font-family:'Nunito',sans-serif; font-weight:700; font-size:12.5px;
+  cursor:pointer; border-radius:12px; white-space:nowrap; box-shadow:var(--shadow-soft);
+  transition:all .2s;
+}
+nav.tabs button.active{ background:var(--blue); color:#fff; box-shadow:0 6px 16px rgba(74,159,224,.35); }
+nav.tabs button:hover:not(.active){ color:var(--text); transform:translateY(-1px); }
+
+/* MAIN */
+main{ max-width:1400px; margin:0 auto; padding:6px 26px 60px 104px; }
+@media(max-width:900px){ main{ padding-left:88px; } .sidebar{ width:64px; } }
+.hidden{ display:none !important; }
+
+/* PANEL */
+.panel{
+  background:var(--card); border:none; border-radius:20px; padding:20px 22px;
+  margin-bottom:16px; box-shadow:var(--shadow); display:flex; flex-direction:column;
+}
+.panel h2{
+  font-family:'Nunito',sans-serif; font-weight:800; text-transform:none; letter-spacing:0;
+  font-size:14.5px; margin:0 0 14px; color:var(--text);
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+}
+.panel h2 .n{ color:var(--text-dim); font-weight:600; text-transform:none; font-size:12px; }
+
+/* DASH GRID */
+.dash-grid{ display:grid; grid-template-columns:repeat(12,1fr); gap:16px; margin-bottom:16px; align-items:stretch; }
+.dash-grid .panel{ margin-bottom:0; height:100%; }
+.g-3{grid-column:span 3;} .g-4{grid-column:span 4;} .g-5{grid-column:span 5;} .g-6{grid-column:span 6;}
+.g-7{grid-column:span 7;} .g-8{grid-column:span 8;} .g-9{grid-column:span 9;} .g-12{grid-column:span 12;}
+@media(max-width:1100px){ .g-3,.g-4,.g-5{grid-column:span 6;} .g-7,.g-8,.g-9{grid-column:span 12;} }
+@media(max-width:700px){ .dash-grid{grid-template-columns:1fr;} .g-3,.g-4,.g-5,.g-6,.g-7,.g-8,.g-9,.g-12{grid-column:span 1;} }
+
+/* KPI */
+.kpi-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:0; }
+.panel .kpi-grid:last-child{ margin-bottom:0; }
+.dash-grid .kpi-grid{ grid-template-columns:repeat(2,1fr); gap:14px; margin-bottom:0; flex:1; align-content:stretch; }
+.dash-grid .kpi-grid .kpi{ display:flex; flex-direction:column; justify-content:center; }
+@media(max-width:900px){ .kpi-grid{ grid-template-columns:repeat(2,1fr); } }
+
+.kpi{
+  background:var(--card-soft); border:none; border-radius:16px; padding:14px 16px;
+  position:relative; overflow:hidden;
+}
+.kpi::before{ content:none; }
+.kpi-label{
+  font-family:'Nunito',sans-serif; font-weight:700; text-transform:none; letter-spacing:0;
+  font-size:11px; color:var(--text-dim); margin-bottom:6px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.kpi-value{
+  font-family:'Nunito',sans-serif; font-size:26px; font-weight:800;
+  color:var(--text); line-height:1.15; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.kpi-sub{ font-size:11px; color:var(--text-soft); margin-top:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:600; }
+
+.kpi.blue{ background:var(--blue-soft); } .kpi.blue .kpi-value{ color:var(--blue); }
+.kpi.purple{ background:var(--purple-soft); } .kpi.purple .kpi-value{ color:var(--purple); }
+.kpi.pink{ background:var(--pink-soft); } .kpi.pink .kpi-value{ color:var(--pink); }
+.kpi.teal{ background:var(--teal-soft); } .kpi.teal .kpi-value{ color:var(--teal); }
+.kpi.red{ background:var(--red-soft); } .kpi.red .kpi-value{ color:var(--red); }
+.kpi.green{ background:var(--green-soft); } .kpi.green .kpi-value{ color:var(--green); }
+.kpi.amber{ background:var(--amber-soft); } .kpi.amber .kpi-value{ color:var(--amber); }
+
+/* BARLIST */
+.barlist{ display:flex; flex-direction:column; gap:12px; flex:1; justify-content:center; }
+.barrow{ display:grid; grid-template-columns:110px 1fr 40px; align-items:center; gap:12px; }
+.barrow .lbl{ font-size:12px; color:var(--text-dim); font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.barrow .track{ background:#eef3f7; border-radius:6px; height:12px; overflow:hidden; }
+.barrow .fill{ background:linear-gradient(90deg, var(--blue), var(--teal)); height:100%; border-radius:6px; }
+.barrow .val{ font-family:'Nunito',sans-serif; font-size:13px; font-weight:800; text-align:right; color:var(--text); }
+
+.mtag{
+  font-family:'Nunito',sans-serif; font-size:11px; font-weight:700;
+  background:var(--blue-soft); border:none; color:var(--blue);
+  padding:3px 9px; border-radius:8px; letter-spacing:0;
+}
+
+/* FORM */
+.form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media(max-width:700px){ .form-grid{ grid-template-columns:1fr; } }
+label{
+  display:block; font-size:11.5px; color:var(--text-dim); margin-bottom:5px;
+  font-family:'Nunito',sans-serif; font-weight:700; letter-spacing:0; text-transform:none;
+}
+input[type=text],input[type=date],input[type=number],select,textarea{
+  width:100%; background:var(--card-soft); border:1.5px solid var(--line); color:var(--text);
+  padding:10px 12px; border-radius:12px; font-family:'Nunito',sans-serif; font-size:13.5px; font-weight:600;
+  transition:all .15s;
+}
+textarea{ resize:vertical; min-height:70px; }
+input:focus,select:focus,textarea:focus{ outline:none; border-color:var(--blue); background:#fff; box-shadow:0 0 0 3px var(--blue-soft); }
+.field{ margin-bottom:14px; }
+
+.btn{
+  background:linear-gradient(135deg, var(--blue), var(--teal)); color:#fff; border:none;
+  padding:11px 20px; border-radius:12px; font-family:'Nunito',sans-serif;
+  text-transform:none; letter-spacing:0; font-weight:800; font-size:13px; cursor:pointer;
+  box-shadow:0 6px 14px rgba(74,159,224,.28); transition:all .2s;
+}
+.btn:hover{ filter:brightness(1.06); transform:translateY(-1px); }
+.btn.ghost{ background:var(--card-soft); color:var(--text-dim); border:none; box-shadow:none; }
+.btn.ghost:hover{ color:var(--text); background:#eef3f7; }
+.btn.danger{ background:var(--red-soft); color:var(--red); box-shadow:none; }
+.btn.danger:hover{ background:var(--red); color:#fff; }
+.btn.small{ padding:7px 12px; font-size:11.5px; border-radius:10px; }
+
+/* TABLE */
+table{ width:100%; border-collapse:separate; border-spacing:0; font-size:13px; }
+th{
+  text-align:left; font-family:'Nunito',sans-serif; font-weight:800; text-transform:none; letter-spacing:0;
+  font-size:11.5px; color:var(--text-dim); border-bottom:1.5px solid var(--line); padding:10px 10px;
+}
+td{ padding:11px 10px; border-bottom:1px solid var(--line); vertical-align:top; font-weight:600; }
+tr:hover td{ background:var(--card-soft); }
+.desc-cell{ max-width:280px; color:var(--text-dim); }
+
+/* FILTERS */
+.filters{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; align-items:center; }
+.filters select,.filters input{ width:auto; min-width:130px; }
+.filters label.chk{
+  display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);
+  background:var(--card-soft); border:none; border-radius:10px; padding:0 12px; height:38px;
+  text-transform:none; font-family:'Nunito',sans-serif; font-weight:700; letter-spacing:0;
+}
+.filters label.chk input{ width:auto; margin:0; }
+
+/* EMPTY / TOAST */
+.empty{ color:var(--text-soft); font-size:13px; padding:24px 0; text-align:center; font-weight:600; }
+.loading{ color:var(--text-dim); padding:40px; text-align:center; font-size:13px; font-weight:600; }
+.toast{
+  position:fixed; bottom:24px; right:24px; background:#fff; color:var(--text);
+  border:none; padding:12px 20px; border-radius:14px; font-size:13px; font-weight:700;
+  box-shadow:0 12px 32px rgba(43,58,85,.18); opacity:0; transform:translateY(10px);
+  transition:.25s; pointer-events:none; z-index:1000;
+}
+.toast.show{ opacity:1; transform:translateY(0); }
+
+/* PHOTO */
+.photo-input-wrap{
+  display:flex; align-items:center; gap:10px; background:var(--card-soft);
+  border:1.5px solid var(--line); border-radius:12px; padding:9px 12px;
+}
+.photo-input-wrap input[type=file]{ color:var(--text-dim); font-size:12px; width:100%; }
+.photo-preview{ width:44px; height:44px; border-radius:10px; object-fit:cover; border:none; flex-shrink:0; display:none; }
+.photo-preview.show{ display:block; }
+.gallery-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:16px; }
+.photo-card{ background:var(--card-soft); border:none; border-radius:16px; overflow:hidden; box-shadow:var(--shadow-soft); }
+.photo-card .photo-row{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); }
+.photo-card .photo-col{ position:relative; background:#fff; }
+.photo-card .photo-col img{ width:100%; height:120px; object-fit:cover; display:block; cursor:zoom-in; }
+.photo-card .photo-col img:hover{ opacity:.9; }
+.photo-card .photo-col .no-photo{ height:120px; display:flex; align-items:center; justify-content:center; color:var(--text-soft); font-size:10.5px; text-align:center; padding:6px; font-weight:600; }
+.photo-card .photo-col .cap{ position:absolute; top:0; left:0; background:rgba(74,159,224,.9); color:#fff; font-family:'Nunito',sans-serif; font-size:10px; font-weight:700; text-transform:none; letter-spacing:0; padding:3px 8px; border-radius:0 0 10px 0; }
+.photo-card .info{ padding:12px; }
+.photo-card .info .meta{ font-family:'Nunito',sans-serif; font-size:11px; color:var(--text-dim); margin-bottom:6px; font-weight:700; }
+.photo-card .info .desc{ font-size:12.5px; color:var(--text); line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; font-weight:600; }
+
+.lightbox{ position:fixed; inset:0; background:rgba(20,30,45,.9); display:none; align-items:center; justify-content:center; z-index:999; padding:36px; cursor:zoom-out; }
+.lightbox.show{ display:flex; }
+.lightbox img{ max-width:100%; max-height:100%; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,.5); }
+
+/* PALLET */
+.pallet-row{ display:flex; align-items:center; gap:8px; background:var(--card-soft); border:1.5px solid var(--line); border-radius:12px; padding:10px; margin-bottom:8px; flex-wrap:wrap; }
+.pallet-row input[type=text]{ flex:1; min-width:140px; }
+.pallet-row .photo-input-wrap{ flex:1; min-width:180px; margin-bottom:0; }
+.pallet-row .pallet-status-select{ flex:1; min-width:200px; background:var(--card-soft); border:1.5px solid var(--line); color:var(--text); padding:10px 12px; border-radius:12px; font-family:'Nunito',sans-serif; font-size:13.5px; font-weight:600; }
+.pallet-row .remove-pallet-row{ flex-shrink:0; }
+.pallet-list{ display:flex; flex-wrap:wrap; gap:6px; padding:0 12px 12px; }
+.pallet-chip{ display:flex; align-items:center; gap:6px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:4px 10px 4px 4px; font-size:11px; color:var(--text-dim); font-weight:700; }
+.pallet-chip img{ width:26px; height:26px; object-fit:cover; border-radius:7px; cursor:zoom-in; }
+.pallet-chip .no-photo-sm{ width:26px; height:26px; display:flex; align-items:center; justify-content:center; background:var(--card-soft); border-radius:7px; font-size:9px; color:var(--text-soft); }
+.pallet-chip.has-note{ border-color:var(--red); }
+.note-flag{ font-family:'Nunito',sans-serif; font-size:9.5px; color:var(--red); white-space:nowrap; font-weight:800; }
+
+/* MASTER */
+.master-cols{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+@media(max-width:900px){ .master-cols{ grid-template-columns:repeat(2,1fr); } }
+.master-col h3{ font-family:'Nunito',sans-serif; font-weight:800; text-transform:none; font-size:13px; color:var(--blue); margin:0 0 10px; letter-spacing:0; }
+.master-list{ list-style:none; margin:0 0 10px; padding:0; display:flex; flex-direction:column; gap:6px; }
+.master-list li{ display:flex; justify-content:space-between; align-items:center; background:var(--card-soft); border:none; border-radius:10px; padding:8px 12px; font-size:12.5px; font-weight:600; }
+.master-list li button{ background:none; border:none; color:var(--text-soft); cursor:pointer; font-size:14px; line-height:1; }
+.master-list li button:hover{ color:var(--red); }
+.addrow{ display:flex; gap:6px; }
+.addrow input{ flex:1; }
+
+/* CHART BOX */
+.chart-box{ background:transparent; border:none; border-radius:14px; padding:4px; height:220px; position:relative; }
+.chart-box canvas{ max-height:180px; }
+.dash-grid .chart-box{ height:100%; min-height:210px; }
+
+/* HOTLIST */
+.hotlist{ display:flex; flex-direction:column; gap:10px; margin-top:6px; }
+.hot-row{ display:flex; align-items:center; gap:12px; background:var(--card-soft); border:none; border-radius:14px; padding:12px 14px; }
+.hot-row.rank-1{ background:var(--red-soft); }
+.hot-row.rank-2{ background:var(--amber-soft); }
+.hot-row.rank-3{ background:var(--purple-soft); }
+.hot-rank{ font-family:'Nunito',sans-serif; font-weight:800; font-size:15px; width:32px; text-align:center; color:var(--text-soft); flex-shrink:0; }
+.hot-row.rank-1 .hot-rank{ color:var(--red); }
+.hot-row.rank-2 .hot-rank{ color:var(--amber); }
+.hot-row.rank-3 .hot-rank{ color:var(--purple); }
+.hot-info{ flex:1; min-width:0; }
+.hot-name{ font-size:13px; font-weight:800; margin-bottom:3px; display:flex; align-items:center; gap:6px; color:var(--text); }
+.hot-sub{ font-size:11px; color:var(--text-dim); font-family:'Nunito',sans-serif; font-weight:600; margin-bottom:6px; }
+.hot-fire{ font-size:12px; }
+.hot-thumb{ width:42px; height:42px; border-radius:10px; object-fit:cover; flex-shrink:0; cursor:zoom-in; border:none; }
+.hot-thumb-empty{ display:flex; align-items:center; justify-content:center; background:#fff; color:var(--text-soft); font-size:10px; font-family:'Nunito',sans-serif; font-weight:800; cursor:default; }
+.hot-bar-wrap{ height:8px; background:#eef3f7; border-radius:4px; overflow:hidden; }
+.hot-bar{ height:100%; background:linear-gradient(90deg,var(--pink),var(--red)); border-radius:4px; }
+.hot-stats{ text-align:right; flex-shrink:0; }
+.hot-reject{ font-family:'Nunito',sans-serif; font-size:14px; color:var(--red); font-weight:800; }
+.hot-pct{ font-size:11px; color:var(--text-dim); font-weight:600; }
+
+/* CHART GRID */
+.chart-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:16px; height:100%; }
+@media(max-width:900px){ .chart-grid{ grid-template-columns:1fr; } }
+
+th.sortable{ cursor:pointer; user-select:none; white-space:nowrap; }
+th.sortable:hover{ color:var(--blue); }
+th.sortable .arrow{ display:inline-block; margin-left:3px; font-size:9px; color:var(--blue); }
+tr.high-reject td{ background:var(--red-soft); }
+tr.high-reject td.mono.pct-cell{ color:var(--red); font-weight:800; }
+
+.table-photos{ display:flex; gap:4px; flex-wrap:nowrap; }
+.table-thumb{ width:32px; height:32px; border-radius:8px; object-fit:cover; border:none; cursor:zoom-in; flex-shrink:0; }
+.table-thumb:hover{ box-shadow:0 0 0 2px var(--blue); }
+.table-thumb-empty{ width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:var(--card-soft); color:var(--text-soft); font-size:11px; flex-shrink:0; font-weight:700; }
+
+/* PROBLEM LOG */
+.plog-list{ display:flex; flex-direction:column; gap:10px; }
+.plog-row{ background:var(--card-soft); border:none; border-radius:14px; overflow:hidden; transition:all .2s; }
+.plog-row:hover{ box-shadow:var(--shadow-soft); }
+.plog-row.st-open{ border-left:4px solid var(--red); }
+.plog-row.st-progress{ border-left:4px solid var(--amber); }
+.plog-row.st-closed{ border-left:4px solid var(--green); }
+.plog-summary{ display:grid; grid-template-columns:26px 60px 1fr auto auto; gap:10px; align-items:center; padding:12px 14px; cursor:pointer; user-select:none; }
+.plog-summary:hover{ background:#fff; }
+.plog-arrow{ font-family:'Nunito',sans-serif; font-size:12px; color:var(--text-dim); transition:transform .2s; text-align:center; }
+.plog-row.expanded .plog-arrow{ transform:rotate(90deg); }
+.plog-badge-no{ font-family:'Nunito',sans-serif; font-size:11px; color:var(--text-dim); background:#fff; border:none; border-radius:8px; padding:3px 8px; text-align:center; font-weight:800; }
+.plog-title-mini{ font-size:13px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; }
+.plog-title-mini b{ font-weight:800; }
+.plog-tag{ font-size:10.5px; padding:3px 9px; border-radius:8px; font-family:'Nunito',sans-serif; font-weight:800; white-space:nowrap; }
+.plog-tag.ph-pp{ background:var(--purple-soft); color:var(--purple); }
+.plog-tag.ph-prod{ background:var(--blue-soft); color:var(--blue); }
+.plog-tag.ph-insp{ background:var(--teal-soft); color:var(--teal); }
+.plog-tag.cat{ background:#eef3f7; color:var(--text-dim); }
+.plog-tag.st-open{ background:var(--red-soft); color:var(--red); }
+.plog-tag.st-progress{ background:var(--amber-soft); color:var(--amber); }
+.plog-tag.st-closed{ background:var(--green-soft); color:var(--green); }
+.plog-summary-meta{ font-family:'Nunito',sans-serif; font-size:11px; color:var(--text-dim); text-align:right; white-space:nowrap; font-weight:700; }
+.plog-actions-mini{ display:flex; gap:6px; }
+.plog-actions-mini button{ background:#fff; border:none; color:var(--text-dim); padding:4px 10px; font-size:11px; border-radius:8px; cursor:pointer; font-weight:700; box-shadow:var(--shadow-soft); }
+.plog-actions-mini button:hover{ color:var(--blue); }
+.plog-actions-mini button.danger:hover{ color:var(--red); }
+.plog-body-wrap{ display:none; padding:0 16px 16px; border-top:1px solid var(--line); background:#fff; }
+.plog-row.expanded .plog-body-wrap{ display:block; }
+.plog-body{ margin-top:14px; }
+.plog-body-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media(max-width:700px){ .plog-body-grid{ grid-template-columns:1fr; } }
+.plog-box{ background:var(--card-soft); border:none; border-radius:12px; padding:12px 14px; }
+.plog-box h4{ margin:0 0 6px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); font-weight:800; }
+.plog-box p{ margin:0; font-size:12.5px; line-height:1.5; white-space:pre-wrap; word-break:break-word; color:var(--text); font-weight:600; }
+.plog-box.bad h4{ color:var(--red); }
+.plog-box.good h4{ color:var(--green); }
+.plog-box.warn h4{ color:var(--amber); }
+.plog-box.prev h4{ color:var(--purple); }
+.plog-imgs{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.plog-imgs img{ width:76px; height:76px; object-fit:cover; border-radius:10px; border:none; cursor:zoom-in; }
+.plog-imgs img:hover{ opacity:.9; }
+.plog-meta-bar{ display:flex; flex-wrap:wrap; gap:14px; margin-bottom:12px; font-family:'Nunito',sans-serif; font-size:11.5px; color:var(--text-dim); padding-bottom:10px; border-bottom:1px dashed var(--line); font-weight:600; }
+.plog-meta-bar span{ white-space:nowrap; }
+.plog-meta-bar b{ color:var(--text); font-weight:800; }
+
+.plog-cm-block{ background:var(--blue-soft); border:none; border-radius:14px; padding:14px 16px; margin-bottom:14px; }
+.plog-cm-block .plog-cm-head{ font-family:'Nunito',sans-serif; text-transform:none; letter-spacing:0; color:var(--blue); font-size:13px; margin-bottom:10px; border-bottom:1px solid rgba(74,159,224,.2); padding-bottom:8px; font-weight:800; }
+
+/* MONITORING */
+.mp-pipeline{ display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; margin-top:6px; }
+.mp-step{ background:var(--card-soft); border:none; border-radius:14px; padding:14px; position:relative; }
+.mp-step.st-proses{ background:var(--amber-soft); }
+.mp-step.st-selesai{ background:var(--green-soft); }
+.mp-step .seq{ font-family:'Nunito',sans-serif; font-size:11px; color:var(--text-dim); font-weight:700; }
+.mp-step .nm{ font-weight:800; margin:2px 0 8px; font-size:14px; }
+.mp-step .stbtn{ width:100%; margin-bottom:8px; font-size:11px; padding:6px 8px; }
+.mp-step .nums{ display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim); font-weight:600; }
+.mp-step .nums b{ font-family:'Nunito',sans-serif; color:var(--text); font-weight:800; }
+.mp-step .nums b.nc{ color:var(--red); }
+.mp-badge{ display:inline-block; font-size:11px; padding:3px 10px; border-radius:8px; font-family:'Nunito',sans-serif; font-weight:800; }
+.mp-badge.b-belum{ background:#eef3f7; color:var(--text-dim); }
+.mp-badge.b-proses{ background:var(--amber-soft); color:var(--amber); }
+.mp-badge.b-selesai{ background:var(--green-soft); color:var(--green); }
+.mp-badge.b-ng{ background:var(--red-soft); color:var(--red); }
+#mpTable tr.clickable{ cursor:pointer; }
+#mpTable tr.clickable:hover td{ background:var(--card-soft); }
+.mp-prog{ height:6px; background:#eef3f7; border-radius:4px; overflow:hidden; min-width:80px; }
+.mp-prog > div{ height:100%; background:var(--green); }
+.mp-prog-row td{ background:var(--card-soft); border-top:1px solid var(--line); font-weight:800; cursor:pointer; }
+.mp-prog-row:hover td{ background:var(--blue-soft); }
+.mp-prog-row .pname{ display:flex; align-items:center; gap:8px; color:var(--teal); }
+.mp-prog-row .arr{ display:inline-block; width:12px; font-size:10px; color:var(--text-dim); transition:transform .15s; }
+.mp-prog-row.collapsed .arr{ transform:rotate(-90deg); }
+.mp-prog-row .pcount{ font-family:'Nunito',sans-serif; font-size:11px; font-weight:700; color:var(--text-dim); }
+.mp-sub-row td:first-child{ padding-left:34px; }
+.mp-sub-row.hide{ display:none; }
+.mp-grp-row td{ background:var(--card-soft); border-top:1px solid var(--line); font-weight:800; color:var(--teal); }
+
+/* PILOT */
+.pl-proc-grid.pl-wide{ grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); }
+.pl-find{ background:#fff; border:none; border-radius:12px; padding:12px; margin-bottom:10px; box-shadow:var(--shadow-soft); }
+.pl-find-h{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:12px; color:var(--text-dim); font-weight:700; }
+.pl-cmp-cols{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px; }
+.pl-lbl{ display:block; font-size:11px; font-weight:800; letter-spacing:0; text-transform:none; margin-bottom:5px; }
+.pl-lbl.bad{ color:var(--red); }
+.pl-lbl.good{ color:var(--green); }
+.pl-find input[type=file]{ width:100%; font-size:11px; margin-top:6px; }
+.pl-thumb img{ width:72px; height:72px; }
+.pl-cmp-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:14px; }
+.pl-cmp-card{ background:var(--card-soft); border:none; border-radius:14px; padding:14px; }
+.pl-cmp-head{ font-size:13px; margin-bottom:8px; display:flex; gap:6px; align-items:center; flex-wrap:wrap; font-weight:700; }
+.pl-cmp-text{ font-size:12.5px; color:var(--text-dim); margin-bottom:10px; font-weight:600; }
+.pl-cmp-imgs{ display:flex; flex-direction:column; gap:6px; }
+.pl-cmp-imgs img{ width:100%; max-height:220px; object-fit:contain; background:#fff; border-radius:10px; border:none; cursor:zoom-in; }
+.pl-none{ font-size:11.5px; color:var(--text-soft); padding:18px 0; text-align:center; border:1.5px dashed var(--line-2); border-radius:10px; font-weight:600; }
+.pl-subnav{ display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; border-top:1px solid var(--line); padding-top:14px; }
+.pl-subbtn{ background:#fff; border:none; color:var(--text-dim); padding:8px 14px; border-radius:10px; cursor:pointer; font-size:12.5px; font-family:'Nunito',sans-serif; font-weight:700; box-shadow:var(--shadow-soft); }
+.pl-subbtn:hover{ color:var(--text); }
+.pl-subbtn.active{ background:var(--blue); color:#fff; box-shadow:0 6px 14px rgba(74,159,224,.3); }
+.pl-proc-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin-bottom:16px; }
+.pl-proc{ background:var(--card-soft); border:none; border-radius:14px; padding:14px; }
+.pl-proc-h{ font-family:'Nunito',sans-serif; text-transform:none; letter-spacing:0; color:var(--blue); margin-bottom:12px; font-size:14px; font-weight:800; }
+.pl-thumbs{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.pl-thumb{ position:relative; display:inline-block; }
+.pl-thumb img{ width:64px; height:64px; object-fit:cover; border-radius:10px; border:none; cursor:zoom-in; }
+.pl-thumb button{ position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; border:none; background:var(--red); color:#fff; font-size:11px; cursor:pointer; line-height:1; box-shadow:0 2px 6px rgba(240,104,124,.4); }
+
+.project-summary-row{ display:flex; gap:10px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
+.project-summary-row select{ width:auto; min-width:200px; }
+
+.kpi-grid:has(> .kpi:nth-child(5)){ grid-template-columns:repeat(5,1fr); }
+@media(max-width:900px){ .kpi-grid:has(> .kpi:nth-child(5)){ grid-template-columns:repeat(2,1fr); } }
 </style>
 </head>
 <body>
 
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-brand">🏭</div>
+  <button class="sb-btn active" data-tab="ringkasan" title="Ringkasan">🏠</button>
+  <button class="sb-btn" data-tab="pilot" title="Monitoring Pilot">🎯</button>
+  <button class="sb-btn" data-tab="monitor" title="Rekap NC">📊</button>
+  <button class="sb-btn" data-tab="problemlog" title="Problem Log">📋</button>
+  <button class="sb-btn" data-tab="input" title="Input Harian">➕</button>
+  <button class="sb-btn" data-tab="galeri" title="Galeri Foto">📷</button>
+  <button class="sb-btn" data-tab="data" title="Data Lengkap">🗂️</button>
+  <button class="sb-btn" data-tab="master" title="Master Data">⚙️</button>
+  <div class="sb-spacer"></div>
+  <button class="sb-btn sb-exit" title="Keluar">⏻</button>
+</aside>
+
 <header class="top">
-  <div class="title-bar">
-    <h1 class="site-title display">Panel Problem Produksi</h1>
-  </div>
   <div class="top-inner">
-    <div class="brand"><span class="tag">LANTAI PRODUKSI</span></div>
+    <div class="brand">
+      <span class="tag">PRODUKSI</span>
+      <span class="title-brand">Panel Problem Produksi</span>
+    </div>
     <div class="week-nav">
       <div class="period-toggle" id="periodToggle">
         <button class="period-btn" data-period="day">Harian</button>
@@ -345,15 +514,33 @@ tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
 
   <section id="tab-ringkasan" class="hidden">
     <div class="dash-grid">
-      <div class="panel g-6"><h2>Ringkasan Problem <span class="n" id="rangeLabelKpi"></span></h2><div class="kpi-grid" id="kpiGrid"></div></div>
-      <div class="panel g-6"><h2>Kualitas Produksi <span class="n" id="rejectPanelLabel">Minggu Ini</span></h2><div class="kpi-grid" id="rejectKpiGrid"></div></div>
+      <div class="panel g-6">
+        <h2>Ringkasan Problem <span class="n" id="rangeLabelKpi"></span></h2>
+        <div class="kpi-grid" id="kpiGrid"></div>
+      </div>
+      <div class="panel g-6">
+        <h2>Kualitas Produksi <span class="n" id="rejectPanelLabel">Minggu Ini</span></h2>
+        <div class="kpi-grid" id="rejectKpiGrid"></div>
+      </div>
     </div>
     <div class="dash-grid">
-      <div class="panel g-5"><h2>Tren Problem Harian <span class="n" id="rangeLabel2"></span></h2><div class="chart-box" style="height:100%;"><canvas id="trendChart"></canvas></div></div>
-      <div class="panel g-3"><h2>Distribusi Jenis Problem</h2><div class="chart-box" style="height:100%;"><canvas id="distChart"></canvas></div></div>
-      <div class="panel g-4"><h2>Mesin Paling Bermasalah <span class="n" id="rangeLabel1"></span></h2><div class="barlist" id="barMachine"></div></div>
+      <div class="panel g-5">
+        <h2>Tren Problem Harian <span class="n" id="rangeLabel2"></span></h2>
+        <div class="chart-box" style="height:100%;"><canvas id="trendChart"></canvas></div>
+      </div>
+      <div class="panel g-3">
+        <h2>Distribusi Jenis Problem</h2>
+        <div class="chart-box" style="height:100%;"><canvas id="distChart"></canvas></div>
+      </div>
+      <div class="panel g-4">
+        <h2>Mesin Paling Bermasalah <span class="n" id="rangeLabel1"></span></h2>
+        <div class="barlist" id="barMachine"></div>
+      </div>
     </div>
-    <div class="panel"><h2>🔥 Top 10 Hot List — Reject Terbesar</h2><div class="hotlist" id="hotlistReject"></div></div>
+    <div class="panel">
+      <h2>🔥 Top 10 Hot List — Reject Terbesar</h2>
+      <div class="hotlist" id="hotlistReject"></div>
+    </div>
     <div class="dash-grid">
       <div class="panel g-6"><h2>Jenis Problem Paling Sering</h2><div class="barlist" id="barProblem"></div></div>
       <div class="panel g-6"><h2>Problem per Nomor Project</h2><div class="barlist" id="barProject"></div></div>
@@ -368,19 +555,24 @@ tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
       <h2>Monitoring Program &amp; Proses</h2>
       <div class="project-summary-row">
         <select id="mp-project"><option value="">- Pilih program -</option></select>
-        <span style="color:var(--text-dim);font-size:12.5px;">Klik tombol status pada tiap proses untuk mengubah: Belum &rarr; Proses &rarr; Selesai.</span>
+        <span style="color:var(--text-dim);font-size:12.5px;font-weight:600;">Klik tombol status pada tiap proses untuk mengubah: Belum &rarr; Proses &rarr; Selesai.</span>
       </div>
       <div class="kpi-grid" id="mpKpi"></div>
       <div class="mp-pipeline" id="mpPipeline"><div class="empty">Pilih program untuk melihat proses.</div></div>
     </div>
     <div class="panel">
       <h2>Monitoring Pilot per Proses <span class="n" id="mpPilotScope"></span></h2>
-      <div style="color:var(--text-dim);font-size:12.5px;margin-bottom:8px;">Klik proses untuk melihat temuan yang ditemukan saat Pilot Production.</div>
+      <div style="color:var(--text-dim);font-size:12.5px;margin-bottom:8px;font-weight:600;">Klik proses untuk melihat temuan yang ditemukan saat Pilot Production.</div>
       <div id="mpPilotChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;"></div>
       <div id="mpPilotList"></div>
     </div>
     <div class="panel">
       <h2>Rekap NC per Proses &amp; Mesin <span class="n" id="ncmScope"></span></h2>
+      <div style="color:var(--text-dim);font-size:12.5px;margin-bottom:8px;font-weight:600;">
+        Menampilkan entri dengan <b style="color:var(--red);">% Reject &gt; 10%</b> dari nomor project yang terdaftar di monitoring pilot (Program di Monitoring Pilot).
+        <br>Pencocokan nomor project fleksibel: <span class="mono" style="color:var(--teal);">MBG 53</span> = <span class="mono" style="color:var(--teal);">MBG53</span> = <span class="mono" style="color:var(--teal);">mbg-53</span>.
+      </div>
+      <div id="ncmRegisteredInfo"></div>
       <div style="overflow-x:auto;"><table id="ncmTable"></table></div>
     </div>
   </section>
@@ -391,20 +583,9 @@ tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
       <form id="plogForm">
         <input type="hidden" id="plog-id">
         <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr;">
-          <div class="field">
-            <label>Tanggal Temuan (Verification Date)</label>
-            <input type="date" id="plog-date" required>
-          </div>
-          <div class="field">
-            <label>Nomor Project (kode: MBG, PMB, dll)</label>
-            <input type="text" id="plog-project" list="projectList" placeholder="cth. MBG 50 / PMB 181" required>
-            <datalist id="projectList"></datalist>
-          </div>
-          <div class="field">
-            <label>Program (nama lengkap)</label>
-            <input type="text" id="plog-program" list="programList" placeholder="cth. 2027 Star Wars 22 Max Rebo">
-            <datalist id="programList"></datalist>
-          </div>
+          <div class="field"><label>Tanggal Temuan</label><input type="date" id="plog-date" required></div>
+          <div class="field"><label>Nomor Project</label><input type="text" id="plog-project" list="projectList" placeholder="cth. MBG 50 / PMB 181" required><datalist id="projectList"></datalist></div>
+          <div class="field"><label>Program (nama lengkap)</label><input type="text" id="plog-program" list="programList" placeholder="cth. 2027 Star Wars 22 Max Rebo"><datalist id="programList"></datalist></div>
         </div>
         <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr;">
           <div class="field">
@@ -417,10 +598,7 @@ tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
               <option value="Inspection">Inspection</option>
             </select>
           </div>
-          <div class="field">
-            <label>Verification Process</label>
-            <input type="text" id="plog-verifprocess" placeholder="cth. PP3K MBG 50 - 2027 Star Wars Sidekicks - SP3 D3">
-          </div>
+          <div class="field"><label>Verification Process</label><input type="text" id="plog-verifprocess" placeholder="cth. PP3K MBG 50 - 2027 Star Wars Sidekicks - SP3 D3"></div>
           <div class="field">
             <label>Kategori Temuan</label>
             <select id="plog-category" required>
@@ -444,63 +622,41 @@ tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
           <div class="field"><label>Mesin (opsional)</label><select id="plog-machine"></select></div>
           <div class="field"><label>PIC / Penanggung Jawab Utama</label><input type="text" id="plog-pic-global" placeholder="cth. YOGA"></div>
         </div>
-
         <div class="form-grid" style="grid-template-columns:1fr 1fr;">
           <div class="field"><label>Standard (kondisi standar)</label><input type="text" id="plog-standard" placeholder="cth. Die Cut Result OK"></div>
           <div class="field"><label>Actual (kondisi aktual)</label><input type="text" id="plog-actual" placeholder="cth. Die Cut Result NG"></div>
         </div>
-
-        <div class="field">
-          <label>Non-compliance Findings (Temuan Problem)</label>
-          <textarea id="plog-problem" placeholder="Jelaskan problem yang ditemukan..." required style="min-height:100px;"></textarea>
-        </div>
-
-        <div class="field">
-          <label>Root Cause (Penyebab Dasar)</label>
-          <textarea id="plog-rootcause" placeholder="Analisis akar masalah (5 Why, Fishbone, dsb)" style="min-height:100px;"></textarea>
-        </div>
-
+        <div class="field"><label>Non-compliance Findings (Temuan Problem)</label><textarea id="plog-problem" placeholder="Jelaskan problem yang ditemukan..." required style="min-height:100px;"></textarea></div>
+        <div class="field"><label>Root Cause (Penyebab Dasar)</label><textarea id="plog-rootcause" placeholder="Analisis akar masalah (5 Why, Fishbone, dsb)" style="min-height:100px;"></textarea></div>
         <div class="plog-cm-block">
           <div class="plog-cm-head">Counter Measure (1)</div>
-          <div class="field">
-            <label>Tindakan Perbaikan 1</label>
-            <textarea id="plog-action" placeholder="Tindakan perbaikan langsung..." required style="min-height:90px;"></textarea>
-          </div>
+          <div class="field"><label>Tindakan Perbaikan 1</label><textarea id="plog-action" placeholder="Tindakan perbaikan langsung..." required style="min-height:90px;"></textarea></div>
           <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr;">
             <div class="field"><label>PIC CM1</label><input type="text" id="plog-pic" placeholder="cth. YOGA"></div>
             <div class="field"><label>Due Date CM1</label><input type="date" id="plog-impl-date"></div>
             <div class="field"><label>Result CM1</label><input type="text" id="plog-result1" placeholder="cth. OK / Still NG"></div>
           </div>
           <div class="field">
-            <label>Attachment CM1 (foto/bukti, boleh banyak)</label>
+            <label>Attachment CM1</label>
             <div class="photo-input-wrap"><input type="file" id="plog-attach-cm1" accept="image/*" multiple></div>
             <div class="pl-thumbs" id="plog-preview-cm1" style="margin-top:6px;"></div>
           </div>
         </div>
-
         <div class="plog-cm-block">
           <div class="plog-cm-head">Counter Measure (2)</div>
-          <div class="field">
-            <label>Tindakan Perbaikan 2 (opsional)</label>
-            <textarea id="plog-action2" placeholder="Tindakan perbaikan tambahan..." style="min-height:90px;"></textarea>
-          </div>
+          <div class="field"><label>Tindakan Perbaikan 2 (opsional)</label><textarea id="plog-action2" placeholder="Tindakan perbaikan tambahan..." style="min-height:90px;"></textarea></div>
           <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr;">
             <div class="field"><label>PIC CM2</label><input type="text" id="plog-pic2" placeholder="cth. YOGA"></div>
             <div class="field"><label>Due Date CM2</label><input type="date" id="plog-impl-date2"></div>
             <div class="field"><label>Result CM2</label><input type="text" id="plog-result2" placeholder="cth. OK"></div>
           </div>
           <div class="field">
-            <label>Attachment CM2 (foto/bukti, boleh banyak)</label>
+            <label>Attachment CM2</label>
             <div class="photo-input-wrap"><input type="file" id="plog-attach-cm2" accept="image/*" multiple></div>
             <div class="pl-thumbs" id="plog-preview-cm2" style="margin-top:6px;"></div>
           </div>
         </div>
-
-        <div class="field">
-          <label>Preventive Action (3)</label>
-          <textarea id="plog-preventive" placeholder="Tindakan pencegahan agar tidak terulang..." style="min-height:100px;"></textarea>
-        </div>
-
+        <div class="field"><label>Preventive Action (3)</label><textarea id="plog-preventive" placeholder="Tindakan pencegahan agar tidak terulang..." style="min-height:100px;"></textarea></div>
         <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr;">
           <div class="field">
             <label>Status</label>
@@ -513,26 +669,23 @@ tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
           <div class="field"><label>Tanggal Close (opsional)</label><input type="date" id="plog-closedate"></div>
           <div class="field"><label>Verified by TMS QC</label><input type="text" id="plog-verifiedby" placeholder="Nama QC yang memverifikasi"></div>
         </div>
-
         <div class="form-grid" style="grid-template-columns:1fr 1fr;">
           <div class="field">
-            <label>Foto Problem (bisa lebih dari satu)</label>
+            <label>Foto Problem</label>
             <div class="photo-input-wrap"><input type="file" id="plog-photo-problem" accept="image/*" multiple></div>
             <div class="pl-thumbs" id="plog-preview-problem" style="margin-top:6px;"></div>
           </div>
           <div class="field">
-            <label>Foto Action / Hasil Perbaikan (tambahan)</label>
+            <label>Foto Action / Hasil Perbaikan</label>
             <div class="photo-input-wrap"><input type="file" id="plog-photo-action" accept="image/*" multiple></div>
             <div class="pl-thumbs" id="plog-preview-action" style="margin-top:6px;"></div>
           </div>
         </div>
-
         <button type="submit" class="btn" id="plogSubmitBtn">Simpan Temuan</button>
         <button type="button" class="btn ghost" id="plogCancelBtn" style="display:none;margin-left:8px;">Batal Edit</button>
-        <span id="plogMsg" style="margin-left:10px;color:var(--green);font-size:12.5px;"></span>
+        <span id="plogMsg" style="margin-left:10px;color:var(--green);font-size:12.5px;font-weight:700;"></span>
       </form>
     </div>
-
     <div class="panel">
       <h2>Daftar Temuan <span class="n" id="plogCount"></span></h2>
       <div class="filters">
@@ -552,7 +705,7 @@ tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
           <option value="Closed">Closed</option>
         </select>
         <button class="btn ghost small" id="plogClearFilter">Reset Filter</button>
-        <button class="btn small" id="plogExportExcel" style="margin-left:auto;">📊 Ekspor Excel (Problem Historical Sheet)</button>
+        <button class="btn small" id="plogExportExcel" style="margin-left:auto;">📊 Ekspor Excel</button>
       </div>
       <div id="plogList"><div class="empty">Belum ada temuan.</div></div>
     </div>
@@ -572,13 +725,13 @@ tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
           <div class="field"><label>Proses</label><select id="f-process"></select></div>
           <div class="field"><label>Jenis Problem</label><select id="f-problemtype" required></select></div>
           <div class="field"><label>Jumlah NC</label><input type="number" id="f-nc-count" min="0" placeholder="0"></div>
-          <div class="field"><label>Downtime (menit) — opsional</label><input type="number" id="f-downtime" min="0" placeholder="0"></div>
+          <div class="field"><label>Downtime (menit)</label><input type="number" id="f-downtime" min="0" placeholder="0"></div>
         </div>
         <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;">
           <div class="field"><label>Qty Production</label><input type="number" id="f-qty-production" min="0" placeholder="0"></div>
           <div class="field"><label>Total Reject</label><input type="number" id="f-total-reject" min="0" placeholder="0"></div>
-          <div class="field"><label>Qty Total (Production − Reject)</label><input type="text" id="f-qty-total" readonly style="background:var(--panel-2);color:var(--text-dim);"></div>
-          <div class="field"><label>% Reject</label><input type="text" id="f-reject-pct" readonly style="background:var(--panel-2);color:var(--text-dim);"></div>
+          <div class="field"><label>Qty Total (Production − Reject)</label><input type="text" id="f-qty-total" readonly style="background:var(--card-soft);color:var(--text-dim);"></div>
+          <div class="field"><label>% Reject</label><input type="text" id="f-reject-pct" readonly style="background:var(--card-soft);color:var(--text-dim);"></div>
         </div>
         <div class="field"><label>Detail / Deskripsi Problem</label><textarea id="f-desc" placeholder="Jelaskan problem yang terjadi secara lengkap..." required></textarea></div>
         <div class="form-grid" style="grid-template-columns:1fr 1fr;">
@@ -586,13 +739,13 @@ tr.high-reject td.mono.pct-cell{color:var(--red);font-weight:700;}
           <div class="field"><label>Foto NC (Non Conformance)</label><div class="photo-input-wrap"><input type="file" id="f-photo-nc" accept="image/*"><img class="photo-preview" id="preview-nc"></div></div>
         </div>
         <div class="field">
-          <label>Nomor Palet &amp; Foto Label Palet <span style="color:var(--text-dim);font-weight:400;">(bisa lebih dari satu)</span></label>
+          <label>Nomor Palet &amp; Foto Label Palet</label>
           <div id="palletRows"></div>
           <button type="button" class="btn ghost small" id="addPalletRow" style="margin-top:6px;">+ Tambah Palet</button>
         </div>
         <button type="submit" class="btn" id="submitBtnMain">Simpan Problem</button>
         <button type="button" class="btn ghost" id="cancelEditBtn" style="display:none;margin-left:8px;">Batal Edit</button>
-        <span id="saveMsg" style="margin-left:10px;color:var(--green);font-size:12.5px;"></span>
+        <span id="saveMsg" style="margin-left:10px;color:var(--green);font-size:12.5px;font-weight:700;"></span>
       </form>
     </div>
     <div class="panel"><h2>Entri Hari Ini <span class="n" id="todayCount"></span></h2><div id="todayList"><div class="empty">Belum ada entri.</div></div></div>
@@ -668,14 +821,12 @@ let currentAnchor = mondayOf(new Date());
 let periodMode = 'week';
 let customStart = null, customEnd = null;
 let dataReady = false;
-const BAR_COLORS = ['#4e8ff5','#9b6ff0','#34d1d1','#3ecf8e','#ec6bb0','#fb923c','#f0506a','#6b7fd7','#5fd4f0','#8891b8'];
+const BAR_COLORS = ['#4a9fe0','#9b7ff0','#4dd0c1','#4ecb8e','#f07fb0','#f6b73c','#f0687c','#8fa2b8','#5fc9e8','#b09bef'];
+const NC_HIGH_THRESHOLD = 10;
 function colorForName(name){ const s = String(name||''); let hash = 0; for(let i=0;i<s.length;i++){ hash = (hash*31 + s.charCodeAt(i)) % 997; } return BAR_COLORS[hash % BAR_COLORS.length]; }
 
-// ============ NORMALISASI STRING UNTUK SORT & FILTER ============
-function normStr(s){
-  return String(s==null?'':s).trim().replace(/\s+/g,' ');
-}
-// Natural sort: MBG 50 < MBG 100, dan angka di awal didahulukan
+function normStr(s){ return String(s==null?'':s).trim().replace(/\s+/g,' '); }
+function projectKey(s){ return String(s==null?'':s).toLowerCase().replace(/[^a-z0-9]/g,''); }
 function naturalCompare(a, b){
   const sa = normStr(a); const sbv = normStr(b);
   const re = /(\d+)|(\D+)/g;
@@ -684,22 +835,12 @@ function naturalCompare(a, b){
   for(let i=0; i<len; i++){
     const xa = ax[i] || ''; const xb = bx[i] || '';
     const na = parseInt(xa, 10); const nb = parseInt(xb, 10);
-    if(!isNaN(na) && !isNaN(nb)){
-      if(na !== nb) return na - nb;
-    } else {
-      const cmp = xa.localeCompare(xb, 'id', { sensitivity: 'base' });
-      if(cmp !== 0) return cmp;
-    }
+    if(!isNaN(na) && !isNaN(nb)){ if(na !== nb) return na - nb; }
+    else { const cmp = xa.localeCompare(xb, 'id', { sensitivity: 'base' }); if(cmp !== 0) return cmp; }
   }
   return 0;
 }
-// Sort unik + natural
-function uniqSort(arr){
-  const clean = arr.map(x => normStr(x)).filter(Boolean);
-  const set = Array.from(new Set(clean));
-  return set.sort(naturalCompare);
-}
-// Normalisasi tanggal (untuk sorting by date)
+function uniqSort(arr){ const clean = arr.map(x => normStr(x)).filter(Boolean); const set = Array.from(new Set(clean)); return set.sort(naturalCompare); }
 function normDate(d){ return d ? String(d).slice(0,10) : ''; }
 
 function mondayOf(d){ const date = new Date(d); const day = date.getDay(); const diff = (day === 0 ? -6 : 1) - day; date.setDate(date.getDate() + diff); date.setHours(0,0,0,0); return date; }
@@ -719,7 +860,6 @@ function getPeriodRange(){
   return { start, end: addDays(start, 6) };
 }
 function fmtDisplayMonth(d){ return d.toLocaleDateString('id-ID',{month:'long',year:'numeric'}); }
-
 function showToast(msg){ const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2200); }
 
 function rowToEntry(r){
@@ -791,6 +931,23 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
   });
 });
 
+/* SIDEBAR sync */
+document.querySelectorAll('.sidebar .sb-btn[data-tab]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.sidebar .sb-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const targetTab = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+    if(targetTab) targetTab.click();
+  });
+});
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.sidebar .sb-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  });
+});
+
 /* PERIOD NAV */
 document.getElementById('prevWeek').addEventListener('click', ()=>{
   if(periodMode==='day') currentAnchor = addDays(currentAnchor, -1);
@@ -858,23 +1015,15 @@ function refreshFormSelects(){
   syncProcessFromMachine();
 }
 
-/* ==================== REFRESH PROJECT OPTIONS (dari entries + problemLogs) ==================== */
 function refreshProjectOptions(){
-  // Sumber 1: entries (input harian) — projectNumber
   const projectsFromEntries = entries.map(e => e.projectNumber);
-  // Sumber 2: problemLogs — projectNumber
   const projectsFromLogs = problemLogs.map(l => l.projectNumber);
-
   const projects = uniqSort([...projectsFromEntries, ...projectsFromLogs]);
-
-  // Datalist untuk form input Problem Log & Input Harian
   const dl1 = document.getElementById('projectList');
   const dl2 = document.getElementById('projectList2');
   const opts = projects.map(p=>`<option value="${esc(p)}">`).join('');
   if(dl1) dl1.innerHTML = opts;
   if(dl2) dl2.innerHTML = opts;
-
-  // Filter di Data Lengkap
   const filtProject = document.getElementById('filt-project');
   if(filtProject) populateSelect(filtProject, projects, 'Semua Project');
 }
@@ -927,7 +1076,7 @@ function renderTodayList(){
   const box = document.getElementById('todayList');
   if(todays.length===0){ box.innerHTML = '<div class="empty">Belum ada entri.</div>'; return; }
   box.innerHTML = '<table><thead><tr><th>Shift</th><th>Mesin</th><th>Operator</th><th>QC</th><th>Jenis</th><th>Deskripsi</th><th></th></tr></thead><tbody>'+
-    todays.map(e=>`<tr><td>${e.shift||'-'}</td><td><span class="mtag" style="color:${colorForName(e.machine)};border-color:${colorForName(e.machine)}66;">${esc(e.machine)}</span></td><td>${esc(e.operator)}</td><td>${esc(e.qc)}</td><td>${esc(e.problemType)}</td><td class="desc-cell">${esc(e.desc)}</td><td style="white-space:nowrap;"><button class="btn ghost small" data-edit="${e.id}">Edit</button><button class="btn danger small" data-del="${e.id}">Hapus</button></td></tr>`).join('') + '</tbody></table>';
+    todays.map(e=>`<tr><td>${e.shift||'-'}</td><td><span class="mtag" style="color:${colorForName(e.machine)};">${esc(e.machine)}</span></td><td>${esc(e.operator)}</td><td>${esc(e.qc)}</td><td>${esc(e.problemType)}</td><td class="desc-cell">${esc(e.desc)}</td><td style="white-space:nowrap;"><button class="btn ghost small" data-edit="${e.id}">Edit</button><button class="btn danger small" data-del="${e.id}">Hapus</button></td></tr>`).join('') + '</tbody></table>';
   box.querySelectorAll('[data-edit]').forEach(b=>{ b.addEventListener('click', ()=>{ const target = entries.find(x=>x.id===b.dataset.edit); if(target) startEdit(target); }); });
   box.querySelectorAll('[data-del]').forEach(b=>{ b.addEventListener('click', async ()=>{ if(!ensureConfigured()) return; const target = entries.find(x=>x.id===b.dataset.del); const { error } = await sb.from('problem_entries').delete().eq('id', b.dataset.del); if(error){ showToast('Gagal menghapus: '+error.message); return; } await deletePhotosForEntry(target); entries = entries.filter(x=>x.id!==b.dataset.del); renderTodayList(); renderAll(); renderDataTable(); renderGallery(); renderMonitor(); }); });
 }
@@ -966,7 +1115,7 @@ function renderPalletRows(){
     <div class="pallet-row" data-idx="${i}">
       <input type="text" class="pallet-number-input" placeholder="Nomor Palet cth. PLT-0001" value="${esc(p.number)}">
       <div class="photo-input-wrap"><input type="file" accept="image/*" class="pallet-photo-input"><img class="photo-preview pallet-preview ${p.existingPhoto || p.file ? 'show':''}" src="${p.file ? '' : esc(p.existingPhoto||'')}"></div>
-      <select class="pallet-status-select"><option value="ditemukan" ${p.status!=='kelolosan'?'selected':''}>✅ Ditemukan QC</option><option value="kelolosan" ${p.status==='kelolosan'?'selected':''}>⚠️ Kelolosan QC (lolos inspeksi)</option></select>
+      <select class="pallet-status-select"><option value="ditemukan" ${p.status!=='kelolosan'?'selected':''}>✅ Ditemukan QC</option><option value="kelolosan" ${p.status==='kelolosan'?'selected':''}>⚠️ Kelolosan QC</option></select>
       <input type="text" class="pallet-note-input" placeholder="Catatan tambahan (opsional)" value="${esc(p.note||'')}" style="flex:1 1 100%;">
       <button type="button" class="btn danger small remove-pallet-row">Hapus</button>
     </div>`).join('');
@@ -1025,7 +1174,6 @@ function startEdit(entry){
 }
 document.getElementById('cancelEditBtn').addEventListener('click', resetFormToBlank);
 
-/* REJECT CALC */
 function calcRejectStats(qtyProduction, totalReject){ const qp = Number(qtyProduction)||0; const tr = Number(totalReject)||0; const qtyTotal = qp - tr; const rejectPct = qp > 0 ? (tr/qp*100) : 0; return { qtyTotal, rejectPct }; }
 function updateRejectPreview(){ const qp = document.getElementById('f-qty-production').value; const tr = document.getElementById('f-total-reject').value; const { qtyTotal, rejectPct } = calcRejectStats(qp, tr); document.getElementById('f-qty-total').value = (qp==='' && tr==='') ? '' : qtyTotal; document.getElementById('f-reject-pct').value = (qp==='' && tr==='') ? '' : rejectPct.toFixed(2)+'%'; }
 document.getElementById('f-qty-production').addEventListener('input', updateRejectPreview);
@@ -1040,7 +1188,7 @@ function photoCardHtml(e){
   const col = (url, label) => url ? `<div class="photo-col"><span class="cap">${label}</span><img src="${esc(url)}" data-lightbox="${esc(url)}" alt="${label}"></div>` : `<div class="photo-col"><span class="cap">${label}</span><div class="no-photo">Tidak ada foto</div></div>`;
   const pallets = e.pallets||[];
   const palletHtml = pallets.length===0 ? '' : `<div class="pallet-list">${pallets.map(p=>`<div class="pallet-chip${p.status==='kelolosan'?' has-note':''}" ${p.note?`title="${esc(p.note)}"`:''}>${p.photo ? `<img src="${esc(p.photo)}" data-lightbox="${esc(p.photo)}" alt="Label Palet ${esc(p.number)}">` : '<div class="no-photo-sm">-</div>'}<span>${esc(p.number||'(tanpa nomor)')}</span>${p.status==='kelolosan'?'<span class="note-flag">⚠ Kelolosan</span>':''}</div>`).join('')}</div>`;
-  return `<div class="photo-card"><div class="photo-row">${col(e.photoProblem,'Problem')}${col(e.photoNc,'NC')}</div>${palletHtml}<div class="info"><div class="meta">${esc(e.date)} · <span class="mtag" style="color:${colorForName(e.machine)};border-color:${colorForName(e.machine)}66;">${esc(e.machine)}</span></div><div class="desc">${esc(e.problemType)} — ${esc(e.desc)}</div></div></div>`;
+  return `<div class="photo-card"><div class="photo-row">${col(e.photoProblem,'Problem')}${col(e.photoNc,'NC')}</div>${palletHtml}<div class="info"><div class="meta">${esc(e.date)} · <span class="mtag" style="color:${colorForName(e.machine)};">${esc(e.machine)}</span></div><div class="desc">${esc(e.problemType)} — ${esc(e.desc)}</div></div></div>`;
 }
 function bindLightboxTriggers(container){ container.querySelectorAll('[data-lightbox]').forEach(img=>{ img.addEventListener('click', ()=> openLightbox(img.dataset.lightbox)); }); }
 function renderRecentPhotos(){ const box = document.getElementById('recentPhotos'); const wk = weekEntries().filter(e=>e.photoProblem||e.photoNc||(e.pallets&&e.pallets.length)).slice().sort((a,b)=> b.date.localeCompare(a.date)).slice(0,6); if(wk.length===0){ box.innerHTML = '<div class="empty">Belum ada foto problem periode ini.</div>'; return; } box.innerHTML = wk.map(photoCardHtml).join(''); bindLightboxTriggers(box); }
@@ -1062,8 +1210,8 @@ function renderRingkasan(){
   const kpis = [
     {label:'Total Problem '+(periodMode==='day'?'Hari Ini':periodMode==='month'?'Bulan Ini':periodMode==='custom'?'Periode Ini':'Minggu Ini'), value: wk.length, sub: wk.length===0?'Tidak ada data':'entri tercatat', cls:'blue'},
     {label:'Mesin Paling Bermasalah', value: topMachine?topMachine[0]:'—', sub: topMachine?topMachine[1]+' problem':'', cls:'red'},
-    {label:'Operator Paling Sering Terkait', value: topOperator?topOperator[0]:'—', sub: topOperator?topOperator[1]+' problem':'', cls:'purple'},
-    {label:'QC Paling Sering Kelolosan', value: topQcKelolosan?topQcKelolosan[0]:'—', sub: topQcKelolosan?topQcKelolosan[1]+' kali kelolosan':'Belum ada kelolosan tercatat', cls:'pink'},
+    {label:'Operator Paling Sering', value: topOperator?topOperator[0]:'—', sub: topOperator?topOperator[1]+' problem':'', cls:'purple'},
+    {label:'QC Paling Sering Kelolosan', value: topQcKelolosan?topQcKelolosan[0]:'—', sub: topQcKelolosan?topQcKelolosan[1]+' kali kelolosan':'Belum ada kelolosan', cls:'pink'},
   ];
   document.getElementById('kpiGrid').innerHTML = kpis.map(k=>`<div class="kpi ${k.cls}"><div class="kpi-label">${k.label}</div><div class="kpi-value">${esc(String(k.value))}</div><div class="kpi-sub">${esc(k.sub)}</div></div>`).join('');
   const totalQtyProduction = wk.reduce((s,e)=> s + (e.qtyProduction||0), 0);
@@ -1089,7 +1237,7 @@ function renderRingkasan(){
 
 /* CHART */
 let trendChartInst = null, distChartInst = null;
-const CHART_COLORS = BAR_COLORS;
+const CHART_COLORS = ['#4a9fe0','#9b7ff0','#4dd0c1','#4ecb8e','#f07fb0','#f6b73c','#f0687c','#8fa2b8'];
 
 function renderCharts(wk, byProblem){
   if(typeof Chart === 'undefined') return;
@@ -1099,16 +1247,55 @@ function renderCharts(wk, byProblem){
   const countsByDate = {}; wk.forEach(e=>{ countsByDate[e.date] = (countsByDate[e.date]||0) + 1; });
   const trendLabels = days.map(d=> fmtDisplay(new Date(d+'T00:00:00')));
   const trendData = days.map(d=> countsByDate[d]||0);
+
   const trendCtx = document.getElementById('trendChart').getContext('2d');
   if(trendChartInst) trendChartInst.destroy();
-  trendChartInst = new Chart(trendCtx, { type: 'bar', data: { labels: trendLabels, datasets: [{ label: 'Jumlah Problem', data: trendData, backgroundColor: trendData.map((_,i)=> BAR_COLORS[i % BAR_COLORS.length]), borderRadius: 3, maxBarThickness: 28 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#8891b8', font:{ family:'IBM Plex Mono', size:10 } }, grid: { color:'#2a3266' } }, y: { beginAtZero:true, ticks: { color: '#8891b8', precision:0, font:{ family:'IBM Plex Mono', size:10 } }, grid: { color:'#2a3266' } } } } });
+  trendChartInst = new Chart(trendCtx, {
+    type: 'line',
+    data: { labels: trendLabels, datasets: [{
+      label: 'Jumlah Problem',
+      data: trendData,
+      borderColor: '#4a9fe0',
+      backgroundColor: 'rgba(74,159,224,.12)',
+      borderWidth: 3,
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: '#fff',
+      pointBorderColor: '#4a9fe0',
+      pointBorderWidth: 2,
+      pointRadius: 4,
+      pointHoverRadius: 6
+    }]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#8fa2b8', font:{ family:'Nunito', size:11, weight:'600' } }, grid: { display:false }, border: { display:false } },
+        y: { beginAtZero:true, ticks: { color: '#8fa2b8', precision:0, font:{ family:'Nunito', size:11, weight:'600' } }, grid: { color:'#eef3f7' }, border: { display:false } }
+      }
+    }
+  });
+
   const topProblems = byProblem.slice(0,7); const restCount = byProblem.slice(7).reduce((s,p)=> s+p[1], 0);
   const distLabels = topProblems.map(p=>p[0]); const distData = topProblems.map(p=>p[1]);
   if(restCount>0){ distLabels.push('Lainnya'); distData.push(restCount); }
   const distCtx = document.getElementById('distChart').getContext('2d');
   if(distChartInst) distChartInst.destroy();
   if(distData.length===0){ distChartInst = null; } else {
-    distChartInst = new Chart(distCtx, { type: 'doughnut', data: { labels: distLabels, datasets: [{ data: distData, backgroundColor: CHART_COLORS, borderColor: '#131a3a', borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position:'bottom', labels: { color:'#e9ecf7', font:{ size:10.5, family:'IBM Plex Sans' }, boxWidth:10, padding:8 } } } } });
+    distChartInst = new Chart(distCtx, {
+      type: 'doughnut',
+      data: { labels: distLabels, datasets: [{
+        data: distData,
+        backgroundColor: CHART_COLORS,
+        borderColor: '#fff',
+        borderWidth: 3
+      }]},
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        cutout: '70%',
+        plugins: { legend: { position:'bottom', labels: { color:'#2b3a55', font:{ size:11, family:'Nunito', weight:'600' }, boxWidth:10, padding:10, usePointStyle:true } } }
+      }
+    });
   }
 }
 
@@ -1120,7 +1307,7 @@ function renderHotlistReject(wk){
   box.innerHTML = ranked.map((r,i)=>{
     const e = r.entry; const rank = i+1; const rankCls = rank<=3 ? 'rank-'+rank : '';
     const rankColor = colorForName(e.machine+e.problemType);
-    const rowStyle = rank>3 ? `style="border-left:3px solid ${rankColor};"` : '';
+    const rowStyle = rank>3 ? `style="border-left:4px solid ${rankColor};"` : '';
     const barPct = maxPct>0 ? Math.round((r.pct/maxPct)*100) : 0;
     const fire = rank===1 ? '🔥🔥🔥' : rank===2 ? '🔥🔥' : rank===3 ? '🔥' : '';
     const thumb = e.photoNc ? `<img class="hot-thumb" src="${esc(e.photoNc)}" data-lightbox="${esc(e.photoNc)}" alt="Foto NC">` : `<div class="hot-thumb hot-thumb-empty">NC</div>`;
@@ -1161,7 +1348,7 @@ function renderDataTable(){
     const pct = entryRejectPct(e); const isHigh = pct!=null && pct>3.5;
     const palletPhotos = (e.pallets||[]).filter(p=>p.photo);
     const photoThumbs = [ e.photoProblem ? `<img class="table-thumb" src="${esc(e.photoProblem)}" data-lightbox="${esc(e.photoProblem)}" title="Foto Problem" alt="Foto Problem">` : '', e.photoNc ? `<img class="table-thumb" src="${esc(e.photoNc)}" data-lightbox="${esc(e.photoNc)}" title="Foto NC" alt="Foto NC">` : '', palletPhotos.length ? `<img class="table-thumb" src="${esc(palletPhotos[0].photo)}" data-lightbox="${esc(palletPhotos[0].photo)}" title="Foto Label Palet" alt="Foto Label Palet">` : '' ].filter(Boolean).join('');
-    return `<tr class="${isHigh?'high-reject':''}"><td class="mono">${esc(e.date)}</td><td class="mono">${esc(e.projectNumber||'-')}</td><td>${esc(e.shift||'-')}</td><td><span class="mtag" style="color:${colorForName(e.machine)};border-color:${colorForName(e.machine)}66;">${esc(e.machine)}</span></td><td class="mono">${(e.pallets&&e.pallets.length) ? esc(e.pallets.map(p=>p.number||'-').join(', ')) : '-'}${entryHasKelolosan(e)?' <span class="note-flag">⚠ Kelolosan QC</span>':''}</td><td>${esc(e.operator)}</td><td>${esc(e.qc)}</td><td>${esc(e.problemType)}</td><td class="desc-cell">${esc(e.desc)}</td><td class="mono">${e.qtyProduction!=null?e.qtyProduction.toLocaleString('id-ID'):'-'}</td><td class="mono">${e.totalReject!=null?e.totalReject.toLocaleString('id-ID'):'-'}</td><td class="mono">${e.qtyTotal!=null?e.qtyTotal.toLocaleString('id-ID'):'-'}</td><td class="mono pct-cell">${pct!=null?pct.toFixed(2)+'%':'-'}</td><td class="mono">${e.downtime?esc(e.downtime)+' mnt':'-'}</td><td><div class="table-photos">${photoThumbs || '<span class="table-thumb-empty">-</span>'}</div></td><td style="white-space:nowrap;"><button class="btn ghost small" data-edit2="${e.id}">Edit</button><button class="btn danger small" data-del2="${e.id}">Hapus</button></td></tr>`;
+    return `<tr class="${isHigh?'high-reject':''}"><td class="mono">${esc(e.date)}</td><td class="mono">${esc(e.projectNumber||'-')}</td><td>${esc(e.shift||'-')}</td><td><span class="mtag" style="color:${colorForName(e.machine)};">${esc(e.machine)}</span></td><td class="mono">${(e.pallets&&e.pallets.length) ? esc(e.pallets.map(p=>p.number||'-').join(', ')) : '-'}${entryHasKelolosan(e)?' <span class="note-flag">⚠ Kelolosan QC</span>':''}</td><td>${esc(e.operator)}</td><td>${esc(e.qc)}</td><td>${esc(e.problemType)}</td><td class="desc-cell">${esc(e.desc)}</td><td class="mono">${e.qtyProduction!=null?e.qtyProduction.toLocaleString('id-ID'):'-'}</td><td class="mono">${e.totalReject!=null?e.totalReject.toLocaleString('id-ID'):'-'}</td><td class="mono">${e.qtyTotal!=null?e.qtyTotal.toLocaleString('id-ID'):'-'}</td><td class="mono pct-cell">${pct!=null?pct.toFixed(2)+'%':'-'}</td><td class="mono">${e.downtime?esc(e.downtime)+' mnt':'-'}</td><td><div class="table-photos">${photoThumbs || '<span class="table-thumb-empty">-</span>'}</div></td><td style="white-space:nowrap;"><button class="btn ghost small" data-edit2="${e.id}">Edit</button><button class="btn danger small" data-del2="${e.id}">Hapus</button></td></tr>`;
   }).join('');
   const th = document.getElementById('th-pct'); th.innerHTML = '% Reject' + (dataSort.key==='pct' ? `<span class="arrow">${dataSort.dir===1?'▲':'▼'}</span>` : '');
   bindLightboxTriggers(tbody);
@@ -1228,6 +1415,31 @@ let mpPilotProc = '';
 const MP_STATUS = ['belum','proses','selesai'];
 const MP_LABEL = { belum:'Belum', proses:'Proses', selesai:'Selesai' };
 function entryNc(e){ if(e.ncCount!=null) return e.ncCount; return e.photoNc ? 1 : 0; }
+
+function entryRejectPctSafe(e){
+  if(e.rejectPercentage!=null) return Number(e.rejectPercentage);
+  if(e.qtyProduction>0 && e.totalReject!=null) return (Number(e.totalReject)/Number(e.qtyProduction))*100;
+  return null;
+}
+function isHighNc(e){
+  const pct = entryRejectPctSafe(e);
+  return pct!=null && pct > NC_HIGH_THRESHOLD;
+}
+
+function registeredPilotProjects(){
+  const set = new Set();
+  pilotDocs.forEach(d=>{ (d.programs||[]).forEach(p=>{ const k = projectKey(p); if(k) set.add(k); }); });
+  projectProcess.forEach(r=>{ const k = projectKey(r.project_number); if(k) set.add(k); });
+  problemLogs.forEach(l=>{ const k = projectKey(l.projectNumber); if(k) set.add(k); });
+  entries.forEach(e=>{ const k = projectKey(e.projectNumber); if(k) set.add(k); });
+  return set;
+}
+function isRegisteredPilotProject(projectNumber){
+  const k = projectKey(projectNumber);
+  if(!k) return false;
+  return registeredPilotProjects().has(k);
+}
+
 function ppStatus(project, proc){ const r = projectProcess.find(x=> normStr(x.project_number) === normStr(project) && x.process===proc); return r ? r.status : 'belum'; }
 function projectList(){
   const set = new Set();
@@ -1280,7 +1492,7 @@ function processOfMachine(machine){
   }
   return '';
 }
-function entryProc(e){ return processOfMachine(e.machine) || entryProc(e) || ''; }
+function entryProc(e){ return processOfMachine(e.machine) || ''; }
 function syncProcessFromMachine(){
   const el = document.getElementById('f-process'); if(!el) return;
   const pr = processOfMachine(document.getElementById('f-machine').value);
@@ -1294,33 +1506,99 @@ function machinesOfProcess(proc){
   entries.forEach(e=>{ if(entryProc(e)===proc && e.machine) set.add(e.machine); });
   return Array.from(set).sort(naturalCompare);
 }
+
 function renderNcMatrix(){
   const tbl = document.getElementById('ncmTable'); const sel = document.getElementById('mp-project');
   const pmap = projectProgramMap(); const NOP = 'Tanpa Program'; const prog = sel.value;
   const progOfEntry = e => pmap[normStr(e.projectNumber)] || NOP;
+
+  const highNcEntries = entries.filter(e => isHighNc(e));
+  const registeredKeys = registeredPilotProjects();
+
+  const projectKeysInEntries = new Set();
+  highNcEntries.forEach(e => {
+    const k = projectKey(e.projectNumber);
+    if(k && registeredKeys.has(k)) projectKeysInEntries.add(normStr(e.projectNumber));
+  });
+
   let cols;
-  if(prog){ cols = programProjects(prog).sort(naturalCompare).map(p=>({ label:p, es: entries.filter(e=>normStr(e.projectNumber)===p) })); }
-  else { const names = Array.from(new Set(entries.map(progOfEntry))).sort((x,y)=>((x===NOP)-(y===NOP))||naturalCompare(x,y)); cols = names.map(n=>({ label:n, es: entries.filter(e=>progOfEntry(e)===n) })); }
-  document.getElementById('ncmScope').textContent = prog ? prog+' · per No. Project' : 'Semua program';
-  if(!cols.length || !master.proses.length){ tbl.innerHTML = '<tbody><tr><td class="empty">Belum ada data NC.</td></tr></tbody>'; return; }
+  if(prog){
+    const entriesInProgram = highNcEntries.filter(e => {
+      const k = projectKey(e.projectNumber);
+      if(!k || !registeredKeys.has(k)) return false;
+      const pm = pmap[normStr(e.projectNumber)];
+      if(pm === prog) return true;
+      const progsMatch = pilotDocs.some(d =>
+        (d.programs||[]).some(p => normStr(p) === normStr(prog) && projectKey(p) === k)
+      );
+      return progsMatch;
+    });
+    cols = Array.from(new Set(entriesInProgram.map(e => normStr(e.projectNumber))))
+      .sort(naturalCompare)
+      .map(p => ({ label: p, es: entriesInProgram.filter(e => normStr(e.projectNumber) === p) }));
+  } else {
+    const names = Array.from(projectKeysInEntries).sort(naturalCompare);
+    cols = names.map(n => ({ label: n, es: highNcEntries.filter(e => normStr(e.projectNumber) === n) }));
+  }
+
+  document.getElementById('ncmScope').textContent = (prog ? prog+' · ' : '') + `NC > ${NC_HIGH_THRESHOLD}%`;
+
+  if(!cols.length || !master.proses.length){
+    tbl.innerHTML = `<tbody><tr><td class="empty">Belum ada data NC di atas ${NC_HIGH_THRESHOLD}% untuk project yang terdaftar di monitoring pilot.<br><span style="font-size:11px;">Pastikan nomor project di Input Harian sama dengan program di Monitoring Pilot (mis. "MBG 53" vs "MBG53" dianggap sama).</span></td></tr></tbody>`;
+    renderRegisteredProjectsInfo();
+    return;
+  }
+
   const ncOf = (es,fn) => es.filter(fn).reduce((a,e)=>a+entryNc(e),0);
-  const numCell = n => `<td class="mono" style="color:${n>0?'var(--red)':'var(--text-dim)'};${n>0?'font-weight:600;':''}">${n}</td>`;
-  const rowHtml = (cls,label,fn)=>{ const vals = cols.map(c=>ncOf(c.es,fn)); const tot = vals.reduce((a,b)=>a+b,0); return {tot, html:`<tr class="${cls}"><td>${label}</td>${vals.map(numCell).join('')}${numCell(tot)}</tr>`}; };
+  const numCell = n => `<td class="mono" style="color:${n>0?'var(--red)':'var(--text-dim)'};${n>0?'font-weight:800;':''}">${n}</td>`;
+  const rowHtml = (cls,label,fn)=>{
+    const vals = cols.map(c=>ncOf(c.es,fn));
+    const tot = vals.reduce((a,b)=>a+b,0);
+    return {tot, html:`<tr class="${cls}"><td>${label}</td>${vals.map(numCell).join('')}${numCell(tot)}</tr>`};
+  };
+
   let body = ''; let grand = 0;
   master.proses.forEach(pr=>{
     const ms = machinesOfProcess(pr);
     const head = rowHtml('mp-grp-row', esc(pr), e=>entryProc(e)===pr);
-    const nomach = ncOf(entries.filter(e=>entryProc(e)===pr && !e.machine), ()=>true);
+    const nomach = ncOf(highNcEntries.filter(e=>entryProc(e)===pr && !e.machine), ()=>true);
     const subs = ms.map(m=>rowHtml('mp-sub-row', esc(m), e=>entryProc(e)===pr && e.machine===m).html).join('')
       + (nomach>0 ? rowHtml('mp-sub-row','<i>(mesin tidak tercatat)</i>', e=>entryProc(e)===pr && !e.machine).html : '');
     grand += head.tot; body += head.html + subs;
   });
+
   const other = rowHtml('mp-grp-row','Tanpa proses / lainnya', e=>!entryProc(e) || !master.proses.includes(entryProc(e)));
   if(other.tot>0){ body += other.html; grand += other.tot; }
+
   const colTot = cols.map(c=>c.es.reduce((a,e)=>a+entryNc(e),0));
   tbl.innerHTML = `<thead><tr><th>Proses / Mesin</th>${cols.map(c=>`<th>${esc(c.label)}</th>`).join('')}<th>Total NC</th></tr></thead><tbody>${body}<tr><td style="font-weight:700;">Total</td>${colTot.map(numCell).join('')}${numCell(grand)}</tr></tbody>`;
+  renderRegisteredProjectsInfo();
 }
-function programProjects(prog){ const pm = projectProgramMap(); return projectList().filter(p => (pm[p] || 'Tanpa Program') === prog); }
+
+function renderRegisteredProjectsInfo(){
+  const info = document.getElementById('ncmRegisteredInfo');
+  if(!info) return;
+  const projects = new Set();
+  pilotDocs.forEach(d => (d.programs||[]).forEach(p => { const pn = normStr(p); if(pn) projects.add(pn); }));
+  const list = Array.from(projects).sort(naturalCompare);
+  if(!list.length){ info.innerHTML = ''; return; }
+  info.innerHTML = `<div style="font-size:11.5px;color:var(--text-dim);margin-bottom:10px;font-weight:600;">
+    <b style="color:var(--teal);">Project terdaftar di Monitoring Pilot:</b>
+    ${list.map(p=>`<span class="plog-tag cat" style="margin-right:4px;">${esc(p)}</span>`).join('')}
+  </div>`;
+}
+
+function programProjects(prog){
+  const pm = projectProgramMap();
+  const target = normStr(prog);
+  const all = new Set(projectList());
+  pilotDocs.forEach(d => { (d.programs||[]).forEach(p => { const pn = normStr(p); if(pn) all.add(pn); }); });
+  return Array.from(all).filter(p => {
+    const k = projectKey(p);
+    return (pm[p] || 'Tanpa Program') === prog || projectKey(p) === projectKey(prog);
+  }).sort(naturalCompare);
+}
+
 function renderMonitorPilot(){
   const chips = document.getElementById('mpPilotChips'), list = document.getElementById('mpPilotList'); if(!chips || !list) return;
   const prog = document.getElementById('mp-project').value;
@@ -1367,9 +1645,9 @@ function renderMonitor(){
     if(!procs.length || !sts.length){ pipe.innerHTML = '<div class="empty">Belum ada daftar proses.</div>'; }
     else {
       sts.sort((x,y)=> y.st.totalNc-x.st.totalNc || naturalCompare(x.p,y.p));
-      const cell = (p,x)=>{ const pp = x.st.perProc.find(q=>q.name===x.pr); return `<td><button class="btn ghost stbtn" style="padding:3px 8px;font-size:11px;" data-project="${esc(p)}" data-proc="${esc(x.pr)}" data-st="${pp.status}"><span class="mp-badge b-${pp.status}">${MP_LABEL[pp.status]}</span></button><div class="mono" style="font-size:11px;margin-top:3px;color:${pp.nc>0?'var(--red)':'var(--text-dim)'};">NC ${pp.nc} · P ${pp.problems}</div></td>`; };
-      const totRow = procs.map(pr=>{ const nc = sts.reduce((t,x)=>t+(x.st.perProc.find(q=>q.name===pr)||{nc:0}).nc,0); return `<td class="mono" style="color:${nc>0?'var(--red)':'var(--text-dim)'};font-weight:600;">NC ${nc}</td>`; }).join('');
-      pipe.innerHTML = `<div style="grid-column:1/-1;overflow-x:auto;"><table><thead><tr><th>No. Project</th>${procs.map(pr=>`<th>${esc(pr)}</th>`).join('')}<th>Total NC</th></tr></thead><tbody>${sts.map(({p,st})=>`<tr><td class="mono">${esc(p)}</td>${procs.map(pr=>cell(p,{st,pr})).join('')}<td class="mono" style="color:${st.totalNc>0?'var(--red)':'var(--text-dim)'};font-weight:600;">${st.totalNc}</td></tr>`).join('')}<tr><td class="mono" style="font-weight:600;">Total Program</td>${totRow}<td class="mono" style="color:var(--red);font-weight:700;">${sum(s=>s.totalNc)}</td></tr></tbody></table></div>`;
+      const cell = (p,x)=>{ const pp = x.st.perProc.find(q=>q.name===x.pr); return `<td><button class="btn ghost stbtn" style="padding:4px 10px;font-size:11px;" data-project="${esc(p)}" data-proc="${esc(x.pr)}" data-st="${pp.status}"><span class="mp-badge b-${pp.status}">${MP_LABEL[pp.status]}</span></button><div class="mono" style="font-size:11px;margin-top:4px;color:${pp.nc>0?'var(--red)':'var(--text-dim)'};">NC ${pp.nc} · P ${pp.problems}</div></td>`; };
+      const totRow = procs.map(pr=>{ const nc = sts.reduce((t,x)=>t+(x.st.perProc.find(q=>q.name===pr)||{nc:0}).nc,0); return `<td class="mono" style="color:${nc>0?'var(--red)':'var(--text-dim)'};font-weight:800;">NC ${nc}</td>`; }).join('');
+      pipe.innerHTML = `<div style="grid-column:1/-1;overflow-x:auto;"><table><thead><tr><th>No. Project</th>${procs.map(pr=>`<th>${esc(pr)}</th>`).join('')}<th>Total NC</th></tr></thead><tbody>${sts.map(({p,st})=>`<tr><td class="mono">${esc(p)}</td>${procs.map(pr=>cell(p,{st,pr})).join('')}<td class="mono" style="color:${st.totalNc>0?'var(--red)':'var(--text-dim)'};font-weight:800;">${st.totalNc}</td></tr>`).join('')}<tr><td class="mono" style="font-weight:800;">Total Program</td>${totRow}<td class="mono" style="color:var(--red);font-weight:800;">${sum(s=>s.totalNc)}</td></tr></tbody></table></div>`;
       pipe.querySelectorAll('.stbtn').forEach(b=>{ b.addEventListener('click', ()=>{ const next = MP_STATUS[(MP_STATUS.indexOf(b.dataset.st)+1)%3]; setProcessStatus(b.dataset.project, b.dataset.proc, next); }); });
     }
     const logsProject = problemLogs.filter(l => projSet.has(normStr(l.projectNumber))).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
@@ -1386,7 +1664,7 @@ function renderMonitor(){
 }
 document.getElementById('mp-project').addEventListener('change', renderMonitor);
 
-/* ================= PROBLEM LOG ================= */
+/* PROBLEM LOG */
 let plogFilesProblem = [], plogFilesAction = [], plogFilesAction2 = [];
 let plogExistingProblem = [], plogExistingAction = [], plogExistingAction2 = [];
 let plogEditingId = null;
@@ -1395,25 +1673,16 @@ function renderProblemLog(){
   populateSelect(document.getElementById('plog-process'), master.proses, '- Pilih proses (opsional) -');
   populateSelect(document.getElementById('plog-machine'), master.mesin, '- Pilih mesin (opsional) -');
 
-  // ========== NOMOR PROJECT: kode pendek ==========
-  const rawProjects = [
-    ...entries.map(e => e.projectNumber),
-    ...problemLogs.map(l => l.projectNumber)
-  ];
+  const rawProjects = [...entries.map(e => e.projectNumber), ...problemLogs.map(l => l.projectNumber)];
   const projects = uniqSort(rawProjects);
-
-  // ========== PROGRAM: nama lengkap ==========
   const rawPrograms = problemLogs.map(l => l.program);
   const programs = uniqSort(rawPrograms);
 
-  // Populate filter dropdown
   populateSelect(document.getElementById('plog-filt-project'), projects, 'Semua Nomor Project');
   populateSelect(document.getElementById('plog-filt-program'), programs, 'Semua Program');
 
-  // Populate datalist
   const dlProject = document.getElementById('projectList');
   if(dlProject) dlProject.innerHTML = projects.map(p=>`<option value="${esc(p)}">`).join('');
-
   const dlProgram = document.getElementById('programList');
   if(dlProgram) dlProgram.innerHTML = programs.map(p=>`<option value="${esc(p)}">`).join('');
 
@@ -1451,8 +1720,8 @@ function renderProblemLogList(){
         <div class="plog-title-mini">
           <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:3px;">
             <span class="plog-tag ${plogPhaseClass(l.phase)}">${esc(l.phase||'-')}</span>
-            <span class="plog-tag cat" style="background:var(--blue-dim);color:var(--blue);font-weight:700;">${esc(l.projectNumber||'-')}</span>
-            ${l.program?`<span class="plog-tag cat" style="background:var(--teal-dim);color:var(--teal);">${esc(l.program)}</span>`:''}
+            <span class="plog-tag cat" style="background:var(--blue-soft);color:var(--blue);font-weight:800;">${esc(l.projectNumber||'-')}</span>
+            ${l.program?`<span class="plog-tag cat" style="background:var(--teal-soft);color:var(--teal);">${esc(l.program)}</span>`:''}
             <span class="plog-tag cat">${esc(l.category||'-')}</span>
             <span class="plog-tag ${stTag}">${esc(l.status)}</span>
             ${hasPhotos?`<span class="plog-tag cat">📷 ${hasPhotos}</span>`:''}
@@ -1592,7 +1861,6 @@ document.getElementById('plog-attach-cm1').addEventListener('change', (e)=>{ plo
 document.getElementById('plog-attach-cm2').addEventListener('change', (e)=>{ plogFilesAction2.push(...Array.from(e.target.files)); e.target.value = ''; renderPlogPreviews(); });
 document.getElementById('plogCancelBtn').addEventListener('click', resetProblemLogForm);
 
-// ============ AUTO-SUGGEST PROGRAM (hanya jika field kosong & 1 program unik) ============
 document.getElementById('plog-project').addEventListener('change', (e)=>{
   const proj = normStr(e.target.value);
   const programField = document.getElementById('plog-program');
@@ -1627,7 +1895,6 @@ document.getElementById('plogForm').addEventListener('submit', async (e)=>{
     verifiedBy: document.getElementById('plog-verifiedby').value.trim()
   };
   if(!data.date || !data.projectNumber || !data.phase || !data.category || !data.problem || !data.action){ showToast('Lengkapi field wajib'); return; }
-  // Validasi: Nomor Project tidak boleh mengandung tahun/nama program
   if(/20\d{2}|star wars|max rebo|sidekick/i.test(data.projectNumber)){
     showToast('⚠ Nomor Project salah — itu sepertinya nama Program. Gunakan kode seperti MBG 50 / PMB 181.');
     return;
@@ -1658,7 +1925,6 @@ document.getElementById('plogForm').addEventListener('submit', async (e)=>{
 document.getElementById('plogClearFilter').addEventListener('click', ()=>{ ['plog-filt-project','plog-filt-program','plog-filt-phase','plog-filt-status'].forEach(id=>document.getElementById(id).value=''); renderProblemLogList(); });
 document.getElementById('plogExportExcel').addEventListener('click', exportProblemLogExcel);
 
-/* EXPORT PROBLEM LOG KE EXCEL */
 function getFilteredProblemLogs(){
   const fp = document.getElementById('plog-filt-project').value;
   const fpr = document.getElementById('plog-filt-program').value;
@@ -1683,46 +1949,16 @@ async function exportProblemLogExcel(){
   const originalText = btn.textContent;
   btn.disabled = true; btn.textContent = 'Menyiapkan...';
   try{
-    // ============ GROUP BY NOMOR PROJECT SAJA (bukan kombinasi) ============
     const byProject = {};
-    list.forEach(l=>{ 
-      const key = normStr(l.projectNumber) || 'Tanpa Project';
-      if(!byProject[key]) byProject[key] = []; 
-      byProject[key].push(l); 
-    });
-
+    list.forEach(l=>{ const key = normStr(l.projectNumber) || 'Tanpa Project'; if(!byProject[key]) byProject[key] = []; byProject[key].push(l); });
     const wb = new ExcelJS.Workbook(); wb.creator = 'Panel Problem Produksi'; wb.created = new Date();
     const XL = { top:{style:'thin'}, left:{style:'thin'}, bottom:{style:'thin'}, right:{style:'thin'} };
     const HEADER_FILL = 'FFD9E1F2'; const GROUP_FILL = 'FFF2F2F2';
-
-    function styleCell(cell, opt){
-      opt = opt || {};
-      cell.font = { name: opt.font || 'Calibri', size: opt.sz || 10, bold: !!opt.b, italic: !!opt.i, color: opt.color ? {argb:opt.color} : undefined };
-      if(opt.fill) cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:opt.fill} };
-      cell.alignment = { horizontal: opt.h || 'left', vertical: opt.v || 'top', wrapText: opt.wrap !== false };
-      if(opt.border) cell.border = opt.border;
-    }
-    function safeMerge(ws, r1, c1, r2, c2){
-      if(r1===r2 && c1===c2) return;
-      for(let r=r1; r<=r2; r++){ for(let c=c1; c<=c2; c++){ if(ws.getCell(r,c).isMerged) return; } }
-      ws.mergeCells(r1, c1, r2, c2);
-    }
-    const imgCache = {};
-    let photoCount = 0, photoDone = 0;
-    const getImg = async (url)=>{
-      if(!url) return null;
-      if(imgCache[url]!==undefined) return imgCache[url];
-      photoCount++;
-      btn.textContent = `Mengambil foto ${photoDone+1}/${photoCount}...`;
-      const img = await loadImg(url);
-      imgCache[url] = img;
-      photoDone++;
-      return img;
-    };
-
-    // Urutkan project dengan natural sort
+    function styleCell(cell, opt){ opt = opt || {}; cell.font = { name: opt.font || 'Calibri', size: opt.sz || 10, bold: !!opt.b, italic: !!opt.i, color: opt.color ? {argb:opt.color} : undefined }; if(opt.fill) cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:opt.fill} }; cell.alignment = { horizontal: opt.h || 'left', vertical: opt.v || 'top', wrapText: opt.wrap !== false }; if(opt.border) cell.border = opt.border; }
+    function safeMerge(ws, r1, c1, r2, c2){ if(r1===r2 && c1===c2) return; for(let r=r1; r<=r2; r++){ for(let c=c1; c<=c2; c++){ if(ws.getCell(r,c).isMerged) return; } } ws.mergeCells(r1, c1, r2, c2); }
+    const imgCache = {}; let photoCount = 0, photoDone = 0;
+    const getImg = async (url)=>{ if(!url) return null; if(imgCache[url]!==undefined) return imgCache[url]; photoCount++; btn.textContent = `Mengambil foto ${photoDone+1}/${photoCount}...`; const img = await loadImg(url); imgCache[url] = img; photoDone++; return img; };
     const projectKeys = Object.keys(byProject).sort(naturalCompare);
-
     let sheetIdx = 0;
     for(const projName of projectKeys){
       const items = byProject[projName].slice().sort((a,b)=> (a.date||'').localeCompare(b.date||''));
@@ -1731,96 +1967,56 @@ async function exportProblemLogExcel(){
       const ws = wb.addWorksheet(sheetName);
       const colWidths = [5, 8, 10, 32, 10, 10, 28, 10, 22, 10, 22, 10, 22, 10, 22, 10, 10];
       colWidths.forEach((w,i)=> ws.getColumn(i+1).width = w);
-
       safeMerge(ws, 1,1, 2,12);
-      const h1 = ws.getCell(1,1);
-      h1.value = 'PROGRESS : 1 : Find Out   2 : Counter Measure    3 : Action   4 : Finish / OK';
-      styleCell(h1, { sz:9, b:true, h:'left' });
-
+      const h1 = ws.getCell(1,1); h1.value = 'PROGRESS : 1 : Find Out   2 : Counter Measure    3 : Action   4 : Finish / OK'; styleCell(h1, { sz:9, b:true, h:'left' });
       safeMerge(ws, 1,13, 1,17);
-      const h2 = ws.getCell(1,13); h2.value = 'PAGE';
-      styleCell(h2, { sz:9, b:true, h:'center', fill:GROUP_FILL });
-
+      const h2 = ws.getCell(1,13); h2.value = 'PAGE'; styleCell(h2, { sz:9, b:true, h:'center', fill:GROUP_FILL });
       safeMerge(ws, 2,13, 2,17);
-      const h2b = ws.getCell(2,13); h2b.value = '   ./';
-      styleCell(h2b, { sz:9, h:'center' });
-
+      const h2b = ws.getCell(2,13); h2b.value = '   ./'; styleCell(h2b, { sz:9, h:'center' });
       safeMerge(ws, 2,1, 2,12);
-      const h3 = ws.getCell(2,1);
-      h3.value = 'CATAGORY : CRITICAL = 3, MAJOR = 2, MINOR = 1, OK = 0       CAUSE : P : PRODUCTION,   I : INSPECTION,  PP : PILOT PRODUCTION,   A : AUDIT';
-      styleCell(h3, { sz:9, h:'left' });
-
-      const docRows = [
-        ['DESIGN NAME', '2027 Star Wars'],
-        ['DOKUMENT No.', '-'],
-        ['REVISION No.', '0'],
-        ['PROGRAM NAME', items[0] && items[0].program ? items[0].program : '']
-      ];
-      docRows.forEach((dr,i)=>{
-        const rr = 3 + i;
-        safeMerge(ws, rr,1, rr,3); styleCell(ws.getCell(rr,1), { sz:9 });
-        safeMerge(ws, rr,4, rr,5);
-        const lbl = ws.getCell(rr,4); lbl.value = dr[0]; styleCell(lbl, { sz:9, b:true, h:'left' });
-        safeMerge(ws, rr,6, rr,7);
-        const val = ws.getCell(rr,6); val.value = dr[1]; styleCell(val, { sz:9, h:'left' });
-      });
-
+      const h3 = ws.getCell(2,1); h3.value = 'CATAGORY : CRITICAL = 3, MAJOR = 2, MINOR = 1, OK = 0       CAUSE : P : PRODUCTION,   I : INSPECTION,  PP : PILOT PRODUCTION,   A : AUDIT'; styleCell(h3, { sz:9, h:'left' });
+      const docRows = [['DESIGN NAME', '2027 Star Wars'],['DOKUMENT No.', '-'],['REVISION No.', '0'],['PROGRAM NAME', items[0] && items[0].program ? items[0].program : '']];
+      docRows.forEach((dr,i)=>{ const rr = 3 + i; safeMerge(ws, rr,1, rr,3); styleCell(ws.getCell(rr,1), { sz:9 }); safeMerge(ws, rr,4, rr,5); const lbl = ws.getCell(rr,4); lbl.value = dr[0]; styleCell(lbl, { sz:9, b:true, h:'left' }); safeMerge(ws, rr,6, rr,7); const val = ws.getCell(rr,6); val.value = dr[1]; styleCell(val, { sz:9, h:'left' }); });
       safeMerge(ws, 3,8, 6,9);
-      const title = ws.getCell(3,8); title.value = 'PROBLEM HISTORY SHEET';
-      styleCell(title, { sz:14, b:true, h:'center', v:'middle' });
-
+      const title = ws.getCell(3,8); title.value = 'PROBLEM HISTORY SHEET'; styleCell(title, { sz:14, b:true, h:'center', v:'middle' });
       const c3_10 = ws.getCell(3,10); c3_10.value = 'DISTRIBUTION'; styleCell(c3_10, { sz:8, b:true, h:'center', fill:GROUP_FILL });
       const c3_11 = ws.getCell(3,11); c3_11.value = 'PREPARED'; styleCell(c3_11, { sz:8, b:true, h:'center', fill:GROUP_FILL });
       const c3_12 = ws.getCell(3,12); c3_12.value = 'CHECKED'; styleCell(c3_12, { sz:8, b:true, h:'center', fill:GROUP_FILL });
       safeMerge(ws, 3,13, 3,17);
       const c3_13 = ws.getCell(3,13); c3_13.value = 'APPROVED'; styleCell(c3_13, { sz:8, b:true, h:'center', fill:GROUP_FILL });
-
       const c4_10 = ws.getCell(4,10); c4_10.value = 'Quality Dept.'; styleCell(c4_10, { sz:8, h:'center' });
-
-      // NO. PROJECT
       safeMerge(ws, 4,8, 4,9);
       const c48 = ws.getCell(4,8); c48.value = 'NO. PROJECT'; styleCell(c48, { sz:8, b:true, h:'left' });
       safeMerge(ws, 4,10, 4,17);
       const c410 = ws.getCell(4,10); c410.value = projName; styleCell(c410, { sz:8, b:true, h:'left' });
-
       safeMerge(ws, 5,8, 5,9);
       const c58 = ws.getCell(5,8); c58.value = 'CUSTOMER'; styleCell(c58, { sz:8, b:true, h:'left' });
       safeMerge(ws, 5,10, 5,17);
       const c510 = ws.getCell(5,10); c510.value = 'TMS'; styleCell(c510, { sz:8, b:true, h:'left' });
-
       safeMerge(ws, 6,8, 6,9);
       const c68 = ws.getCell(6,8); c68.value = 'PROGRAM NAME'; styleCell(c68, { sz:8, b:true, h:'left' });
       safeMerge(ws, 6,10, 6,17);
       const c610 = ws.getCell(6,10); c610.value = items[0] && items[0].program ? items[0].program : ''; styleCell(c610, { sz:8, h:'left' });
-
       safeMerge(ws, 7,8, 7,9);
       const c78 = ws.getCell(7,8); c78.value = 'SUPPLIER'; styleCell(c78, { sz:8, b:true, h:'left' });
       safeMerge(ws, 7,10, 7,17);
       styleCell(ws.getCell(7,10), { sz:8, h:'left' });
-
       ws.getRow(8).height = 6;
-
       const headerMain = { 1:'NO.', 2:'PROGRES', 3:'PROBLEMS CONTENTS', 5:'DETAIL', 7:'IDENTIFICATION', 9:'COUNTER MEASURE ( 1 )', 11:'PIC', 12:'COUNTER MEASURE ( 2 )', 14:'PIC', 15:'PREFENTIVE ACTION ( 3 )', 17:'PIC' };
-      Object.entries(headerMain).forEach(([c,label])=>{
-        const cc = +c; const cell = ws.getCell(9, cc); cell.value = label;
-        styleCell(cell, { sz:9, b:true, h:'center', v:'middle', fill:HEADER_FILL, border:XL });
-      });
+      Object.entries(headerMain).forEach(([c,label])=>{ const cc = +c; const cell = ws.getCell(9, cc); cell.value = label; styleCell(cell, { sz:9, b:true, h:'center', v:'middle', fill:HEADER_FILL, border:XL }); });
       for(let cc=1; cc<=17; cc++){ if(!headerMain[cc]) styleCell(ws.getCell(9,cc), { fill:HEADER_FILL, border:XL }); }
       safeMerge(ws, 9,3, 9,4); safeMerge(ws, 9,5, 9,6); safeMerge(ws, 9,7, 9,8);
       safeMerge(ws, 9,9, 9,10); safeMerge(ws, 9,12, 9,13); safeMerge(ws, 9,15, 9,16);
       ws.getRow(9).height = 22;
-
       ws.getCell(10,2).value = 'CATEGORY'; styleCell(ws.getCell(10,2), { sz:9, b:true, h:'center', v:'middle', fill:HEADER_FILL, border:XL });
       ws.getCell(10,11).value = 'TARGET'; styleCell(ws.getCell(10,11), { sz:9, b:true, h:'center', v:'middle', fill:HEADER_FILL, border:XL });
       ws.getCell(10,14).value = 'TARGET'; styleCell(ws.getCell(10,14), { sz:9, b:true, h:'center', v:'middle', fill:HEADER_FILL, border:XL });
       ws.getCell(10,17).value = 'TARGET'; styleCell(ws.getCell(10,17), { sz:9, b:true, h:'center', v:'middle', fill:HEADER_FILL, border:XL });
       for(let cc=1; cc<=17; cc++){ if(cc!==2 && cc!==11 && cc!==14 && cc!==17) styleCell(ws.getCell(10,cc), { fill:HEADER_FILL, border:XL }); }
       ws.getRow(10).height = 18;
-
       const c11 = ws.getCell(11, 1); c11.value = 'CAUSE'; styleCell(c11, { sz:9, b:true, h:'center', v:'middle', border:XL });
       for(let cc=2; cc<=17; cc++){ styleCell(ws.getCell(11,cc), { sz:9, border:XL }); }
       ws.getRow(11).height = 16;
-
       let r = 12;
       for(let idx=0; idx<items.length; idx++){
         const l = items[idx];
@@ -1831,111 +2027,46 @@ async function exportProblemLogExcel(){
         const imgCM1 = photoCM1 ? await getImg(photoCM1) : null;
         const imgCM2 = photoCM2 ? await getImg(photoCM2) : null;
         const hasAnyPhoto = imgProblem || imgCM1 || imgCM2;
-        const baseRows = 5;
-        const extraRows = hasAnyPhoto ? 13 : 0;
-        const rowSpan = baseRows + extraRows;
-        const startR = r;
-        const endR = r + rowSpan - 1;
-
-        safeMerge(ws, startR,1, endR,1);
-        ws.getCell(startR,1).value = idx + 1;
-        styleCell(ws.getCell(startR,1), { sz:9, b:true, h:'center', v:'center', border:XL });
-
-        safeMerge(ws, startR,2, endR,2);
-        ws.getCell(startR,2).value = categoryToNumber(l.category);
-        styleCell(ws.getCell(startR,2), { sz:9, b:true, h:'center', v:'center', border:XL });
-
-        safeMerge(ws, startR,3, endR,4);
-        ws.getCell(startR,3).value = `Item :\n${l.problem || '-'}`;
-        styleCell(ws.getCell(startR,3), { sz:9, h:'left', v:'top', wrap:true, border:XL });
-
+        const baseRows = 5; const extraRows = hasAnyPhoto ? 13 : 0; const rowSpan = baseRows + extraRows;
+        const startR = r; const endR = r + rowSpan - 1;
+        safeMerge(ws, startR,1, endR,1); ws.getCell(startR,1).value = idx + 1; styleCell(ws.getCell(startR,1), { sz:9, b:true, h:'center', v:'center', border:XL });
+        safeMerge(ws, startR,2, endR,2); ws.getCell(startR,2).value = categoryToNumber(l.category); styleCell(ws.getCell(startR,2), { sz:9, b:true, h:'center', v:'center', border:XL });
+        safeMerge(ws, startR,3, endR,4); ws.getCell(startR,3).value = `Item :\n${l.problem || '-'}`; styleCell(ws.getCell(startR,3), { sz:9, h:'left', v:'top', wrap:true, border:XL });
         safeMerge(ws, startR,5, endR,6);
-        const detailLines = [];
-        if(l.standard) detailLines.push('STANDARD: ' + l.standard);
-        if(l.actual) detailLines.push('ACTUAL: ' + l.actual);
-        detailLines.push('CAUSE: ' + (phaseToCauseCode(l.phase) || '-'));
-        ws.getCell(startR,5).value = detailLines.join('\n');
-        styleCell(ws.getCell(startR,5), { sz:9, h:'left', v:'top', wrap:true, border:XL });
-
-        safeMerge(ws, startR,7, endR,8);
-        ws.getCell(startR,7).value = l.rootCause || '-';
-        styleCell(ws.getCell(startR,7), { sz:8.5, h:'left', v:'top', wrap:true, border:XL });
-
-        safeMerge(ws, startR,9, endR,10);
-        ws.getCell(startR,9).value = l.action || '-';
-        styleCell(ws.getCell(startR,9), { sz:8.5, h:'left', v:'top', wrap:true, border:XL });
-
+        const detailLines = []; if(l.standard) detailLines.push('STANDARD: ' + l.standard); if(l.actual) detailLines.push('ACTUAL: ' + l.actual); detailLines.push('CAUSE: ' + (phaseToCauseCode(l.phase) || '-'));
+        ws.getCell(startR,5).value = detailLines.join('\n'); styleCell(ws.getCell(startR,5), { sz:9, h:'left', v:'top', wrap:true, border:XL });
+        safeMerge(ws, startR,7, endR,8); ws.getCell(startR,7).value = l.rootCause || '-'; styleCell(ws.getCell(startR,7), { sz:8.5, h:'left', v:'top', wrap:true, border:XL });
+        safeMerge(ws, startR,9, endR,10); ws.getCell(startR,9).value = l.action || '-'; styleCell(ws.getCell(startR,9), { sz:8.5, h:'left', v:'top', wrap:true, border:XL });
         safeMerge(ws, startR,11, endR,11);
-        const picText = [];
-        if(l.pic) picText.push('PIC: ' + l.pic);
-        if(l.implDate) picText.push('Due Date: ' + dateOnly(l.implDate));
-        picText.push('Result: ' + (l.result1 || l.status || '-'));
-        ws.getCell(startR,11).value = picText.join('\n');
-        styleCell(ws.getCell(startR,11), { sz:8.5, h:'left', v:'top', wrap:true, border:XL });
-
-        safeMerge(ws, startR,12, endR,13);
-        ws.getCell(startR,12).value = l.action2 || '';
-        styleCell(ws.getCell(startR,12), { sz:8.5, h:'left', v:'top', wrap:true, border:XL });
-
+        const picText = []; if(l.pic) picText.push('PIC: ' + l.pic); if(l.implDate) picText.push('Due Date: ' + dateOnly(l.implDate)); picText.push('Result: ' + (l.result1 || l.status || '-'));
+        ws.getCell(startR,11).value = picText.join('\n'); styleCell(ws.getCell(startR,11), { sz:8.5, h:'left', v:'top', wrap:true, border:XL });
+        safeMerge(ws, startR,12, endR,13); ws.getCell(startR,12).value = l.action2 || ''; styleCell(ws.getCell(startR,12), { sz:8.5, h:'left', v:'top', wrap:true, border:XL });
         safeMerge(ws, startR,14, endR,14);
-        const pic2Text = [];
-        if(l.pic2) pic2Text.push('PIC: ' + l.pic2);
-        if(l.implDate2) pic2Text.push('Due Date: ' + dateOnly(l.implDate2));
-        if(l.result2) pic2Text.push('Result: ' + l.result2);
-        ws.getCell(startR,14).value = pic2Text.join('\n');
-        styleCell(ws.getCell(startR,14), { sz:8.5, h:'left', v:'top', wrap:true, border:XL });
-
-        safeMerge(ws, startR,15, endR,16);
-        ws.getCell(startR,15).value = l.preventive || '-';
-        styleCell(ws.getCell(startR,15), { sz:8.5, h:'left', v:'top', wrap:true, border:XL });
-
+        const pic2Text = []; if(l.pic2) pic2Text.push('PIC: ' + l.pic2); if(l.implDate2) pic2Text.push('Due Date: ' + dateOnly(l.implDate2)); if(l.result2) pic2Text.push('Result: ' + l.result2);
+        ws.getCell(startR,14).value = pic2Text.join('\n'); styleCell(ws.getCell(startR,14), { sz:8.5, h:'left', v:'top', wrap:true, border:XL });
+        safeMerge(ws, startR,15, endR,16); ws.getCell(startR,15).value = l.preventive || '-'; styleCell(ws.getCell(startR,15), { sz:8.5, h:'left', v:'top', wrap:true, border:XL });
         safeMerge(ws, startR,17, endR,17);
-        const pic3Text = [];
-        if(l.verifiedBy) pic3Text.push('Verified: ' + l.verifiedBy);
-        ws.getCell(startR,17).value = pic3Text.join('\n');
-        styleCell(ws.getCell(startR,17), { sz:8.5, h:'left', v:'top', wrap:true, border:XL });
-
-        ws.getRow(startR).height = 40;
-        for(let k=1; k<rowSpan; k++) ws.getRow(startR+k).height = 20;
-
+        const pic3Text = []; if(l.verifiedBy) pic3Text.push('Verified: ' + l.verifiedBy);
+        ws.getCell(startR,17).value = pic3Text.join('\n'); styleCell(ws.getCell(startR,17), { sz:8.5, h:'left', v:'top', wrap:true, border:XL });
+        ws.getRow(startR).height = 40; for(let k=1; k<rowSpan; k++) ws.getRow(startR+k).height = 20;
         const photoWidth = 180, photoHeight = 130;
-        if(imgProblem){
-          const imgId = wb.addImage({ buffer: imgProblem.buffer, extension: imgProblem.extension });
-          ws.addImage(imgId, { tl: { col: 4, row: startR }, ext: { width: photoWidth, height: photoHeight } });
-        }
-        if(imgCM1){
-          const imgId = wb.addImage({ buffer: imgCM1.buffer, extension: imgCM1.extension });
-          ws.addImage(imgId, { tl: { col: 8, row: startR }, ext: { width: photoWidth, height: photoHeight } });
-        }
-        if(imgCM2){
-          const imgId = wb.addImage({ buffer: imgCM2.buffer, extension: imgCM2.extension });
-          ws.addImage(imgId, { tl: { col: 11, row: startR }, ext: { width: photoWidth, height: photoHeight } });
-        }
-
-        r += rowSpan;
-        ws.getRow(r).height = 6;
-        r += 1;
+        if(imgProblem){ const imgId = wb.addImage({ buffer: imgProblem.buffer, extension: imgProblem.extension }); ws.addImage(imgId, { tl: { col: 4, row: startR }, ext: { width: photoWidth, height: photoHeight } }); }
+        if(imgCM1){ const imgId = wb.addImage({ buffer: imgCM1.buffer, extension: imgCM1.extension }); ws.addImage(imgId, { tl: { col: 8, row: startR }, ext: { width: photoWidth, height: photoHeight } }); }
+        if(imgCM2){ const imgId = wb.addImage({ buffer: imgCM2.buffer, extension: imgCM2.extension }); ws.addImage(imgId, { tl: { col: 11, row: startR }, ext: { width: photoWidth, height: photoHeight } }); }
+        r += rowSpan; ws.getRow(r).height = 6; r += 1;
       }
-
-      safeMerge(ws, r, 1, r, 3);
-      styleCell(ws.getCell(r,1), { sz:8, b:true, h:'left', border:XL });
-      ws.getCell(r,1).value = 'FR.ENGG.01-006';
-      for(let cc=4; cc<=17; cc++) styleCell(ws.getCell(r,cc), { border:XL });
-      ws.getRow(r).height = 20;
-
+      safeMerge(ws, r, 1, r, 3); styleCell(ws.getCell(r,1), { sz:8, b:true, h:'left', border:XL }); ws.getCell(r,1).value = 'FR.ENGG.01-006';
+      for(let cc=4; cc<=17; cc++) styleCell(ws.getCell(r,cc), { border:XL }); ws.getRow(r).height = 20;
       ws.pageSetup = { orientation:'landscape', fitToPage:true, fitToWidth:1, fitToHeight:0, paperSize: 9 };
       ws.views = [{ state:'frozen', ySplit:11 }];
     }
-
     btn.textContent = 'Menyusun file...';
     const buf = await wb.xlsx.writeBuffer();
     const blob = new Blob([buf], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url;
+    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url;
     const today = new Date().toISOString().slice(0,10);
     a.download = `Problem_Historical_Sheet-${today}.xlsx`; a.click();
-    URL.revokeObjectURL(url);
-    showToast('File Excel berhasil dibuat dengan foto');
+    URL.revokeObjectURL(url); showToast('File Excel berhasil dibuat dengan foto');
   }catch(err){ console.error(err); showToast('Gagal membuat Excel: '+err.message); }
   finally { btn.disabled = false; btn.textContent = originalText; }
 }
@@ -2049,7 +2180,7 @@ function renderVisualForm(){
   if(!visSel.part || !doc.parts.includes(visSel.part)) visSel.part = doc.parts[0];
   if(!visState || visState.k !== `${visSel.program}|${visSel.part}`) loadVisState();
   const V = visState;
-  view.innerHTML = `<div class="panel"><h2>Input Visual Check per Program &amp; Part</h2><div class="project-summary-row"><select id="vs-program">${doc.programs.map(p=>`<option ${p===visSel.program?'selected':''}>${esc(p)}</option>`).join('')}</select><select id="vs-part">${doc.parts.map(p=>`<option ${p===visSel.part?'selected':''}>${esc(p)}</option>`).join('')}</select></div><div class="field"><label>Foto Part (desain / artwork)</label><div class="photo-input-wrap"><input type="file" id="vs-partphoto" accept="image/*"><img class="photo-preview ${V.partPhoto||V.partFile?'show':''}" id="vs-partprev" src="${esc(V.partFile?URL.createObjectURL(V.partFile):V.partPhoto)}"></div></div><div class="pl-proc-grid pl-wide">${PROC.map((pr,i)=>{ const P = V.procs[i]; return `<div class="pl-proc"><div class="pl-proc-h">${esc(pr)}</div>${P.findings.map((f,fi)=>`<div class="pl-find"><div class="pl-find-h"><span>Temuan ${fi+1}</span><button type="button" class="btn danger small" data-rmf="${i}:${fi}">Hapus</button></div><textarea rows="2" data-ft="${i}:${fi}" placeholder="Deskripsi temuan / problem">${esc(f.text)}</textarea><div class="pl-cmp-cols"><div><label class="pl-lbl bad">Foto Problem</label><div class="pl-thumbs">${imgThumbs(f.problem,i,fi,'problem')}</div><input type="file" accept="image/*" multiple data-addimg="${i}:${fi}:problem"></div><div><label class="pl-lbl good">Foto Sample / Standar</label><div class="pl-thumbs">${imgThumbs(f.sample,i,fi,'sample')}</div><input type="file" accept="image/*" multiple data-addimg="${i}:${fi}:sample"></div></div></div>`).join('')}<button type="button" class="btn ghost small" data-addf="${i}" style="margin-bottom:12px;">+ Tambah Temuan</button><div class="field"><label>Improvement</label><textarea rows="2" data-imp="${i}" placeholder="cth. CONTINUE TO MASSPRODUCTION">${esc(P.improvement)}</textarea></div><div class="field"><label>Status</label><select data-st="${i}">${VSTAT.map(s=>`<option ${s===P.status?'selected':''}>${s}</option>`).join('')}</select></div></div>`;}).join('')}</div><button class="btn" id="vs-save">Simpan Part Ini</button><span id="vs-msg" style="margin-left:10px;color:var(--green);font-size:12.5px;"></span></div>`;
+  view.innerHTML = `<div class="panel"><h2>Input Visual Check per Program &amp; Part</h2><div class="project-summary-row"><select id="vs-program">${doc.programs.map(p=>`<option ${p===visSel.program?'selected':''}>${esc(p)}</option>`).join('')}</select><select id="vs-part">${doc.parts.map(p=>`<option ${p===visSel.part?'selected':''}>${esc(p)}</option>`).join('')}</select></div><div class="field"><label>Foto Part (desain / artwork)</label><div class="photo-input-wrap"><input type="file" id="vs-partphoto" accept="image/*"><img class="photo-preview ${V.partPhoto||V.partFile?'show':''}" id="vs-partprev" src="${esc(V.partFile?URL.createObjectURL(V.partFile):V.partPhoto)}"></div></div><div class="pl-proc-grid pl-wide">${PROC.map((pr,i)=>{ const P = V.procs[i]; return `<div class="pl-proc"><div class="pl-proc-h">${esc(pr)}</div>${P.findings.map((f,fi)=>`<div class="pl-find"><div class="pl-find-h"><span>Temuan ${fi+1}</span><button type="button" class="btn danger small" data-rmf="${i}:${fi}">Hapus</button></div><textarea rows="2" data-ft="${i}:${fi}" placeholder="Deskripsi temuan / problem">${esc(f.text)}</textarea><div class="pl-cmp-cols"><div><label class="pl-lbl bad">Foto Problem</label><div class="pl-thumbs">${imgThumbs(f.problem,i,fi,'problem')}</div><input type="file" accept="image/*" multiple data-addimg="${i}:${fi}:problem"></div><div><label class="pl-lbl good">Foto Sample / Standar</label><div class="pl-thumbs">${imgThumbs(f.sample,i,fi,'sample')}</div><input type="file" accept="image/*" multiple data-addimg="${i}:${fi}:sample"></div></div></div>`).join('')}<button type="button" class="btn ghost small" data-addf="${i}" style="margin-bottom:12px;">+ Tambah Temuan</button><div class="field"><label>Improvement</label><textarea rows="2" data-imp="${i}" placeholder="cth. CONTINUE TO MASSPRODUCTION">${esc(P.improvement)}</textarea></div><div class="field"><label>Status</label><select data-st="${i}">${VSTAT.map(s=>`<option ${s===P.status?'selected':''}>${s}</option>`).join('')}</select></div></div>`;}).join('')}</div><button class="btn" id="vs-save">Simpan Part Ini</button><span id="vs-msg" style="margin-left:10px;color:var(--green);font-size:12.5px;font-weight:700;"></span></div>`;
   P$('vs-program').addEventListener('change', e=>{ visSel.program=e.target.value; renderVisualForm(); });
   P$('vs-part').addEventListener('change', e=>{ visSel.part=e.target.value; renderVisualForm(); });
   P$('vs-partphoto').addEventListener('change', e=>{ V.partFile = e.target.files[0]||null; if(V.partFile){ const im=P$('vs-partprev'); im.src=URL.createObjectURL(V.partFile); im.classList.add('show'); } });
@@ -2104,12 +2235,12 @@ function renderPcpView(){
   const f = pcpForm; f.points.forEach(hydratePcpPoint); const doc = curDoc(); const view = P$('pilotView');
   const saved = itemsOfKind('pcp').sort((a,b)=>(b.data.date||'').localeCompare(a.data.date||''));
   const resCell = r => { const x = pcpRowResult(f.points,r); return x ? `<span class="mp-badge ${x==='OK'?'b-selesai':'b-ng'}">${x}</span>` : '-'; };
-  view.innerHTML = `<div class="panel"><h2>${f.id?'Ubah':'Input'} PCP Critical Dimension Check</h2><div class="form-grid"><div class="field"><label>Tanggal</label><input type="date" data-pf="date" value="${esc(f.date)}"></div><div class="field"><label>Part Name</label><input type="text" data-pf="part" list="pcpParts" value="${esc(f.part)}" placeholder="cth. TUCK BOX MBG53-55 Unfold"><datalist id="pcpParts">${doc.parts.map(p=>`<option value="${esc(p)}">`).join('')}</datalist></div><div class="field"><label>Equipment</label><input type="text" data-pf="equipment" value="${esc(f.equipment)}"></div></div><div class="field"><label>Critical Point, Nominal &amp; Toleransi <span style="color:var(--text-dim);font-weight:400;">(isi nominal dan toleransi ± agar hasil OK/NG dihitung otomatis)</span></label>${f.points.map((p,i)=>`<div class="addrow" style="margin-bottom:6px;"><input type="text" data-pn="${i}" data-pk="name" value="${esc(p.name)}" placeholder="Critical point"><input type="text" inputmode="decimal" data-pn="${i}" data-pk="nom" value="${esc(p.nom)}" placeholder="Nominal, cth. 68.5" style="max-width:130px;"><span style="align-self:center;color:var(--text-dim);">±</span><input type="text" inputmode="decimal" data-pn="${i}" data-pk="tol" value="${esc(p.tol)}" placeholder="Toleransi, cth. 1.0" style="max-width:130px;"><input type="text" data-pn="${i}" data-pk="unit" value="${esc(p.unit)}" placeholder="mm" style="max-width:70px;"><button type="button" class="btn ghost small" data-rmpoint="${i}">✕</button></div>`).join('')}${f.points.length<3?'<button type="button" class="btn ghost small" id="pcp-addpoint">+ Critical Point</button>':''}</div><div class="field"><label>Hasil Ukur per Cavity <span style="margin-left:8px;">Hasil Keseluruhan: <span id="pcp-overall">${pcpOverallBadge(pcpOverall(f.points,f.rows))}</span></span></label><div style="overflow-x:auto;"><table><thead><tr><th>No Cavity</th>${f.points.map(p=>`<th>${esc(p.name||'-')}<div class="mono" style="font-weight:400;color:var(--text-dim);font-size:11px;">${esc(p.acc||'')}</div></th>`).join('')}<th>Result</th><th></th></tr></thead><tbody>${f.rows.map((r,ri)=>`<tr><td class="mono">${ri+1}</td>${f.points.map((p,ci)=>`<td><input type="text" inputmode="decimal" data-cell="${ri}:${ci}" value="${esc(r[ci]==null?'':r[ci])}" style="width:90px;${pcpCellNg(p,r[ci])?'border-color:var(--red);background:var(--red-dim);':''}"></td>`).join('')}<td id="pcp-res-${ri}">${resCell(r)}</td><td><button type="button" class="btn ghost small" data-rmrow="${ri}">✕</button></td></tr>`).join('')}</tbody></table></div><button type="button" class="btn ghost small" id="pcp-addrow" style="margin-top:6px;">+ Cavity</button><button type="button" class="btn ghost small" id="pcp-add5" style="margin-top:6px;">+ 5 Cavity</button></div><div class="field"><label>Foto / Gambar Part (opsional)</label><div class="photo-input-wrap"><input type="file" id="pcp-photo" accept="image/*"><img class="photo-preview ${f.photo?'show':''}" id="pcp-preview" src="${esc(f.photo||'')}"></div></div><button class="btn" id="pcp-save">${f.id?'Update':'Simpan'} PCP</button>${f.id?'<button class="btn ghost" id="pcp-cancel" style="margin-left:8px;">Batal Edit</button>':''}</div><div class="panel"><h2>PCP Tersimpan <span class="n">${saved.length}</span></h2>${saved.length? `<table><thead><tr><th>Tanggal</th><th>Part</th><th>Cavity</th><th>OK</th><th>NG</th><th>Hasil</th><th></th></tr></thead><tbody>${saved.map(s=>{ const rs = s.data.rows.map(r=>pcpRowResult(s.data.points,r)); const ok = rs.filter(x=>x==='OK').length, ng = rs.filter(x=>x==='NG').length; return `<tr><td class="mono">${esc(fmtShortDate(s.data.date))}</td><td>${esc(s.data.part)}</td><td class="mono">${s.data.rows.length}</td><td class="mono" style="color:var(--green)">${ok}</td><td class="mono" style="color:${ng?'var(--red)':'var(--text-dim)'}">${ng}</td><td>${pcpOverallBadge(pcpOverall(s.data.points,s.data.rows))}</td><td style="text-align:right;"><button class="btn ghost small" data-pcp-edit="${s.id}">Edit</button> <button class="btn danger small" data-pcp-del="${s.id}">Hapus</button></td></tr>`;}).join('')}</tbody></table>` : '<div class="empty">Belum ada data PCP.</div>'}</div>`;
+  view.innerHTML = `<div class="panel"><h2>${f.id?'Ubah':'Input'} PCP Critical Dimension Check</h2><div class="form-grid"><div class="field"><label>Tanggal</label><input type="date" data-pf="date" value="${esc(f.date)}"></div><div class="field"><label>Part Name</label><input type="text" data-pf="part" list="pcpParts" value="${esc(f.part)}" placeholder="cth. TUCK BOX MBG53-55 Unfold"><datalist id="pcpParts">${doc.parts.map(p=>`<option value="${esc(p)}">`).join('')}</datalist></div><div class="field"><label>Equipment</label><input type="text" data-pf="equipment" value="${esc(f.equipment)}"></div></div><div class="field"><label>Critical Point, Nominal &amp; Toleransi</label>${f.points.map((p,i)=>`<div class="addrow" style="margin-bottom:6px;"><input type="text" data-pn="${i}" data-pk="name" value="${esc(p.name)}" placeholder="Critical point"><input type="text" inputmode="decimal" data-pn="${i}" data-pk="nom" value="${esc(p.nom)}" placeholder="Nominal" style="max-width:120px;"><span style="align-self:center;color:var(--text-dim);">±</span><input type="text" inputmode="decimal" data-pn="${i}" data-pk="tol" value="${esc(p.tol)}" placeholder="Tol" style="max-width:110px;"><input type="text" data-pn="${i}" data-pk="unit" value="${esc(p.unit)}" placeholder="mm" style="max-width:70px;"><button type="button" class="btn ghost small" data-rmpoint="${i}">✕</button></div>`).join('')}${f.points.length<3?'<button type="button" class="btn ghost small" id="pcp-addpoint">+ Critical Point</button>':''}</div><div class="field"><label>Hasil Ukur per Cavity <span style="margin-left:8px;">Hasil: <span id="pcp-overall">${pcpOverallBadge(pcpOverall(f.points,f.rows))}</span></span></label><div style="overflow-x:auto;"><table><thead><tr><th>No Cavity</th>${f.points.map(p=>`<th>${esc(p.name||'-')}<div class="mono" style="font-weight:400;color:var(--text-dim);font-size:11px;">${esc(p.acc||'')}</div></th>`).join('')}<th>Result</th><th></th></tr></thead><tbody>${f.rows.map((r,ri)=>`<tr><td class="mono">${ri+1}</td>${f.points.map((p,ci)=>`<td><input type="text" inputmode="decimal" data-cell="${ri}:${ci}" value="${esc(r[ci]==null?'':r[ci])}" style="width:90px;${pcpCellNg(p,r[ci])?'border-color:var(--red);background:var(--red-soft);':''}"></td>`).join('')}<td id="pcp-res-${ri}">${resCell(r)}</td><td><button type="button" class="btn ghost small" data-rmrow="${ri}">✕</button></td></tr>`).join('')}</tbody></table></div><button type="button" class="btn ghost small" id="pcp-addrow" style="margin-top:6px;">+ Cavity</button><button type="button" class="btn ghost small" id="pcp-add5" style="margin-top:6px;">+ 5 Cavity</button></div><div class="field"><label>Foto / Gambar Part (opsional)</label><div class="photo-input-wrap"><input type="file" id="pcp-photo" accept="image/*"><img class="photo-preview ${f.photo?'show':''}" id="pcp-preview" src="${esc(f.photo||'')}"></div></div><button class="btn" id="pcp-save">${f.id?'Update':'Simpan'} PCP</button>${f.id?'<button class="btn ghost" id="pcp-cancel" style="margin-left:8px;">Batal Edit</button>':''}</div><div class="panel"><h2>PCP Tersimpan <span class="n">${saved.length}</span></h2>${saved.length? `<table><thead><tr><th>Tanggal</th><th>Part</th><th>Cavity</th><th>OK</th><th>NG</th><th>Hasil</th><th></th></tr></thead><tbody>${saved.map(s=>{ const rs = s.data.rows.map(r=>pcpRowResult(s.data.points,r)); const ok = rs.filter(x=>x==='OK').length, ng = rs.filter(x=>x==='NG').length; return `<tr><td class="mono">${esc(fmtShortDate(s.data.date))}</td><td>${esc(s.data.part)}</td><td class="mono">${s.data.rows.length}</td><td class="mono" style="color:var(--green)">${ok}</td><td class="mono" style="color:${ng?'var(--red)':'var(--text-dim)'}">${ng}</td><td>${pcpOverallBadge(pcpOverall(s.data.points,s.data.rows))}</td><td style="text-align:right;"><button class="btn ghost small" data-pcp-edit="${s.id}">Edit</button> <button class="btn danger small" data-pcp-del="${s.id}">Hapus</button></td></tr>`;}).join('')}</tbody></table>` : '<div class="empty">Belum ada data PCP.</div>'}</div>`;
   view.querySelectorAll('[data-pf]').forEach(el=>el.addEventListener('input', ()=>{ f[el.dataset.pf]=el.value; }));
   view.querySelectorAll('[data-pn]').forEach(el=>el.addEventListener('change', ()=>{ const pt = f.points[+el.dataset.pn]; pt[el.dataset.pk]=el.value; if(['nom','tol','unit'].includes(el.dataset.pk)) pt.acc = buildPcpAcc(pt); renderPcpView(); }));
   view.querySelectorAll('[data-rmpoint]').forEach(b=>b.addEventListener('click', ()=>{ if(f.points.length<=1) return; const i=+b.dataset.rmpoint; f.points.splice(i,1); f.rows.forEach(r=>r.splice(i,1)); renderPcpView(); }));
   view.querySelectorAll('[data-rmrow]').forEach(b=>b.addEventListener('click', ()=>{ if(f.rows.length<=1) return; f.rows.splice(+b.dataset.rmrow,1); renderPcpView(); }));
-  view.querySelectorAll('[data-cell]').forEach(el=>el.addEventListener('input', ()=>{ const [r,c] = el.dataset.cell.split(':').map(Number); f.rows[r][c]=el.value; P$('pcp-res-'+r).innerHTML = resCell(f.rows[r]); const bad = pcpCellNg(f.points[c], el.value); el.style.borderColor = bad ? 'var(--red)' : ''; el.style.background = bad ? 'var(--red-dim)' : ''; P$('pcp-overall').innerHTML = pcpOverallBadge(pcpOverall(f.points,f.rows)); }));
+  view.querySelectorAll('[data-cell]').forEach(el=>el.addEventListener('input', ()=>{ const [r,c] = el.dataset.cell.split(':').map(Number); f.rows[r][c]=el.value; P$('pcp-res-'+r).innerHTML = resCell(f.rows[r]); const bad = pcpCellNg(f.points[c], el.value); el.style.borderColor = bad ? 'var(--red)' : ''; el.style.background = bad ? 'var(--red-soft)' : ''; P$('pcp-overall').innerHTML = pcpOverallBadge(pcpOverall(f.points,f.rows)); }));
   if(P$('pcp-addpoint')) P$('pcp-addpoint').addEventListener('click', ()=>{ f.points.push({name:'',acc:'',nom:'',tol:'',unit:'mm'}); f.rows.forEach(r=>r.push('')); renderPcpView(); });
   const addRows = n => { for(let k=0;k<n;k++) f.rows.push(f.points.map(()=>'')); renderPcpView(); };
   P$('pcp-addrow').addEventListener('click', ()=>addRows(1));
@@ -2165,7 +2296,7 @@ function renderSampView(){
 function getChecklist(){ const it = getItem('checklist','main'); return it ? JSON.parse(JSON.stringify(it.data)) : defaultChecklist(); }
 function renderCheckView(){
   const cl = getChecklist(); const view = P$('pilotView');
-  view.innerHTML = `<div class="panel"><h2>Summary Requirement Pilot Production &amp; Mass Production <span class="n">perubahan tersimpan otomatis</span></h2><div style="overflow-x:auto;"><table><thead><tr><th>No</th><th>Point Check</th><th>Status</th><th>Remark / PIC</th></tr></thead><tbody>${cl.groups.map((g,gi)=>`<tr style="background:var(--panel-2);"><td class="mono">${esc(g.no)}</td><td colspan="2"><b>${esc(g.title)}</b></td><td><input type="text" data-remark="${gi}" value="${esc(g.remark||'')}" placeholder="PIC"></td></tr>${g.items.map((it,ii)=>`<tr><td></td><td>${esc(it.text)}</td><td>${it.noStatus?'':`<select data-cs="${gi}:${ii}">${['-','OK','NOT OK'].map(s=>`<option ${s===it.status?'selected':''}>${s}</option>`).join('')}</select>`}</td><td></td></tr>`).join('')}`).join('')}</tbody></table></div><span id="cl-msg" style="font-size:12.5px;color:var(--green);"></span></div>`;
+  view.innerHTML = `<div class="panel"><h2>Summary Requirement Pilot Production &amp; Mass Production <span class="n">perubahan tersimpan otomatis</span></h2><div style="overflow-x:auto;"><table><thead><tr><th>No</th><th>Point Check</th><th>Status</th><th>Remark / PIC</th></tr></thead><tbody>${cl.groups.map((g,gi)=>`<tr style="background:var(--card-soft);"><td class="mono">${esc(g.no)}</td><td colspan="2"><b>${esc(g.title)}</b></td><td><input type="text" data-remark="${gi}" value="${esc(g.remark||'')}" placeholder="PIC"></td></tr>${g.items.map((it,ii)=>`<tr><td></td><td>${esc(it.text)}</td><td>${it.noStatus?'':`<select data-cs="${gi}:${ii}">${['-','OK','NOT OK'].map(s=>`<option ${s===it.status?'selected':''}>${s}</option>`).join('')}</select>`}</td><td></td></tr>`).join('')}`).join('')}</tbody></table></div><span id="cl-msg" style="font-size:12.5px;color:var(--green);font-weight:700;"></span></div>`;
   const persist = async ()=>{ try{ await saveItem('checklist','main',cl); P$('cl-msg').textContent='Tersimpan ✓'; setTimeout(()=>{const m=P$('cl-msg'); if(m) m.textContent='';},1500);}catch(err){ showToast('Gagal menyimpan: '+err.message); } };
   view.querySelectorAll('[data-cs]').forEach(el=>el.addEventListener('change', ()=>{ const [g,i]=el.dataset.cs.split(':').map(Number); cl.groups[g].items[i].status=el.value; persist(); }));
   view.querySelectorAll('[data-remark]').forEach(el=>el.addEventListener('change', ()=>{ cl.groups[+el.dataset.remark].remark=el.value; persist(); }));
@@ -2194,8 +2325,8 @@ function renderPmProcDetail(S){
   if(pmProc==='Dimensi'){
     const rs = pcpRows().sort((x,y)=> (y.ng>0)-(x.ng>0) || naturalCompare(x.part,y.part));
     const ngT = rs.reduce((t,r)=>t+r.ng,0);
-    const body = rs.length ? `<div style="overflow-x:auto;"><table><thead><tr><th>Part</th><th>Critical Point</th><th>Acceptance</th><th>Diukur</th><th>NG</th><th>Min – Max</th><th>Hasil</th></tr></thead><tbody>${rs.map(r=>`<tr style="${r.ng?'background:var(--red-dim);':''}"><td>${esc(r.part)}</td><td>${esc(r.name)}</td><td class="mono">${esc(r.acc)}</td><td class="mono">${r.n}</td><td class="mono" style="color:${r.ng?'var(--red)':'var(--text-dim)'};">${r.ng}</td><td class="mono">${r.min==null?'-':r.min+' – '+r.max}</td><td>${r.judged?`<span class="mp-badge ${r.ng?'b-ng':'b-selesai'}">${r.ng?'NG':'OK'}</span>`:'-'}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">Belum ada data PCP Critical Dimension.</div>';
-    box.innerHTML = `<div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px;"><div style="font-weight:600;margin-bottom:8px;">Rincian Dimensi <span class="n">${rs.length} critical point · ${ngT} ukuran NG</span></div>${body}</div>`;
+    const body = rs.length ? `<div style="overflow-x:auto;"><table><thead><tr><th>Part</th><th>Critical Point</th><th>Acceptance</th><th>Diukur</th><th>NG</th><th>Min – Max</th><th>Hasil</th></tr></thead><tbody>${rs.map(r=>`<tr style="${r.ng?'background:var(--red-soft);':''}"><td>${esc(r.part)}</td><td>${esc(r.name)}</td><td class="mono">${esc(r.acc)}</td><td class="mono">${r.n}</td><td class="mono" style="color:${r.ng?'var(--red)':'var(--text-dim)'};">${r.ng}</td><td class="mono">${r.min==null?'-':r.min+' – '+r.max}</td><td>${r.judged?`<span class="mp-badge ${r.ng?'b-ng':'b-selesai'}">${r.ng?'NG':'OK'}</span>`:'-'}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">Belum ada data PCP Critical Dimension.</div>';
+    box.innerHTML = `<div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px;"><div style="font-weight:800;margin-bottom:8px;">Rincian Dimensi <span class="n">${rs.length} critical point · ${ngT} ukuran NG</span></div>${body}</div>`;
     return;
   }
   const stCls = { 'FINISH':'b-selesai','ON PROGRESS':'b-proses','NOT YET':'b-belum','N/A':'b-belum' };
@@ -2207,7 +2338,7 @@ function renderPmProcDetail(S){
   }));
   const imgs = l => l.length ? `<div class="pl-cmp-imgs">${l.map(u=>`<img src="${esc(u)}" data-lightbox="${esc(u)}" loading="lazy">`).join('')}</div>` : '';
   const body = rows.length ? `<div style="overflow-x:auto;"><table><thead><tr><th>Program</th><th>Part</th><th>Temuan</th><th>Improvement</th><th>Status</th></tr></thead><tbody>${rows.map(({p,pt,d,fs})=>`<tr><td class="mono">${esc(p)}</td><td>${esc(pt)}</td><td>${fs.map((f,n)=>`<div style="margin-bottom:6px;">${n+1}. ${esc(f.text||'-')}${imgs(f.problem)}</div>`).join('')}</td><td>${esc(d.improvement||'-')}</td><td><span class="mp-badge ${stCls[d.status]||'b-belum'}">${esc(d.status||'NOT YET')}</span></td></tr>`).join('')}</tbody></table></div>` : `<div class="empty">Belum ada temuan di proses ${esc(pmProc)}.</div>`;
-  box.innerHTML = `<div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px;"><div style="font-weight:600;margin-bottom:8px;">Temuan proses ${esc(pmProc)} <span class="n">${total} temuan · ${rows.length} part</span></div>${body}</div>`;
+  box.innerHTML = `<div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px;"><div style="font-weight:800;margin-bottom:8px;">Temuan proses ${esc(pmProc)} <span class="n">${total} temuan · ${rows.length} part</span></div>${body}</div>`;
 }
 function pcpRows(){
   const rows = [];
@@ -2238,9 +2369,9 @@ function renderPilotDash(){
   renderPmProcDetail(S);
   renderCompare(S);
   pdCharts.forEach(c=>c.destroy()); pdCharts = [];
-  const txt = '#8891b8', grid = '#2a3266';
-  pdCharts.push(new Chart(P$('pdReject').getContext('2d'), { type:'bar', data:{ labels:Object.keys(S.rej), datasets:[ {label:'Critical', data:Object.values(S.rej).map(r=>r.c), backgroundColor:'#f0506a'},{label:'Major', data:Object.values(S.rej).map(r=>r.m), backgroundColor:'#fb923c'},{label:'Minor', data:Object.values(S.rej).map(r=>r.n), backgroundColor:'#4e8ff5'} ]}, options:{ responsive:true, maintainAspectRatio:false, scales:{ x:{stacked:true,ticks:{color:txt},grid:{color:grid}}, y:{stacked:true,beginAtZero:true,ticks:{color:txt,precision:0},grid:{color:grid}} }, plugins:{legend:{labels:{color:txt}}} } }));
-  pdCharts.push(new Chart(P$('pdStatus').getContext('2d'), { type:'doughnut', data:{ labels:VSTAT, datasets:[{ data:VSTAT.map(s=>S.statusCount[s]), backgroundColor:['#8891b8','#fb923c','#3ecf8e','#34d1d1'], borderColor:'#131a3a' }]}, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom',labels:{color:txt}}} } }));
+  const txt = '#8fa2b8', grid = '#eef3f7';
+  pdCharts.push(new Chart(P$('pdReject').getContext('2d'), { type:'bar', data:{ labels:Object.keys(S.rej), datasets:[ {label:'Critical', data:Object.values(S.rej).map(r=>r.c), backgroundColor:'#f0687c', borderRadius:6},{label:'Major', data:Object.values(S.rej).map(r=>r.m), backgroundColor:'#f6b73c', borderRadius:6},{label:'Minor', data:Object.values(S.rej).map(r=>r.n), backgroundColor:'#4a9fe0', borderRadius:6} ]}, options:{ responsive:true, maintainAspectRatio:false, scales:{ x:{stacked:true,ticks:{color:txt},grid:{display:false},border:{display:false}}, y:{stacked:true,beginAtZero:true,ticks:{color:txt,precision:0},grid:{color:grid},border:{display:false}} }, plugins:{legend:{labels:{color:'#2b3a55', font:{family:'Nunito', weight:'600'}}}} } }));
+  pdCharts.push(new Chart(P$('pdStatus').getContext('2d'), { type:'doughnut', data:{ labels:VSTAT, datasets:[{ data:VSTAT.map(s=>S.statusCount[s]), backgroundColor:['#8fa2b8','#f6b73c','#4ecb8e','#4dd0c1'], borderColor:'#fff', borderWidth:3 }]}, options:{ responsive:true, maintainAspectRatio:false, cutout:'65%', plugins:{legend:{position:'bottom',labels:{color:'#2b3a55', font:{family:'Nunito', weight:'600'}, usePointStyle:true}}} } }));
   P$('pdCheck').innerHTML = S.cl.groups.map((g,i)=>{ const its = g.items.filter(x=>!x.noStatus), ok = its.filter(x=>x.status==='OK').length; return `<div class="barrow"><div class="lbl">${esc(g.no+'. '+g.title)}</div><div class="track"><div class="fill" style="width:${Math.max(4,pct(ok,its.length))}%;background:${BAR_COLORS[i%BAR_COLORS.length]}"></div></div><div class="val">${ok}/${its.length}</div></div>`; }).join('');
 }
 function renderCompare(S){
