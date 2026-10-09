@@ -453,6 +453,15 @@ tr.high-reject td.mono.pct-cell{ color:var(--red); font-weight:800; }
 
 .kpi-grid:has(> .kpi:nth-child(5)){ grid-template-columns:repeat(5,1fr); }
 @media(max-width:900px){ .kpi-grid:has(> .kpi:nth-child(5)){ grid-template-columns:repeat(2,1fr); } }
+
+/* RINGKASAN PROGRAM FILTER */
+.ringkasan-filter{
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+}
+.ringkasan-filter label{ margin:0; font-size:12px; }
+.ringkasan-filter select{ width:auto; min-width:240px; }
+.ringkasan-filter .info{ color:var(--text-dim); font-size:12px; font-weight:600; }
+.ringkasan-filter .spacer{ flex:1; }
 </style>
 </head>
 <body>
@@ -513,6 +522,18 @@ tr.high-reject td.mono.pct-cell{ color:var(--red); font-weight:800; }
   <div id="loadingMsg" class="loading">Memuat data...</div>
 
   <section id="tab-ringkasan" class="hidden">
+    <div class="panel" style="padding:12px 20px;margin-bottom:16px;">
+      <div class="ringkasan-filter">
+        <label>Filter Program:</label>
+        <select id="ringkasan-program">
+          <option value="">Semua Program</option>
+        </select>
+        <span id="ringkasan-program-info" class="info"></span>
+        <span class="spacer"></span>
+        <button type="button" class="btn ghost small" id="ringkasan-program-reset">Reset</button>
+      </div>
+    </div>
+
     <div class="dash-grid">
       <div class="panel g-6">
         <h2>Ringkasan Problem <span class="n" id="rangeLabelKpi"></span></h2>
@@ -821,6 +842,7 @@ let currentAnchor = mondayOf(new Date());
 let periodMode = 'week';
 let customStart = null, customEnd = null;
 let dataReady = false;
+let ringkasanProgram = '';
 const BAR_COLORS = ['#4a9fe0','#9b7ff0','#4dd0c1','#4ecb8e','#f07fb0','#f6b73c','#f0687c','#8fa2b8','#5fc9e8','#b09bef'];
 const NC_HIGH_THRESHOLD = 10;
 function colorForName(name){ const s = String(name||''); let hash = 0; for(let i=0;i<s.length;i++){ hash = (hash*31 + s.charCodeAt(i)) % 997; } return BAR_COLORS[hash % BAR_COLORS.length]; }
@@ -1195,10 +1217,53 @@ function renderRecentPhotos(){ const box = document.getElementById('recentPhotos
 function renderGallery(){ const grid = document.getElementById('galleryGrid'); const withPhotos = entries.filter(e=>e.photoProblem||e.photoNc||(e.pallets&&e.pallets.length)).slice().sort((a,b)=> b.date.localeCompare(a.date)); if(withPhotos.length===0){ grid.innerHTML = '<div class="empty">Belum ada problem dengan foto.</div>'; return; } grid.innerHTML = withPhotos.map(photoCardHtml).join(''); bindLightboxTriggers(grid); }
 
 /* RINGKASAN */
-function weekEntries(){ const { start, end } = getPeriodRange(); const s = fmt(start), e = fmt(end); return entries.filter(x => x.date >= s && x.date <= e); }
+function weekEntries(){
+  const { start, end } = getPeriodRange();
+  const s = fmt(start), e = fmt(end);
+  let list = entries.filter(x => x.date >= s && x.date <= e);
+  if(ringkasanProgram){
+    const pmap = projectProgramMap();
+    if(ringkasanProgram === '__tanpa__'){
+      list = list.filter(x => !pmap[normStr(x.projectNumber)]);
+    } else {
+      list = list.filter(x => pmap[normStr(x.projectNumber)] === ringkasanProgram);
+    }
+  }
+  return list;
+}
 function countBy(list, key){ const m = {}; list.forEach(e=>{ const k = normStr(e[key])||'(tidak diisi)'; m[k] = (m[k]||0)+1; }); return Object.entries(m).sort((a,b)=>b[1]-a[1]); }
 function entryHasKelolosan(e){ return (e.pallets||[]).some(p=> p.status === 'kelolosan'); }
 function periodLabelWord(){ if(periodMode==='day') return 'hari ini'; if(periodMode==='month') return 'bulan ini'; if(periodMode==='custom') return 'periode ini'; return 'minggu ini'; }
+
+function refreshRingkasanProgramOptions(){
+  const sel = document.getElementById('ringkasan-program');
+  if(!sel) return;
+  const pmap = projectProgramMap();
+  const set = new Set();
+  Object.values(pmap).forEach(p => { if(p) set.add(p); });
+  problemLogs.forEach(l => { const p = normStr(l.program); if(p) set.add(p); });
+  const programs = Array.from(set).sort(naturalCompare);
+
+  const cur = sel.value || ringkasanProgram;
+  sel.innerHTML =
+    '<option value="">Semua Program</option>' +
+    programs.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('') +
+    '<option value="__tanpa__">— Tanpa Program —</option>';
+
+  if(cur && (programs.includes(cur) || cur === '__tanpa__' || cur === '')){
+    sel.value = cur;
+  } else {
+    sel.value = '';
+    ringkasanProgram = '';
+  }
+
+  const info = document.getElementById('ringkasan-program-info');
+  if(info){
+    if(!ringkasanProgram) info.textContent = '';
+    else if(ringkasanProgram === '__tanpa__') info.textContent = 'Menampilkan entri tanpa program';
+    else info.textContent = 'Program: ' + ringkasanProgram;
+  }
+}
 
 function renderRingkasan(){
   const wk = weekEntries();
@@ -1207,6 +1272,14 @@ function renderRingkasan(){
   const byProblem = countBy(wk,'problemType'); const byProject = countBy(wk,'projectNumber');
   const plabel = periodLabelWord();
   const topMachine = byMachine[0]; const topOperator = byOperator[0]; const topQcKelolosan = byQcKelolosan[0];
+
+  const rk = document.getElementById('rangeLabelKpi');
+  if(rk){
+    if(!ringkasanProgram) rk.textContent = '';
+    else if(ringkasanProgram === '__tanpa__') rk.textContent = '(Tanpa Program)';
+    else rk.textContent = '(' + ringkasanProgram + ')';
+  }
+
   const kpis = [
     {label:'Total Problem '+(periodMode==='day'?'Hari Ini':periodMode==='month'?'Bulan Ini':periodMode==='custom'?'Periode Ini':'Minggu Ini'), value: wk.length, sub: wk.length===0?'Tidak ada data':'entri tercatat', cls:'blue'},
     {label:'Mesin Paling Bermasalah', value: topMachine?topMachine[0]:'—', sub: topMachine?topMachine[1]+' problem':'', cls:'red'},
@@ -2129,10 +2202,11 @@ function renderPilot(){
   const doc = curDoc();
   const docOpts = pilotDocs.map(d=>`<option value="${esc(d.id)}" ${d.id===curDocId?'selected':''}>${esc(d.title)}</option>`).join('');
   const tabs = [['dash','Dashboard'],['visual','Input Visual Check'],['pcp','Input PCP Dimension'],['samp','Input Sampling'],['check','Checklist']];
-  root.innerHTML = `<div class="panel"><h2>Monitoring Pilot Production <span class="n">${doc?('Update: '+esc(fmtUpdate(doc.update_date))):''}</span></h2><div class="project-summary-row"><select id="pl-doc">${docOpts || '<option value="">(belum ada dokumen)</option>'}</select><button class="btn small" id="pl-new">+ Dokumen Baru</button>${doc?'<button class="btn ghost small" id="pl-edit">Ubah Info</button>':''}${doc?'<button class="btn small" id="pl-download" style="margin-left:auto;">Unduh Excel Monitoring</button>':''}</div><div id="pl-docform"></div>${doc?`<div class="pl-subnav">${tabs.map(([k,l])=>`<button class="pl-subbtn ${pilotView===k?'active':''}" data-pv="${k}">${l}</button>`).join('')}</div>`:''}</div><div id="pilotView"></div>`;
+  root.innerHTML = `<div class="panel"><h2>Monitoring Pilot Production <span class="n">${doc?('Update: '+esc(fmtUpdate(doc.update_date))):''}</span></h2><div class="project-summary-row"><select id="pl-doc">${docOpts || '<option value="">(belum ada dokumen)</option>'}</select><button class="btn small" id="pl-new">+ Dokumen Baru</button>${doc?'<button class="btn ghost small" id="pl-edit">Ubah Info</button>':''}${doc?'<button class="btn danger small" id="pl-delete">🗑 Hapus Dokumen</button>':''}${doc?'<button class="btn small" id="pl-download" style="margin-left:auto;">Unduh Excel Monitoring</button>':''}</div><div id="pl-docform"></div>${doc?`<div class="pl-subnav">${tabs.map(([k,l])=>`<button class="pl-subbtn ${pilotView===k?'active':''}" data-pv="${k}">${l}</button>`).join('')}</div>`:''}</div><div id="pilotView"></div>`;
   P$('pl-doc').addEventListener('change', e=>{ curDocId = e.target.value; visSel={program:'',part:''}; visState=null; pcpForm=null; sampForm=null; renderPilot(); });
   P$('pl-new').addEventListener('click', ()=>showDocForm(null));
   if(P$('pl-edit')) P$('pl-edit').addEventListener('click', ()=>showDocForm(doc));
+  if(P$('pl-delete')) P$('pl-delete').addEventListener('click', ()=>deleteDoc(doc));
   if(P$('pl-download')) P$('pl-download').addEventListener('click', downloadMonitoringExcel);
   root.querySelectorAll('.pl-subbtn').forEach(b=>b.addEventListener('click', ()=>{ pilotView=b.dataset.pv; renderPilot(); }));
   if(!doc){ P$('pilotView').innerHTML = '<div class="panel"><div class="empty">Buat dokumen monitoring dulu.</div></div>'; return; }
@@ -2156,6 +2230,56 @@ function showDocForm(doc){
     curDocId = row.id; visSel={program:'',part:''}; visState=null;
     renderPilot();
   });
+}
+
+async function deleteDoc(doc){
+  if(!doc) return;
+  if(!confirm(`⚠️ Hapus dokumen "${doc.title}" ?\n\nSemua data monitoring yang terkait (Visual Check, PCP, Sampling, Checklist, dan foto-fotonya) akan ikut terhapus.\n\nTindakan ini tidak bisa dibatalkan.`)) return;
+  if(!ensureConfigured()) return;
+
+  const items = pilotItems.filter(i => i.doc_id === doc.id);
+  const itemIds = items.map(i => i.id);
+
+  const photoPaths = [];
+  items.forEach(it => {
+    const d = it.data || {};
+    if(d.photo) photoPaths.push(pathFromPublicUrl(d.photo));
+    (d.findings || []).forEach(f => {
+      (f.problem || []).forEach(u => photoPaths.push(pathFromPublicUrl(u)));
+      (f.sample  || []).forEach(u => photoPaths.push(pathFromPublicUrl(u)));
+    });
+    Object.values(d.progs || {}).forEach(g => {
+      (g.photos || []).forEach(u => photoPaths.push(pathFromPublicUrl(u)));
+    });
+  });
+  const validPaths = photoPaths.filter(Boolean);
+
+  try{
+    if(itemIds.length){
+      const { error: e1 } = await sb.from('pilot_items').delete().in('id', itemIds);
+      if(e1) throw e1;
+    }
+    const { error: e2 } = await sb.from('pilot_docs').delete().eq('id', doc.id);
+    if(e2) throw e2;
+    if(validPaths.length){
+      try{ await sb.storage.from('problem-photos').remove(validPaths); }
+      catch(e){ console.error('Gagal hapus file foto:', e); }
+    }
+
+    pilotDocs  = pilotDocs.filter(d => d.id !== doc.id);
+    pilotItems = pilotItems.filter(i => i.doc_id !== doc.id);
+    if(curDocId === doc.id){
+      curDocId = pilotDocs.length ? pilotDocs[0].id : '';
+    }
+    visSel = { program:'', part:'' };
+    visState = null; pcpForm = null; sampForm = null;
+
+    showToast('Dokumen berhasil dihapus');
+    renderPilot();
+  }catch(err){
+    console.error(err);
+    showToast('Gagal menghapus: ' + err.message);
+  }
 }
 
 function normFindings(d){
@@ -2620,13 +2744,34 @@ document.querySelectorAll('[data-add]').forEach(btn=>{
   });
 });
 
-function renderAll(){ renderWeekRange(); renderRingkasan(); refreshProjectOptions(); renderMonitor(); }
+/* RINGKASAN PROGRAM FILTER — EVENT LISTENERS */
+document.getElementById('ringkasan-program').addEventListener('change', (e) => {
+  ringkasanProgram = e.target.value;
+  refreshRingkasanProgramOptions();
+  renderRingkasan();
+});
+document.getElementById('ringkasan-program-reset').addEventListener('click', () => {
+  ringkasanProgram = '';
+  document.getElementById('ringkasan-program').value = '';
+  refreshRingkasanProgramOptions();
+  renderRingkasan();
+});
+
+function renderAll(){
+  renderWeekRange();
+  refreshRingkasanProgramOptions();
+  renderRingkasan();
+  refreshProjectOptions();
+  renderMonitor();
+}
 
 async function init(){
   await loadAll();
   document.getElementById('loadingMsg').classList.add('hidden');
   document.getElementById('tab-ringkasan').classList.remove('hidden');
-  refreshFormSelects(); renderMasterLists(); renderTodayList(); renderAll(); renderGallery();
+  refreshFormSelects(); renderMasterLists(); renderTodayList();
+  refreshRingkasanProgramOptions();
+  renderAll(); renderGallery();
   document.getElementById('plog-date').value = fmt(new Date());
 }
 init();
